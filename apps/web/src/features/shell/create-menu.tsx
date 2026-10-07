@@ -1,11 +1,23 @@
-import { cn } from '@worldroot/ui';
-import { BookOpen, Globe, Megaphone, Plus, UserRound, Users } from 'lucide-react';
+'use client';
 
-// Each entry becomes a link when its feature ships. Until then it says when that is.
-const CREATE_ITEMS = [
-  { label: 'Scene', icon: BookOpen, arrives: 'Phase 2' },
-  { label: 'Character', icon: UserRound, arrives: 'Phase 1' },
-  { label: 'World', icon: Globe, arrives: 'Phase 1' },
+import { cn } from '@worldroot/ui';
+import { BookOpen, Globe, Megaphone, Plus, UserRound, Users, type LucideIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useCloseOnNavigate } from './use-close-on-navigate';
+
+interface CreateItem {
+  label: string;
+  icon: LucideIcon;
+  /** Set once the feature exists. */
+  href?: string;
+  /** Shown in place of a link until then. */
+  arrives?: string;
+}
+
+const CREATE_ITEMS: CreateItem[] = [
+  { label: 'Scene', icon: BookOpen, href: '/scenes/new' },
+  { label: 'Character', icon: UserRound, href: '/library/characters/new' },
+  { label: 'World', icon: Globe, href: '/library/worlds/new' },
   { label: 'LFRP listing', icon: Megaphone, arrives: 'Phase 4' },
   { label: 'Community', icon: Users, arrives: 'Phase 3' },
 ];
@@ -17,8 +29,9 @@ interface CreateMenuProps {
 
 export function CreateMenu({ placement }: CreateMenuProps) {
   const rail = placement === 'rail';
+  const ref = useCloseOnNavigate();
   return (
-    <details className="group relative">
+    <details ref={ref} className="group relative">
       <summary
         className={cn(
           'flex cursor-pointer list-none items-center justify-center gap-2 font-medium [&::-webkit-details-marker]:hidden',
@@ -37,13 +50,25 @@ export function CreateMenu({ placement }: CreateMenuProps) {
           rail ? 'left-0 top-full mt-2' : 'bottom-full left-1/2 mb-3 -translate-x-1/2',
         )}
       >
-        {CREATE_ITEMS.map(({ label, icon: Icon, arrives }) => (
-          <li key={label} aria-disabled="true" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm text-ink-muted">
-            <Icon className="size-4" aria-hidden="true" />
-            <span className="flex-1">{label}</span>
-            <span className="text-xs">{arrives}</span>
-          </li>
-        ))}
+        {CREATE_ITEMS.map(({ label, icon: Icon, href, arrives }) =>
+          href ? (
+            <li key={label}>
+              <Link
+                href={href}
+                className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm text-ink hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-focus"
+              >
+                <Icon className="size-4" aria-hidden="true" />
+                {label}
+              </Link>
+            </li>
+          ) : (
+            <li key={label} aria-disabled="true" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm text-ink-muted">
+              <Icon className="size-4" aria-hidden="true" />
+              <span className="flex-1">{label}</span>
+              <span className="text-xs">{arrives}</span>
+            </li>
+          ),
+        )}
       </ul>
     </details>
   );

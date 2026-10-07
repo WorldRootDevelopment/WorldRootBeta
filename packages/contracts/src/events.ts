@@ -8,6 +8,10 @@ export interface EventPayloads {
   'community.member_joined': { communityId: string; userId: string };
   'world.copied': { worldId: string; sourceWorldId: string; communityId: string };
   'character.copied': { characterId: string; sourceCharacterId: string; communityId: string };
+  'scene.created': { sceneId: string };
+  'scene.post.created': { sceneId: string; postId: string; seq: number };
+  'scene.participant.added': { sceneId: string; userId: string };
+  'scene.updated': { sceneId: string };
 }
 
 export type EventType = keyof EventPayloads;

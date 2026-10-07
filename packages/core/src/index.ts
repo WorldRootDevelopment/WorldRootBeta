@@ -5,6 +5,7 @@ export * from './platform/audit';
 export * from './platform/authorize';
 export * from './platform/errors';
 export * from './platform/outbox';
+export * from './platform/validate';
 
 export * from './identity/auth';
 export * from './identity/profile';
@@ -14,3 +15,4 @@ export * from './community/service';
 export * from './worlds/service';
 
 export { DEMO_ACCOUNT, seedStarTrekDemo } from './demo/star-trek';
+export * from './scenes/service';

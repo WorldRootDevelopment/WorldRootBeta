@@ -1,34 +1,47 @@
+import { locationInputSchema, worldInputSchema, type LocationInput, type WorldInput } from '@worldroot/contracts';
 import { locations, worlds, type Db } from '@worldroot/db';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, max } from 'drizzle-orm';
 import { assertSlug, communityGrants } from '../community/service';
 import { recordAudit } from '../platform/audit';
-import { authorize, authorizeOwner, type Actor } from '../platform/authorize';
+import { authorize, authorizeOwner, can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
+import { parseInput, slugify } from '../platform/validate';
 
 export type World = typeof worlds.$inferSelect;
 export type Location = typeof locations.$inferSelect;
 
 const MAX_LOCATION_DEPTH = 5;
 
-export interface CreateWorldInput {
-  slug: string;
-  name: string;
-  summary?: string;
-  description?: string;
+export type CreateWorldInput = WorldInput & {
+  /** The address within the owner's library. Derived from the name when omitted. */
+  slug?: string;
+};
+
+/** A slug no other world of this owner uses: the name's slug, numbered if taken. */
+async function freeSlug(db: Db, userId: string, name: string): Promise<string> {
+  const base = slugify(name) || 'world';
+  const taken = new Set(
+    (await db.select({ slug: worlds.slug }).from(worlds).where(eq(worlds.ownerUserId, userId))).map((row) => row.slug),
+  );
+  if (!taken.has(base)) return base;
+  for (let n = 2; ; n += 1) if (!taken.has(`${base}-${n}`)) return `${base}-${n}`;
 }
 
-/** Creates a world in the actor's own library. */
+/** Creates a world in the actor's own library. Only the name is required. */
 export async function createWorld(db: Db, actor: Actor, input: CreateWorldInput): Promise<World> {
-  assertSlug(input.slug);
-  const [taken] = await db
-    .select({ id: worlds.id })
-    .from(worlds)
-    .where(and(eq(worlds.ownerUserId, actor.userId), eq(worlds.slug, input.slug)));
-  if (taken) throw new DomainError('conflict', 'You already have a world at that address.');
+  const values = parseInput(worldInputSchema, input);
+  if (input.slug) {
+    assertSlug(input.slug);
+    const [taken] = await db
+      .select({ id: worlds.id })
+      .from(worlds)
+      .where(and(eq(worlds.ownerUserId, actor.userId), eq(worlds.slug, input.slug)));
+    if (taken) throw new DomainError('conflict', 'You already have a world at that address.');
+  }
   const [world] = await db
     .insert(worlds)
-    .values({ ...input, ownerUserId: actor.userId })
+    .values({ ...values, slug: input.slug ?? (await freeSlug(db, actor.userId, values.name)), ownerUserId: actor.userId })
     .returning();
   return world!;
 }
@@ -39,36 +52,94 @@ async function requireWorld(db: Db, worldId: string): Promise<World> {
   return world;
 }
 
-export interface CreateLocationInput {
-  name: string;
-  parentId?: string | null;
-  summary?: string;
-  description?: string;
-  position?: number;
+/** Loads a world from the actor's own library. Other people's library worlds do not exist to them. */
+export async function getLibraryWorld(db: Db, actor: Actor, worldId: string): Promise<World> {
+  const [world] = await db.select().from(worlds).where(eq(worlds.id, worldId));
+  if (!world?.ownerUserId || (world.ownerUserId !== actor.userId && actor.platformRole !== 'staff')) {
+    throw new DomainError('not_found', 'That world does not exist.');
+  }
+  return world;
 }
+
+/** Updates a world's details. A library world by its owner, a community world by its managers. */
+export async function updateWorld(db: Db, actor: Actor, worldId: string, input: WorldInput): Promise<World> {
+  const values = parseInput(worldInputSchema, input);
+  const world = await requireWorld(db, worldId);
+  if (world.ownerUserId) authorizeOwner(actor, world.ownerUserId);
+  else await authorize(actor, 'world.manage', { communityId: world.ownerCommunityId!, worldId }, communityGrants(db));
+
+  return db.transaction(async (tx) => {
+    const [updated] = await tx.update(worlds).set(values).where(eq(worlds.id, worldId)).returning();
+    if (world.ownerCommunityId) {
+      await recordAudit(tx, {
+        actor,
+        action: 'world.update',
+        targetType: 'world',
+        targetId: worldId,
+        communityId: world.ownerCommunityId,
+        before: { name: world.name },
+        after: { name: updated!.name },
+      });
+    }
+    return updated!;
+  });
+}
+
+export type CreateLocationInput = LocationInput & {
+  parentId?: string | null;
+  /** Order among its siblings. Placed last when omitted. */
+  position?: number;
+};
 
 /** Adds a location to a world. Only the name is required. */
 export async function createLocation(db: Db, actor: Actor, worldId: string, input: CreateLocationInput): Promise<Location> {
+  const values = parseInput(locationInputSchema, input);
   const world = await requireWorld(db, worldId);
   if (world.ownerUserId) authorizeOwner(actor, world.ownerUserId);
   else await authorize(actor, 'location.create', { communityId: world.ownerCommunityId!, worldId }, communityGrants(db));
 
-  if (input.parentId) {
-    const all = await listLocations(db, worldId);
-    const byId = new Map(all.map((location) => [location.id, location]));
+  const parentId = input.parentId ?? null;
+  if (parentId) {
+    const byId = new Map((await listLocations(db, worldId)).map((location) => [location.id, location]));
+    if (!byId.has(parentId)) throw new DomainError('invalid_input', 'The parent location is not in this world.');
     let depth = 1;
-    for (let at = byId.get(input.parentId); at; at = at.parentId ? byId.get(at.parentId) : undefined) depth += 1;
-    if (!byId.has(input.parentId)) throw new DomainError('invalid_input', 'The parent location is not in this world.');
+    for (let at = byId.get(parentId); at; at = at.parentId ? byId.get(at.parentId) : undefined) depth += 1;
     if (depth > MAX_LOCATION_DEPTH) {
       throw new DomainError('invalid_input', `Locations can nest ${MAX_LOCATION_DEPTH} levels deep at most.`);
     }
   }
 
+  let position = input.position;
+  if (position === undefined) {
+    const [last] = await db.select({ value: max(locations.position) }).from(locations).where(eq(locations.worldId, worldId));
+    position = (last?.value ?? -1) + 1;
+  }
+
   const [location] = await db
     .insert(locations)
-    .values({ ...input, worldId })
+    .values({ ...values, worldId, parentId, position })
     .returning();
   return location!;
+}
+
+/** Whether the actor may add and edit locations in a world. */
+export async function canEditLocations(db: Db, actor: Actor, world: World): Promise<boolean> {
+  if (actor.platformRole === 'staff') return true;
+  if (world.ownerUserId) return world.ownerUserId === actor.userId;
+  return can(actor, 'location.manage', { communityId: world.ownerCommunityId!, worldId: world.id }, communityGrants(db));
+}
+
+export async function updateLocation(db: Db, actor: Actor, locationId: string, input: LocationInput): Promise<Location> {
+  const values = parseInput(locationInputSchema, input);
+  const [location] = await db.select().from(locations).where(eq(locations.id, locationId));
+  if (!location) throw new DomainError('not_found', 'That location does not exist.');
+  const world = await requireWorld(db, location.worldId);
+  if (world.ownerUserId) authorizeOwner(actor, world.ownerUserId);
+  else {
+    await authorize(actor, 'location.manage', { communityId: world.ownerCommunityId!, worldId: world.id }, communityGrants(db));
+  }
+  const [updated] = await db.update(locations).set(values).where(eq(locations.id, locationId)).returning();
+  return updated!;
 }
 
 export async function listLocations(db: Db, worldId: string): Promise<Location[]> {

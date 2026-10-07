@@ -1,10 +1,12 @@
 import { communities, users, type Db } from '@worldroot/db';
 import { eq } from 'drizzle-orm';
-import { addCharacterToCommunity, createCharacter, type CreateCharacterInput } from '../characters/service';
+import type { CharacterInput } from '@worldroot/contracts';
+import { addCharacterToCommunity, createCharacter } from '../characters/service';
 import { addCharacterField, createCommunity, createRole } from '../community/service';
 import { createAuth } from '../identity/auth';
 import { createProfile, getProfile } from '../identity/profile';
 import type { Actor } from '../platform/authorize';
+import { ensureDemoScenes } from './star-trek-scenes';
 import { copyWorldToCommunity, createLocation, createWorld, type CreateLocationInput } from '../worlds/service';
 
 /**
@@ -97,7 +99,7 @@ const REGION_LOCATIONS: LocationSeed[] = [
 ];
 
 interface CrewSeed {
-  character: CreateCharacterInput;
+  character: CharacterInput;
   rank: string;
   division: string;
   position: string;
@@ -268,7 +270,11 @@ export interface DemoSeedResult {
 /** Creates the demo community once. Running it again changes nothing. */
 export async function seedStarTrekDemo(db: Db): Promise<DemoSeedResult> {
   const [existing] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, COMMUNITY_SLUG));
-  if (existing) return { created: false, communitySlug: COMMUNITY_SLUG };
+  if (existing) {
+    // Scenes are their own step, so a database seeded before they existed still gets them.
+    await ensureDemoScenes(db, await ensureDemoActor(db), existing.id);
+    return { created: false, communitySlug: COMMUNITY_SLUG };
+  }
 
   const actor = await ensureDemoActor(db);
 
@@ -349,6 +355,8 @@ export async function seedStarTrekDemo(db: Db): Promise<DemoSeedResult> {
       worldIds: [shipCopy.id],
     });
   }
+
+  await ensureDemoScenes(db, actor, community.id);
 
   return { created: true, communitySlug: COMMUNITY_SLUG };
 }

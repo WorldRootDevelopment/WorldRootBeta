@@ -1,5 +1,7 @@
 import { getCharacterView } from '@worldroot/core';
+import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { cache } from 'react';
 import { CharacterAvatar } from '@/features/characters/character-card';
@@ -23,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CharacterPage({ params }: Props) {
-  const { character, community, customFields, sourceName } = await loadCharacter((await params).characterId);
+  const { character, community, customFields, sourceName, canEdit } = await loadCharacter((await params).characterId);
 
   const facts = [
     { label: 'Pronouns', value: character.pronouns },
@@ -61,9 +63,9 @@ export default async function CharacterPage({ params }: Props) {
         }
       />
 
-      <header className="flex items-start gap-5">
+      <header className="flex flex-wrap items-start gap-5">
         <CharacterAvatar name={character.name} className="size-20 text-3xl" />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{character.name}</h1>
           {character.tagline ? <p className="mt-2 font-serif text-lg italic text-ink-muted">{character.tagline}</p> : null}
           <p className="mt-3 text-sm text-ink-muted">
@@ -74,6 +76,11 @@ export default async function CharacterPage({ params }: Props) {
               : 'An original in your library.'}
           </p>
         </div>
+        {canEdit ? (
+          <Link href={`/characters/${character.id}/edit`} className={buttonClass('secondary')}>
+            Edit
+          </Link>
+        ) : null}
       </header>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[16rem_1fr]">

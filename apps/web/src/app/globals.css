@@ -46,3 +46,68 @@
     background-color: var(--wr-accent-soft);
   }
 }
+
+/*
+ * Rendered rich text: scene posts, and the editor while writing. The same
+ * rules style both, so a post looks the same before and after it is sent.
+ */
+@layer components {
+  .wr-prose {
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--wr-text);
+    overflow-wrap: anywhere;
+  }
+  .wr-prose > * + * {
+    margin-top: 1em;
+  }
+  .wr-prose h2 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1.5em;
+  }
+  .wr-prose h3 {
+    font-size: 1.1875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-top: 1.5em;
+  }
+  .wr-prose > :first-child {
+    margin-top: 0;
+  }
+  .wr-prose blockquote {
+    border-left: 2px solid var(--wr-border-strong);
+    padding-left: 1em;
+    color: var(--wr-text-muted);
+  }
+  .wr-prose blockquote > * + * {
+    margin-top: 1em;
+  }
+  .wr-prose hr {
+    border: 0;
+    height: 1px;
+    width: 4rem;
+    margin: 2em auto;
+    background-color: var(--wr-border-strong);
+  }
+  .wr-prose a {
+    color: var(--wr-accent-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .wr-editor {
+    outline: none;
+    min-height: inherit;
+  }
+  /* The placeholder, shown by the editor on its empty first paragraph. */
+  .wr-editor p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    color: var(--wr-text-muted);
+  }
+}

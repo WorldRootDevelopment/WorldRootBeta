@@ -12,6 +12,7 @@
   "dependencies": {
     "@worldroot/contracts": "workspace:*",
     "@worldroot/core": "workspace:*",
+    "@worldroot/editor": "workspace:*",
     "@worldroot/ui": "workspace:*",
     "better-auth": "catalog:",
     "lucide-react": "^1.52.0",

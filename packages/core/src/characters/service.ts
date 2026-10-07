@@ -1,38 +1,58 @@
+import { characterInputSchema, type CharacterInput } from '@worldroot/contracts';
 import { characters, characterWorldLinks, communities, worlds, type CharacterCustomValues, type Db } from '@worldroot/db';
 import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
 import { communityGrants, isMember, listCharacterFields } from '../community/service';
 import { recordAudit } from '../platform/audit';
-import { authorize, authorizeOwner, type Actor } from '../platform/authorize';
+import { authorize, authorizeOwner, can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
+import { parseInput } from '../platform/validate';
 
 export type Character = typeof characters.$inferSelect;
 
-export interface CreateCharacterInput {
-  name: string;
-  tagline?: string;
-  pronouns?: string;
-  age?: string;
-  gender?: string;
-  species?: string;
-  appearance?: string;
-  personality?: string;
-  biography?: string;
-  skills?: string;
-  likes?: string;
-  dislikes?: string;
-  voice?: string;
-  boundaries?: string;
-}
-
 /** Creates a character in the actor's own library. Only the name is required. */
-export async function createCharacter(db: Db, actor: Actor, input: CreateCharacterInput): Promise<Character> {
-  if (!input.name.trim()) throw new DomainError('invalid_input', 'A character needs a name.', { fields: { name: 'Enter a name.' } });
+export async function createCharacter(db: Db, actor: Actor, input: CharacterInput): Promise<Character> {
+  const values = parseInput(characterInputSchema, input);
   const [character] = await db
     .insert(characters)
-    .values({ ...input, playerUserId: actor.userId })
+    .values({ ...values, playerUserId: actor.userId })
     .returning();
   return character!;
+}
+
+/** A character is edited by its player, or in a community by staff who manage characters. */
+async function canEditCharacter(db: Db, actor: Actor, character: Character): Promise<boolean> {
+  if (character.playerUserId === actor.userId || actor.platformRole === 'staff') return true;
+  if (!character.communityId) return false;
+  return can(actor, 'character.manage', { communityId: character.communityId }, communityGrants(db));
+}
+
+/**
+ * Updates a character's profile. Editing an original never changes its community
+ * copies, and editing a copy never changes the original.
+ */
+export async function updateCharacter(db: Db, actor: Actor, characterId: string, input: CharacterInput): Promise<Character> {
+  const values = parseInput(characterInputSchema, input);
+  const [character] = await db.select().from(characters).where(eq(characters.id, characterId));
+  if (!character) throw new DomainError('not_found', 'That character does not exist.');
+  if (!(await canEditCharacter(db, actor, character))) throw new DomainError('forbidden', 'You cannot edit this character.');
+
+  return db.transaction(async (tx) => {
+    const [updated] = await tx.update(characters).set(values).where(eq(characters.id, characterId)).returning();
+    // Changes to a community's copy are part of that community's record.
+    if (character.communityId) {
+      await recordAudit(tx, {
+        actor,
+        action: 'character.update',
+        targetType: 'character',
+        targetId: characterId,
+        communityId: character.communityId,
+        before: { name: character.name },
+        after: { name: updated!.name },
+      });
+    }
+    return updated!;
+  });
 }
 
 export async function listLibraryCharacters(db: Db, userId: string): Promise<Character[]> {
@@ -140,6 +160,7 @@ export interface CharacterView {
   customFields: Array<{ label: string; value: string }>;
   /** The original's name, when this is a copy the viewer made. */
   sourceName: string | null;
+  canEdit: boolean;
 }
 
 /** Loads a character the actor may see: their own, or one in a community they can view. */
@@ -151,7 +172,7 @@ export async function getCharacterView(db: Db, actor: Actor, characterId: string
   const own = character.playerUserId === actor.userId;
   if (!character.communityId) {
     if (!own && actor.platformRole !== 'staff') throw missing;
-    return { character, community: null, customFields: [], sourceName: null };
+    return { character, community: null, customFields: [], sourceName: null, canEdit: true };
   }
 
   const [community] = await db.select().from(communities).where(eq(communities.id, character.communityId));
@@ -179,5 +200,6 @@ export async function getCharacterView(db: Db, actor: Actor, characterId: string
     community: { id: community.id, slug: community.slug, name: community.name, accentHue: community.accentHue },
     customFields,
     sourceName,
+    canEdit: await canEditCharacter(db, actor, character),
   };
 }

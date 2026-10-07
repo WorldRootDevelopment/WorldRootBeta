@@ -16,11 +16,16 @@ Decisions that differ from the plan, or that the plan left open, are recorded be
 | 2026-10-07 | A first slice of communities, roles, worlds, locations and characters was built ahead of phase 2, read-only in the interface, to support a demo community. | A browsable demo was wanted before the scene engine. The services, the copy model and the permission checks are real and tested; the create and edit screens are not built. |
 | 2026-10-07 | The embedded database seeds the Star Trek demo community when the web app starts. | The embedded database is single-process, so a separate seed command cannot run beside the dev server. It must not ship to a public deployment: it uses a real franchise setting and a published password. |
 | 2026-10-07 | Locations use a parent id only. The `ltree` path column is deferred. | A world's locations are loaded whole and arranged in memory, which is enough until scenes need subtree queries. |
+| 2026-10-07 | The server validates and renders rich text with its own small module in `packages/editor`, not with TipTap. | The document schema is a short allowlist, so a hand-written validator and renderer is under 200 lines, needs no DOM on the server, and is safe by construction. TipTap runs in the browser only, configured to produce the same schema. |
+| 2026-10-07 | An open scene refreshes on a 15-second timer while its tab is visible. | A stand-in so two writers see each other's posts without reloading. The server-sent event stream from the plan replaces it. |
+| 2026-10-07 | Any participant may post narration. | The plan says "Narrator when permitted" without defining it. Restricting narration is left until a community asks for it. |
+| 2026-10-07 | Character biographies and world descriptions stay plain text. Only scene posts use the rich text editor. | Converting those fields means a storage change for every long field. Scenes were the priority. |
 
 ## Phase status
 
 | Phase | Status |
 | --- | --- |
 | 0. Foundations | Done, except Storybook and the worker running against a real PostgreSQL server |
-| 1. Library | Partly: schema, services and read pages for characters, worlds and locations. Create and edit screens, media and the editor remain. |
+| 1. Library | Mostly: characters, worlds and locations can be created, viewed and edited. Plain text only. Media upload, the rich text editor, deleting, and reordering locations remain. |
+| 2. Scenes | Mostly: private and community scenes, in-character posts, narration, a separate out-of-character stream, multi-character, drafts, read position, "waiting on you", lifecycle, invitations by handle. Remaining: the live event stream, editing and removing posts, mentions, images, tags, the mobile writing mode, the reading view for completed scenes. |
 | 3. Communities | Partly: schema, roles, joining, world and character copying, custom fields, read pages. Settings, roles interface and approval remain. |

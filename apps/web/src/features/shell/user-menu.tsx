@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { NAV_ITEMS } from './nav-items';
 import { ThemeToggle } from './theme-toggle';
+import { useCloseOnNavigate } from './use-close-on-navigate';
 
 interface UserMenuProps {
   profile: Profile;
@@ -21,6 +22,7 @@ const itemClass =
 
 export function UserMenu({ profile, placement }: UserMenuProps) {
   const router = useRouter();
+  const ref = useCloseOnNavigate();
   const rail = placement === 'rail';
   const initial = profile.displayName.charAt(0).toUpperCase();
 
@@ -31,7 +33,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
   };
 
   return (
-    <details className="relative">
+    <details ref={ref} className="relative">
       <summary
         className={cn(
           'flex cursor-pointer list-none items-center gap-3 rounded-lg [&::-webkit-details-marker]:hidden',
