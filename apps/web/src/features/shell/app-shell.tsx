@@ -2,6 +2,7 @@ import type { Profile } from '@worldroot/contracts';
 import { Wordmark } from '@worldroot/ui';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { ChangelogMenu } from '@/features/changelog/changelog-menu';
 import { CreateMenu } from './create-menu';
 import { NAV_ITEMS } from './nav-items';
 import { NavLink } from './nav-link';
@@ -12,6 +13,7 @@ const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 /**
  * The frame around every signed-in page.
  * Under 768px: a top bar and a five-item bottom bar. From 768px: an icon rail. From 1440px: a labelled rail.
+ * The "What's new" menu sits at the top right at every size.
  */
 export function AppShell({ profile, children }: { profile: Profile; children: ReactNode }) {
   return (
@@ -50,10 +52,17 @@ export function AppShell({ profile, children }: { profile: Profile; children: Re
           <Link href="/home" className={`rounded-lg ${focusRing}`}>
             <Wordmark />
           </Link>
-          <UserMenu profile={profile} placement="bar" />
+          <div className="flex items-center gap-1">
+            <ChangelogMenu />
+            <UserMenu profile={profile} placement="bar" />
+          </div>
         </header>
 
-        <main id="main" className="mx-auto w-full max-w-5xl px-4 pb-28 pt-8 md:px-8 md:pb-12 md:pt-12">
+        <div className="hidden justify-end px-8 pt-4 md:flex">
+          <ChangelogMenu />
+        </div>
+
+        <main id="main" className="mx-auto w-full max-w-5xl px-4 pb-28 pt-8 md:px-8 md:pb-12 md:pt-2">
           {children}
         </main>
       </div>
