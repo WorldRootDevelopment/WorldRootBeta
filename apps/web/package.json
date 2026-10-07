@@ -1,0 +1,32 @@
+{
+  "name": "@worldroot/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@worldroot/contracts": "workspace:*",
+    "@worldroot/core": "workspace:*",
+    "@worldroot/ui": "workspace:*",
+    "better-auth": "catalog:",
+    "lucide-react": "^1.52.0",
+    "next": "~16.3.8",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@worldroot/config": "workspace:*",
+    "tailwindcss": "^4.3.3",
+    "typescript": "catalog:"
+  }
+}

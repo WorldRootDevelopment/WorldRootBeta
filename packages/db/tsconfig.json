@@ -1,0 +1,4 @@
+{
+  "extends": "@worldroot/config/tsconfig.base.json",
+  "include": ["src", "drizzle.config.ts"]
+}

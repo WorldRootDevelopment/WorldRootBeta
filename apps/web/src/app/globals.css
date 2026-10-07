@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+@import '@worldroot/ui/styles/tokens.css';
+
+@source '../../../../packages/ui/src';
+
+/* The dark: variant follows the same rule as the tokens: an explicit choice wins, otherwise the system decides. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme inline {
+  --color-surface: var(--wr-surface);
+  --color-surface-raised: var(--wr-surface-raised);
+  --color-surface-sunken: var(--wr-surface-sunken);
+  --color-ooc: var(--wr-ooc-surface);
+  --color-ink: var(--wr-text);
+  --color-ink-muted: var(--wr-text-muted);
+  --color-line: var(--wr-border);
+  --color-line-strong: var(--wr-border-strong);
+  --color-accent: var(--wr-accent);
+  --color-accent-hover: var(--wr-accent-hover);
+  --color-accent-contrast: var(--wr-accent-contrast);
+  --color-accent-soft: var(--wr-accent-soft);
+  --color-accent-text: var(--wr-accent-text);
+  --color-danger: var(--wr-danger);
+  --color-danger-soft: var(--wr-danger-soft);
+  --color-focus: var(--wr-focus);
+
+  --shadow-raised: var(--wr-shadow-raised);
+
+  /* Sans for interface, serif for story text and long-form reading. */
+  --font-sans: var(--font-interface), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-story), ui-serif, Georgia, serif;
+
+  /* The plan's design breakpoints. 768 and 1280 are Tailwind's md and xl. */
+  --breakpoint-wide: 1440px;
+}
+
+@layer base {
+  body {
+    background-color: var(--wr-surface);
+    color: var(--wr-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--wr-accent-soft);
+  }
+}

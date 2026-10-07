@@ -1,0 +1,17 @@
+node_modules/
+.next/
+.turbo/
+dist/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# local database (PGlite) and uploads
+.data/
+
+.env
+.env.local
+.env.*.local
+
+.DS_Store
+Thumbs.db

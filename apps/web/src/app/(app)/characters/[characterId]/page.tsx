@@ -1,0 +1,106 @@
+import { getCharacterView } from '@worldroot/core';
+import type { Metadata } from 'next';
+import type { CSSProperties } from 'react';
+import { cache } from 'react';
+import { CharacterAvatar } from '@/features/characters/character-card';
+import { Breadcrumbs, Prose, SectionHeading } from '@/features/shell/prose';
+import { load } from '@/lib/load';
+import { database } from '@/lib/server';
+import { requireViewer } from '@/lib/session';
+
+interface Props {
+  params: Promise<{ characterId: string }>;
+}
+
+const loadCharacter = cache(async (characterId: string) => {
+  const viewer = await requireViewer();
+  const { db } = await database();
+  return load(() => getCharacterView(db, viewer.actor, characterId));
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return { title: (await loadCharacter((await params).characterId)).character.name };
+}
+
+export default async function CharacterPage({ params }: Props) {
+  const { character, community, customFields, sourceName } = await loadCharacter((await params).characterId);
+
+  const facts = [
+    { label: 'Pronouns', value: character.pronouns },
+    { label: 'Species', value: character.species },
+    { label: 'Age', value: character.age },
+    { label: 'Gender', value: character.gender },
+    ...customFields,
+  ].filter((fact): fact is { label: string; value: string } => Boolean(fact.value));
+
+  const sections = [
+    { title: 'Appearance', text: character.appearance },
+    { title: 'Personality', text: character.personality },
+    { title: 'Biography', text: character.biography },
+    { title: 'Skills and abilities', text: character.skills },
+    { title: 'Likes', text: character.likes },
+    { title: 'Dislikes', text: character.dislikes },
+    { title: 'Voice', text: character.voice },
+    { title: 'Content and boundaries', text: character.boundaries },
+  ].filter((section): section is { title: string; text: string } => Boolean(section.text));
+
+  return (
+    <div
+      className={community ? 'wr-accent-scope' : undefined}
+      style={community ? ({ '--wr-accent-hue': community.accentHue } as CSSProperties) : undefined}
+    >
+      <Breadcrumbs
+        items={
+          community
+            ? [
+                { label: community.name, href: `/c/${community.slug}` },
+                { label: 'Characters', href: `/c/${community.slug}/characters` },
+                { label: character.name },
+              ]
+            : [{ label: 'Library', href: '/library' }, { label: character.name }]
+        }
+      />
+
+      <header className="flex items-start gap-5">
+        <CharacterAvatar name={character.name} className="size-20 text-3xl" />
+        <div className="min-w-0">
+          <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{character.name}</h1>
+          {character.tagline ? <p className="mt-2 font-serif text-lg italic text-ink-muted">{character.tagline}</p> : null}
+          <p className="mt-3 text-sm text-ink-muted">
+            {community
+              ? sourceName
+                ? `${community.name}'s copy of your character ${sourceName}. Changes here do not reach your library.`
+                : `A character in ${community.name}.`
+              : 'An original in your library.'}
+          </p>
+        </div>
+      </header>
+
+      <div className="mt-10 grid gap-10 lg:grid-cols-[16rem_1fr]">
+        {facts.length > 0 ? (
+          <dl className="h-fit space-y-4 rounded-2xl border border-line bg-surface-raised p-5">
+            {facts.map((fact) => (
+              <div key={fact.label}>
+                <dt className="text-xs font-medium uppercase tracking-wide text-ink-muted">{fact.label}</dt>
+                <dd className="mt-0.5 text-ink">{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+
+        <div className="min-w-0">
+          {sections.length > 0 ? (
+            sections.map((section) => (
+              <section key={section.title}>
+                <SectionHeading>{section.title}</SectionHeading>
+                <Prose text={section.text} />
+              </section>
+            ))
+          ) : (
+            <p className="text-ink-muted">Nothing has been written about this character yet.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,29 @@
+{
+  "name": "@worldroot/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing.ts"
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "tsx src/migrate-cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "drizzle-orm": "catalog:",
+    "pg": "^8.23.1",
+    "uuid": "^14.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/pg": "^8.23.1",
+    "@worldroot/config": "workspace:*",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}
