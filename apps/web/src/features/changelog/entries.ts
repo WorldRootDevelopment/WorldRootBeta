@@ -14,6 +14,17 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-07-live-and-edit',
+    date: '2026-10-07',
+    title: 'Live scenes, editing and removing posts',
+    items: [
+      'New posts now appear in an open scene as soon as they are sent.',
+      'Edit your own posts. An edited post is marked as edited.',
+      'Remove your own posts and out-of-character messages. A marker stays in their place.',
+      'Community moderators can remove posts, and each removal is recorded.',
+    ],
+  },
+  {
     id: '2026-10-07-changelog',
     date: '2026-10-07',
     title: 'What’s new menu',

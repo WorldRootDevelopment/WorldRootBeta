@@ -4,3 +4,4 @@ export * from './identity';
 export * from './platform';
 export * from './worlds';
 export * from './scenes';
+export * from './scene-revisions';

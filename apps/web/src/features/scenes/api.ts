@@ -9,11 +9,11 @@ export interface ApiResult<T> {
 }
 
 /** Sends JSON to an API route and unpacks the error envelope. Never throws. */
-export async function send<T = unknown>(method: 'POST' | 'PUT', url: string, body: unknown): Promise<ApiResult<T>> {
+export async function send<T = unknown>(method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, body?: unknown): Promise<ApiResult<T>> {
   const response = await fetch(url, {
     method,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(body),
+    headers: body === undefined ? undefined : { 'content-type': 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
   }).catch(() => null);
 
   if (!response) return { ok: false, data: null, message: 'Could not reach WorldRoot. Check your connection.', fields: {} };

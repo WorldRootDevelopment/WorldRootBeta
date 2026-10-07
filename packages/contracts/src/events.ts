@@ -10,6 +10,7 @@ export interface EventPayloads {
   'character.copied': { characterId: string; sourceCharacterId: string; communityId: string };
   'scene.created': { sceneId: string };
   'scene.post.created': { sceneId: string; postId: string; seq: number };
+  'scene.post.updated': { sceneId: string; postId: string; seq: number };
   'scene.participant.added': { sceneId: string; userId: string };
   'scene.updated': { sceneId: string };
 }

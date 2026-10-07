@@ -15,12 +15,13 @@ import {
   sceneCharacters,
   sceneDrafts,
   sceneParticipants,
+  scenePostRevisions,
   scenePosts,
   scenes,
   worlds,
   type Db,
 } from '@worldroot/db';
-import { InvalidDocumentError, isBlank, parseDoc, renderHtml, toPlainText, type RichDoc } from '@worldroot/editor';
+import { EMPTY_DOC, InvalidDocumentError, isBlank, parseDoc, renderHtml, toPlainText, type RichDoc } from '@worldroot/editor';
 import { and, asc, desc, eq, inArray, isNull, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
 import { recordAudit } from '../platform/audit';
@@ -328,8 +329,92 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
   });
 }
 
+/** Whether the actor may remove posts they did not write: community moderators and platform staff. */
+async function canRemoveOthersPosts(db: Db, actor: Actor, scene: Scene): Promise<boolean> {
+  if (actor.platformRole === 'staff') return true;
+  if (!scene.communityId) return false;
+  return can(actor, 'post.remove', { communityId: scene.communityId, worldId: await worldIdOf(db, scene) }, communityGrants(db));
+}
+
+/** Whether the actor may see a scene at all. Used to guard the live event stream. */
+export async function canAccessScene(db: Db, actor: Actor, sceneId: string): Promise<boolean> {
+  const [scene] = await db.select().from(scenes).where(eq(scenes.id, sceneId));
+  return scene ? canViewScene(db, actor, scene) : false;
+}
+
+async function requirePost(db: Db, actor: Actor, postId: string): Promise<{ post: ScenePost; scene: Scene }> {
+  const [post] = await db.select().from(scenePosts).where(eq(scenePosts.id, postId));
+  if (!post) throw new DomainError('not_found', 'That post does not exist.');
+  return { post, scene: await requireVisibleScene(db, actor, post.sceneId) };
+}
+
+/** Rewrites a post. Only its author may, and what it said before is kept as a revision. */
+export async function editPost(db: Db, actor: Actor, postId: string, content: unknown): Promise<ScenePost> {
+  const { post, scene } = await requirePost(db, actor, postId);
+  if (post.authorUserId !== actor.userId || post.kind === 'system') throw new DomainError('forbidden', 'Only its author can edit a post.');
+  if (post.removedAt) throw new DomainError('conflict', 'This post has been removed.');
+  if (scene.status === 'archived') throw new DomainError('conflict', 'This scene is archived.');
+  const doc = parseContent(content, post.kind === 'ooc' ? MAX_OOC_CHARACTERS : MAX_POST_CHARACTERS);
+
+  return db.transaction(async (tx) => {
+    await tx.insert(scenePostRevisions).values({ postId, contentJson: post.contentJson, editedByUserId: actor.userId });
+    const [updated] = await tx
+      .update(scenePosts)
+      .set({ contentJson: doc, contentHtml: renderHtml(doc), contentText: toPlainText(doc), editedAt: new Date() })
+      .where(eq(scenePosts.id, postId))
+      .returning();
+    await emitEvent(tx, 'scene.post.updated', { sceneId: post.sceneId, postId, seq: post.seq });
+    return updated!;
+  });
+}
+
+/**
+ * Removes a post, leaving a marker in its place so the scene keeps its shape.
+ * Its author may, and in a community so may anyone who holds "Remove posts".
+ */
+export async function removePost(db: Db, actor: Actor, postId: string): Promise<{ sceneId: string }> {
+  const { post, scene } = await requirePost(db, actor, postId);
+  if (post.removedAt) return { sceneId: post.sceneId };
+  const own = post.authorUserId === actor.userId;
+  if (!own) {
+    if (scene.communityId && actor.platformRole !== 'staff') {
+      await authorize(actor, 'post.remove', { communityId: scene.communityId, worldId: await worldIdOf(db, scene) }, communityGrants(db));
+    } else if (actor.platformRole !== 'staff') {
+      throw new DomainError('forbidden', 'Only its author can remove this post.');
+    }
+  }
+
+  await db.transaction(async (tx) => {
+    await tx.update(scenePosts).set({ removedAt: new Date(), removedByUserId: actor.userId }).where(eq(scenePosts.id, postId));
+    // Removing someone else's words is a moderation action and is recorded as one.
+    if (!own) {
+      await recordAudit(tx, {
+        actor,
+        action: 'post.remove',
+        targetType: 'scene_post',
+        targetId: postId,
+        communityId: scene.communityId,
+        before: { authorUserId: post.authorUserId, seq: post.seq, kind: post.kind },
+      });
+    }
+    await emitEvent(tx, 'scene.post.updated', { sceneId: post.sceneId, postId, seq: post.seq });
+  });
+  return { sceneId: post.sceneId };
+}
+
 export interface PostPage {
-  posts: Array<ScenePost & { authorName: string | null; authorHandle: string | null }>;
+  posts: Array<
+    ScenePost & {
+      authorName: string | null;
+      authorHandle: string | null;
+      /** Written by the viewer. */
+      mine: boolean;
+      /** Who removed it, when it has been removed. Its content is then withheld. */
+      removedBy: 'author' | 'moderator' | null;
+    }
+  >;
+  /** The viewer may remove other people's posts here. */
+  viewerCanModerate: boolean;
   /** True when older posts exist before the first one returned. */
   hasEarlier: boolean;
 }
@@ -344,7 +429,7 @@ export async function listPosts(
   sceneId: string,
   options: { stream: 'story' | 'ooc'; beforeSeq?: number; limit?: number },
 ): Promise<PostPage> {
-  await requireVisibleScene(db, actor, sceneId);
+  const scene = await requireVisibleScene(db, actor, sceneId);
   const limit = Math.min(options.limit ?? 50, 100);
   const rows = await db
     .select({ post: scenePosts, authorName: profiles.displayName, authorHandle: profiles.handle })
@@ -364,7 +449,16 @@ export async function listPosts(
     posts: rows
       .slice(0, limit)
       .reverse()
-      .map(({ post, authorName, authorHandle }) => ({ ...post, authorName, authorHandle })),
+      .map(({ post, authorName, authorHandle }) => ({
+        ...post,
+        // A removed post keeps its place in the scene, but its words are not sent to anyone.
+        ...(post.removedAt ? { contentJson: EMPTY_DOC, contentHtml: '', contentText: '' } : {}),
+        authorName,
+        authorHandle,
+        mine: post.authorUserId === actor.userId,
+        removedBy: post.removedAt ? (post.removedByUserId === post.authorUserId ? ('author' as const) : ('moderator' as const)) : null,
+      })),
+    viewerCanModerate: await canRemoveOthersPosts(db, actor, scene),
     hasEarlier: rows.length > limit,
   };
 }

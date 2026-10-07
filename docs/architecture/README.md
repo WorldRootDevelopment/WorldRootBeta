@@ -17,9 +17,20 @@ Decisions that differ from the plan, or that the plan left open, are recorded be
 | 2026-10-07 | The embedded database seeds the Star Trek demo community when the web app starts. | The embedded database is single-process, so a separate seed command cannot run beside the dev server. It must not ship to a public deployment: it uses a real franchise setting and a published password. |
 | 2026-10-07 | Locations use a parent id only. The `ltree` path column is deferred. | A world's locations are loaded whole and arranged in memory, which is enough until scenes need subtree queries. |
 | 2026-10-07 | The server validates and renders rich text with its own small module in `packages/editor`, not with TipTap. | The document schema is a short allowlist, so a hand-written validator and renderer is under 200 lines, needs no DOM on the server, and is safe by construction. TipTap runs in the browser only, configured to produce the same schema. |
-| 2026-10-07 | An open scene refreshes on a 15-second timer while its tab is visible. | A stand-in so two writers see each other's posts without reloading. The server-sent event stream from the plan replaces it. |
+| 2026-10-07 | Live updates use an in-process publish and subscribe in the web app, feeding a server-sent event stream at `/api/v1/events`. | It makes posts appear at once with no extra infrastructure, and it works on the embedded database. It reaches only browsers connected to the same process, so running more than one web process needs Postgres notifications behind the same `publish` and `subscribe` functions. A 60-second refresh remains as a safety net. |
 | 2026-10-07 | Any participant may post narration. | The plan says "Narrator when permitted" without defining it. Restricting narration is left until a community asks for it. |
 | 2026-10-07 | Character biographies and world descriptions stay plain text. Only scene posts use the rich text editor. | Converting those fields means a storage change for every long field. Scenes were the priority. |
+
+## Requested, not yet scheduled
+
+Ideas raised by the product owner after the plan was written. None is started.
+
+| Raised | Idea | Notes |
+| --- | --- | --- |
+| 2026-10-07 | Template worlds, browsable by genre, theme and pop culture | Fits the copy model as it stands: a template is a world anyone may copy into their library, with the lineage pointer back. Needs the tag system from Discovery for the categories. Templates of real franchises are a copyright question for a public launch, so begin with original genre templates. |
+| 2026-10-07 | A "DnD mode" for worlds or communities | The plan's Tier 3 "dice and custom RP systems". Likely shape: a switch on a community or scene that enables dice rolls recorded as system posts, numeric stat fields on characters, and a game master role. Custom number fields and the `system` post kind already exist. |
+| 2026-10-07 | A company staff portal | The plan's staff console in phase 5: platform reports, account actions, delisting. `platform_role = 'staff'` and the audit log already exist. Needs two-factor sign-in for staff before it ships. |
+| 2026-10-07 | A landing page for the project | A minimal one exists at `/` for signed-out visitors. A full marketing page needs the visual identity work the plan runs in parallel. |
 
 ## Phase status
 
@@ -27,5 +38,5 @@ Decisions that differ from the plan, or that the plan left open, are recorded be
 | --- | --- |
 | 0. Foundations | Done, except Storybook and the worker running against a real PostgreSQL server |
 | 1. Library | Mostly: characters, worlds and locations can be created, viewed and edited. Plain text only. Media upload, the rich text editor, deleting, and reordering locations remain. |
-| 2. Scenes | Mostly: private and community scenes, in-character posts, narration, a separate out-of-character stream, multi-character, drafts, read position, "waiting on you", lifecycle, invitations by handle. Remaining: the live event stream, editing and removing posts, mentions, images, tags, the mobile writing mode, the reading view for completed scenes. |
+| 2. Scenes | Mostly: private and community scenes, in-character posts, narration, a separate out-of-character stream, multi-character, drafts, read position, "waiting on you", lifecycle, invitations by handle. Live updates, editing and removing posts are in. Remaining: mentions, images, tags, the mobile writing mode, the reading view for completed scenes. |
 | 3. Communities | Partly: schema, roles, joining, world and character copying, custom fields, read pages. Settings, roles interface and approval remain. |

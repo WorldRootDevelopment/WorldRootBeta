@@ -1,4 +1,4 @@
-import { auditLog, locations, users, worlds, type DbConnection } from '@worldroot/db';
+import { auditLog, locations, scenePostRevisions, users, worlds, type DbConnection } from '@worldroot/db';
 import { createTestDb } from '@worldroot/db/testing';
 import { docFromText } from '@worldroot/editor';
 import { and, eq, isNotNull } from 'drizzle-orm';
@@ -11,6 +11,7 @@ import type { Actor } from '../platform/authorize';
 import {
   createPost,
   createScene,
+  editPost,
   getSceneView,
   inviteToScene,
   joinScene,
@@ -18,6 +19,7 @@ import {
   listMyScenes,
   listPosts,
   markSceneRead,
+  removePost,
   saveDraft,
   setSceneStatus,
 } from './service';
@@ -159,6 +161,83 @@ describe('a private scene', () => {
     await createPost(db, thea, scene.id, { kind: 'ic', characterId: character.id, content: say('Posted.') });
     expect((await getSceneView(db, thea, scene.id)).viewer.draft).toBeNull();
     await expect(saveDraft(db, outsider, scene.id, { content: say('sneaky') })).rejects.toMatchObject({ code: 'not_found' });
+  });
+});
+
+describe('editing and removing posts', () => {
+  it('lets an author edit and remove their own post, keeping what it said before', async () => {
+    const { db } = connection;
+    const mine = await createCharacter(db, thea, { name: 'Editor' });
+    const theirs = await createCharacter(db, marcus, { name: 'Reader' });
+    const scene = await createScene(db, thea, { title: 'Second thoughts', rating: 'everyone', characterIds: [mine.id], openingPost: say('Frist draft.') });
+    await inviteToScene(db, thea, scene.id, 'marcus');
+    await joinScene(db, marcus, scene.id, [theirs.id]);
+    const reply = await createPost(db, marcus, scene.id, { kind: 'ic', characterId: theirs.id, content: say('A reply.') });
+    const [opening] = (await listPosts(db, thea, scene.id, { stream: 'story' })).posts;
+
+    const edited = await editPost(db, thea, opening!.id, say('First draft.'));
+    expect(edited).toMatchObject({ contentHtml: '<p>First draft.</p>', seq: 1 });
+    expect(edited.editedAt).not.toBeNull();
+    const revisions = await db.select().from(scenePostRevisions).where(eq(scenePostRevisions.postId, opening!.id));
+    expect(revisions).toHaveLength(1);
+    expect(JSON.stringify(revisions[0]!.contentJson)).toContain('Frist');
+
+    await expect(editPost(db, thea, opening!.id, say('  '))).rejects.toMatchObject({ code: 'invalid_input' });
+    await expect(editPost(db, marcus, opening!.id, say('Hijacked.'))).rejects.toMatchObject({ code: 'forbidden' });
+    // In a private scene there are no moderators: not even the scene's creator removes another writer's post.
+    await expect(removePost(db, thea, reply.id)).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(removePost(db, outsider, reply.id)).rejects.toMatchObject({ code: 'not_found' });
+
+    await removePost(db, marcus, reply.id);
+    await removePost(db, marcus, reply.id);
+    const page = await listPosts(db, thea, scene.id, { stream: 'story' });
+    expect(page.viewerCanModerate).toBe(false);
+    expect(page.posts.map((p) => p.seq)).toEqual([1, 2]);
+    expect(page.posts[0]).toMatchObject({ mine: true, removedBy: null });
+    // The removed post keeps its place and its words are withheld.
+    expect(page.posts[1]).toMatchObject({ mine: false, removedBy: 'author', contentHtml: '', contentText: '' });
+    await expect(editPost(db, marcus, reply.id, say('Back again.'))).rejects.toMatchObject({ code: 'conflict' });
+  });
+
+  it('lets a community moderator remove a post, and records it', async () => {
+    const { db } = connection;
+    const [owner] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
+    const gm: Actor = { userId: owner!.id, platformRole: 'user' };
+    const { community } = await getCommunityView(db, gm, 'meridian');
+    const [lounge] = await db
+      .select({ id: locations.id })
+      .from(locations)
+      .innerJoin(worlds, eq(worlds.id, locations.worldId))
+      .where(and(eq(locations.name, 'Holodecks'), isNotNull(worlds.ownerCommunityId)));
+
+    const member = await addUser('ensign');
+    await joinCommunity(db, member, community.id);
+    const fields = await listCharacterFields(db, community.id);
+    const original = await createCharacter(db, member, { name: 'Ensign Trouble' });
+    const copy = await addCharacterToCommunity(db, member, original.id, community.id, {
+      customValues: Object.fromEntries(fields.map((field) => [field.id, field.options?.[1] ?? 'Holodeck Technician'])),
+    });
+    const scene = await createScene(db, member, {
+      title: 'Program Nine',
+      rating: 'everyone',
+      locationId: lounge!.id,
+      characterIds: [copy.id],
+      openingPost: say('Something the rules do not allow.'),
+    });
+    const [post] = (await listPosts(db, member, scene.id, { stream: 'story' })).posts;
+
+    // Another ordinary member cannot remove it. The owner can.
+    await expect(removePost(db, thea, post!.id)).rejects.toMatchObject({ code: 'forbidden', permission: 'post.remove' });
+    expect((await listPosts(db, gm, scene.id, { stream: 'story' })).viewerCanModerate).toBe(true);
+    await removePost(db, gm, post!.id);
+
+    const [seen] = (await listPosts(db, member, scene.id, { stream: 'story' })).posts;
+    expect(seen).toMatchObject({ removedBy: 'moderator', contentText: '' });
+    const [entry] = await db
+      .select()
+      .from(auditLog)
+      .where(and(eq(auditLog.action, 'post.remove'), eq(auditLog.targetId, post!.id)));
+    expect(entry).toMatchObject({ actorUserId: gm.userId, communityId: community.id });
   });
 });
 

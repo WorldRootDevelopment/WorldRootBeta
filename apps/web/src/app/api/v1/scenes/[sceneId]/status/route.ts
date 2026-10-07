@@ -1,6 +1,7 @@
 import { SCENE_STATUSES, type SceneStatus } from '@worldroot/contracts';
 import { DomainError, setSceneStatus } from '@worldroot/core';
 import { readJson, route } from '@/lib/api';
+import { publish } from '@/lib/live';
 import { database } from '@/lib/server';
 
 /** Move a scene to another lifecycle status. */
@@ -9,5 +10,6 @@ export const POST = route<{ sceneId: string }>(async ({ request, actor, params }
   if (!SCENE_STATUSES.includes(status as SceneStatus)) throw new DomainError('invalid_input', 'Unknown status.');
   const { db } = await database();
   await setSceneStatus(db, actor, params.sceneId, status as SceneStatus);
+  publish({ type: 'scene.updated', sceneId: params.sceneId });
   return new Response(null, { status: 204 });
 });

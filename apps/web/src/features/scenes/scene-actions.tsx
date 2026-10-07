@@ -191,12 +191,12 @@ export function StatusControl({ sceneId, status }: { sceneId: string; status: Sc
   );
 }
 
-const REFRESH_MS = 15_000;
+const FALLBACK_REFRESH_MS = 60_000;
 
 /**
- * Keeps an open scene current: records how far the reader has read, and
- * re-fetches the page on a timer while the tab is visible. A stand-in for the
- * live event stream, which replaces the timer later.
+ * Keeps an open scene current. It records how far the reader has read, and
+ * listens on the live event stream: when anything in the scene changes, the
+ * page is re-fetched. A slow timer covers a stream that has silently dropped.
  */
 export function SceneLive({ sceneId, lastSeq, track }: { sceneId: string; lastSeq: number; track: boolean }) {
   const router = useRouter();
@@ -206,11 +206,25 @@ export function SceneLive({ sceneId, lastSeq, track }: { sceneId: string; lastSe
   }, [sceneId, lastSeq, track]);
 
   useEffect(() => {
+    const refresh = () => router.refresh();
+    const stream = new EventSource(`/api/v1/events?scene=${sceneId}`);
+    let opened = false;
+    // After a reconnect, catch up on anything missed while the stream was down.
+    stream.onopen = () => {
+      if (opened) refresh();
+      opened = true;
+    };
+    for (const type of ['scene.post.created', 'scene.post.updated', 'scene.updated']) stream.addEventListener(type, refresh);
+
     const timer = setInterval(() => {
-      if (document.visibilityState === 'visible') router.refresh();
-    }, REFRESH_MS);
-    return () => clearInterval(timer);
-  }, [router]);
+      if (document.visibilityState === 'visible') refresh();
+    }, FALLBACK_REFRESH_MS);
+
+    return () => {
+      stream.close();
+      clearInterval(timer);
+    };
+  }, [router, sceneId]);
 
   return null;
 }

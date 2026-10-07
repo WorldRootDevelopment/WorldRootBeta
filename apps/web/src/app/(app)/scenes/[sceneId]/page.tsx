@@ -86,7 +86,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
 
           <div className="space-y-12">
             {story.posts.map((post) => (
-              <StoryPost key={post.id} post={post} />
+              <StoryPost key={post.id} post={post} canModerate={story.viewerCanModerate} editable={scene.status !== 'archived'} />
             ))}
           </div>
 
@@ -126,7 +126,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
             {ooc.posts.length > 0 ? (
               <ul className="flex flex-col gap-4">
                 {ooc.posts.map((post) => (
-                  <OocMessage key={post.id} post={post} />
+                  <OocMessage key={post.id} post={post} canModerate={ooc.viewerCanModerate} />
                 ))}
               </ul>
             ) : (
