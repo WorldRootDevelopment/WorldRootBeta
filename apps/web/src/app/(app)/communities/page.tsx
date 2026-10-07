@@ -1,5 +1,5 @@
 import { listListedCommunities, listMyCommunities, type Community } from '@worldroot/core';
-import { EmptyState } from '@worldroot/ui';
+import { buttonClass, EmptyState } from '@worldroot/ui';
 import { Users } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -37,6 +37,11 @@ export default async function CommunitiesPage() {
   return (
     <>
       <PageHeader title="Communities" lead="The communities you belong to." />
+      <div className="mb-10">
+        <Link href="/communities/new" className={buttonClass('primary')}>
+          New community
+        </Link>
+      </div>
 
       {mine.length > 0 ? (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -48,7 +53,7 @@ export default async function CommunitiesPage() {
         </ul>
       ) : (
         <EmptyState icon={<Users className="size-8" aria-hidden="true" />} title="No communities yet">
-          {others.length > 0 ? 'Join one of the open communities below.' : 'Creating a community arrives in phase 3 of the build.'}
+          {others.length > 0 ? 'Join one of the open communities below.' : 'Start one of your own, or join one when you are invited.'}
         </EmptyState>
       )}
 

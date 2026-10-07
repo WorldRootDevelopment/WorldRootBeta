@@ -83,6 +83,14 @@ export default async function CharacterPage({ params }: Props) {
         ) : null}
       </header>
 
+      {character.approvalStatus === 'pending' || character.approvalStatus === 'returned' ? (
+        <p role="status" className="mt-6 rounded-lg bg-surface-sunken px-4 py-3 text-sm text-ink">
+          {character.approvalStatus === 'pending'
+            ? 'Waiting for review. This character can join scenes once the community approves it.'
+            : 'Returned by a reviewer. Revise the profile, then ask the community staff to look again.'}
+        </p>
+      ) : null}
+
       <div className="mt-10 grid gap-10 lg:grid-cols-[16rem_1fr]">
         {facts.length > 0 ? (
           <dl className="h-fit space-y-4 rounded-2xl border border-line bg-surface-raised p-5">

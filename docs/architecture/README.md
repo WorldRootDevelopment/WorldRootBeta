@@ -20,6 +20,8 @@ Decisions that differ from the plan, or that the plan left open, are recorded be
 | 2026-10-07 | Live updates use an in-process publish and subscribe in the web app, feeding a server-sent event stream at `/api/v1/events`. | It makes posts appear at once with no extra infrastructure, and it works on the embedded database. It reaches only browsers connected to the same process, so running more than one web process needs Postgres notifications behind the same `publish` and `subscribe` functions. A 60-second refresh remains as a safety net. |
 | 2026-10-07 | Any participant may post narration. | The plan says "Narrator when permitted" without defining it. Restricting narration is left until a community asks for it. |
 | 2026-10-07 | Character biographies and world descriptions stay plain text. Only scene posts use the rich text editor. | Converting those fields means a storage change for every long field. Scenes were the priority. |
+| 2026-10-07 | A role manager can grant only permissions they hold, and can change, assign or remove only roles ranked below their own highest role. The Owner role is fixed and cannot be assigned or removed. | Without these two rules, anyone with "Manage roles" could promote themselves to full control. The cost is that ownership cannot be transferred yet. |
+| 2026-10-07 | Community settings pages return 404, not a refusal, to anyone without an admin permission. | Consistent with the rest of the app: what you may not see does not exist to you. |
 
 ## Requested, not yet scheduled
 
@@ -39,4 +41,4 @@ Ideas raised by the product owner after the plan was written. None is started.
 | 0. Foundations | Done, except Storybook and the worker running against a real PostgreSQL server |
 | 1. Library | Mostly: characters, worlds and locations can be created, viewed and edited. Plain text only. Media upload, the rich text editor, deleting, and reordering locations remain. |
 | 2. Scenes | Mostly: private and community scenes, in-character posts, narration, a separate out-of-character stream, multi-character, drafts, read position, "waiting on you", lifecycle, invitations by handle. Live updates, editing and removing posts are in. Remaining: mentions, images, tags, the mobile writing mode, the reading view for completed scenes. |
-| 3. Communities | Partly: schema, roles, joining, world and character copying, custom fields, read pages. Settings, roles interface and approval remain. |
+| 3. Communities | Mostly: create a community, general settings, custom roles from the permission registry, role assignment with rank rules, member removal, the character template, character review, adding library worlds, and the audit log viewer. Remaining: invitations for unlisted communities, bans, transferring ownership, world-scoped role assignment in the interface, reordering roles and fields, Announcements and the Lounge. |

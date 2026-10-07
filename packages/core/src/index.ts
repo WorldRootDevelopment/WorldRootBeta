@@ -16,3 +16,4 @@ export * from './worlds/service';
 
 export { DEMO_ACCOUNT, seedStarTrekDemo } from './demo/star-trek';
 export * from './scenes/service';
+export * from './community/admin';

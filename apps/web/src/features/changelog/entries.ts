@@ -14,6 +14,18 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-07-community-admin',
+    date: '2026-10-07',
+    title: 'Create and run a community',
+    items: [
+      'Create your own community from the Create menu or the Communities page.',
+      'A Settings tab for owners and staff: name, about, rules, accent colour, and who can find it.',
+      'Build custom roles from a list of permissions, and give them to members.',
+      'Define the fields every character is asked for, and switch on character review.',
+      'Add worlds from your library, remove members, and read the audit log.',
+    ],
+  },
+  {
     id: '2026-10-07-live-and-edit',
     date: '2026-10-07',
     title: 'Live scenes, editing and removing posts',

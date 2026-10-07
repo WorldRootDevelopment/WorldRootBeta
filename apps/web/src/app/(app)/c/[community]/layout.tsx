@@ -1,3 +1,4 @@
+import { ADMIN_PERMISSIONS } from '@worldroot/core';
 import type { Metadata } from 'next';
 import type { CSSProperties, ReactNode } from 'react';
 import { loadCommunity } from '@/features/community/community-view';
@@ -19,7 +20,8 @@ const tabClass =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 export default async function CommunityLayout({ params, children }: Props) {
-  const { community, isMember, memberCount } = await loadCommunity((await params).community);
+  const { community, isMember, memberCount, permissions } = await loadCommunity((await params).community);
+  const canAdminister = ADMIN_PERMISSIONS.some((key) => permissions.includes(key));
   const base = `/c/${community.slug}`;
 
   return (
@@ -43,7 +45,7 @@ export default async function CommunityLayout({ params, children }: Props) {
         </div>
       </header>
 
-      <nav aria-label={community.name} className="mb-8 mt-2 flex gap-6 border-b border-line">
+      <nav aria-label={community.name} className="mb-8 mt-2 flex gap-6 overflow-x-auto border-b border-line">
         <NavLink href={base} exact className={tabClass} activeClassName="border-accent text-ink">
           Overview
         </NavLink>
@@ -53,6 +55,11 @@ export default async function CommunityLayout({ params, children }: Props) {
         <NavLink href={`${base}/characters`} className={tabClass} activeClassName="border-accent text-ink">
           Characters
         </NavLink>
+        {canAdminister ? (
+          <NavLink href={`${base}/settings`} className={tabClass} activeClassName="border-accent text-ink">
+            Settings
+          </NavLink>
+        ) : null}
       </nav>
 
       {children}

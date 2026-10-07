@@ -19,7 +19,7 @@ const CREATE_ITEMS: CreateItem[] = [
   { label: 'Character', icon: UserRound, href: '/library/characters/new' },
   { label: 'World', icon: Globe, href: '/library/worlds/new' },
   { label: 'LFRP listing', icon: Megaphone, arrives: 'Phase 4' },
-  { label: 'Community', icon: Users, arrives: 'Phase 3' },
+  { label: 'Community', icon: Users, href: '/communities/new' },
 ];
 
 interface CreateMenuProps {

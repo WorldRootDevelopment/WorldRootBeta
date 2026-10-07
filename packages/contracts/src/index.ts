@@ -4,3 +4,4 @@ export * from './identity';
 export * from './permissions';
 export * from './library';
 export * from './scenes';
+export * from './community';
