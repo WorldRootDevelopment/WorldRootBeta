@@ -12,6 +12,7 @@ import { recordAudit } from '../platform/audit';
 import { authorize, resolvePermissions, type Actor, type GrantSource } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
+import { addMember } from './access';
 
 export type Community = typeof communities.$inferSelect;
 export type Role = typeof roles.$inferSelect;
@@ -173,17 +174,7 @@ export async function joinCommunity(db: Db, actor: Actor, communityId: string): 
     const [community] = await tx.select().from(communities).where(eq(communities.id, communityId));
     if (!community) throw new DomainError('not_found', 'That community does not exist.');
     if (!community.listed) throw new DomainError('forbidden', 'This community is joined by invitation.');
-    if (await isMember(tx, actor.userId, communityId)) return;
-
-    await tx.insert(communityMembers).values({ communityId, userId: actor.userId });
-    const defaults = await tx
-      .select({ id: roles.id })
-      .from(roles)
-      .where(and(eq(roles.communityId, communityId), eq(roles.isDefault, true)));
-    if (defaults.length > 0) {
-      await tx.insert(roleAssignments).values(defaults.map((role) => ({ communityId, userId: actor.userId, roleId: role.id })));
-    }
-    await emitEvent(tx, 'community.member_joined', { communityId, userId: actor.userId });
+    await addMember(tx, communityId, actor.userId);
   });
 }
 

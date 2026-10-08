@@ -1,6 +1,6 @@
-import { canAccessScene } from '@worldroot/core';
+import { canAccessConversation, canAccessScene } from '@worldroot/core';
 import { errorResponse } from '@/lib/api';
-import { sceneTopic, subscribe, type LiveMessage } from '@/lib/live';
+import { conversationTopic, sceneTopic, subscribe, type LiveMessage } from '@/lib/live';
 import { database } from '@/lib/server';
 import { getViewer } from '@/lib/session';
 
@@ -9,18 +9,25 @@ export const dynamic = 'force-dynamic';
 const HEARTBEAT_MS = 25_000;
 
 /**
- * The live event stream (server-sent events). `?scene=<id>` follows one scene.
- * Nothing depends on this stream being reliable: a browser that reconnects
- * simply re-fetches the scene.
+ * The live event stream (server-sent events). `?scene=<id>` follows one scene
+ * and `?conversation=<id>` follows one conversation. Nothing depends on this
+ * stream being reliable: a browser that reconnects simply re-fetches.
  */
 export async function GET(request: Request) {
   try {
-    const sceneId = new URL(request.url).searchParams.get('scene');
+    const query = new URL(request.url).searchParams;
+    const sceneId = query.get('scene');
+    const conversationId = query.get('conversation');
     const viewer = await getViewer();
     if (!viewer) return new Response(null, { status: 401 });
     const { db } = await database();
-    if (!sceneId || !(await canAccessScene(db, viewer.actor, sceneId))) return new Response(null, { status: 404 });
 
+    let topic: string | null = null;
+    if (sceneId && (await canAccessScene(db, viewer.actor, sceneId))) topic = sceneTopic(sceneId);
+    else if (conversationId && (await canAccessConversation(db, viewer.actor, conversationId))) topic = conversationTopic(conversationId);
+    if (!topic) return new Response(null, { status: 404 });
+
+    const following = topic;
     const encoder = new TextEncoder();
     let close = () => {};
 
@@ -33,7 +40,7 @@ export async function GET(request: Request) {
             close();
           }
         };
-        const unsubscribe = subscribe(sceneTopic(sceneId), (message: LiveMessage) => {
+        const unsubscribe = subscribe(following, (message: LiveMessage) => {
           write(`event: ${message.type}\ndata: ${JSON.stringify(message)}\n\n`);
         });
         // Comment lines keep proxies from closing an idle connection.

@@ -15,7 +15,8 @@ export interface SettingsSection {
 export const settingsSections = (slug: string): SettingsSection[] => [
   { href: `/c/${slug}/settings`, label: 'General', needs: ['community.manage'] },
   { href: `/c/${slug}/settings/roles`, label: 'Roles', needs: ['role.manage'] },
-  { href: `/c/${slug}/settings/members`, label: 'Members', needs: ['role.manage', 'member.kick'] },
+  { href: `/c/${slug}/settings/members`, label: 'Members', needs: ['role.manage', 'member.kick', 'member.ban'] },
+  { href: `/c/${slug}/settings/invites`, label: 'Invites', needs: ['community.invite'] },
   { href: `/c/${slug}/settings/characters`, label: 'Characters', needs: ['characterfield.manage', 'character.approve'] },
   { href: `/c/${slug}/settings/audit`, label: 'Audit log', needs: ['auditlog.view'] },
 ];

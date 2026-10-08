@@ -5,7 +5,7 @@ import { Button, TextField } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 
-export function OnboardingForm() {
+export function OnboardingForm({ next }: { next: string }) {
   const router = useRouter();
   const [fields, setFields] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,7 @@ export function OnboardingForm() {
       setPending(false);
       return;
     }
-    router.push('/home');
+    router.push(next);
     router.refresh();
   };
 

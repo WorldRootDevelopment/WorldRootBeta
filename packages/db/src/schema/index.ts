@@ -5,3 +5,5 @@ export * from './platform';
 export * from './worlds';
 export * from './scenes';
 export * from './scene-revisions';
+export * from './community-access';
+export * from './messaging';

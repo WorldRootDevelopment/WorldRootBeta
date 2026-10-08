@@ -1,4 +1,4 @@
-import { listMembers, listRoles } from '@worldroot/core';
+import { listBans, listMembers, listRoles } from '@worldroot/core';
 import type { Metadata } from 'next';
 import { requireSection } from '@/features/community/admin/admin-view';
 import { MembersTable } from '@/features/community/admin/members-table';
@@ -6,8 +6,12 @@ import { MembersTable } from '@/features/community/admin/members-table';
 export const metadata: Metadata = { title: 'Members' };
 
 export default async function MembersPage({ params }: { params: Promise<{ community: string }> }) {
-  const { community, admin, holds, viewer, db } = await requireSection((await params).community, ['role.manage', 'member.kick']);
-  const [members, roles] = await Promise.all([listMembers(db, community.id), listRoles(db, community.id)]);
+  const { community, admin, holds, viewer, db } = await requireSection((await params).community, ['role.manage', 'member.kick', 'member.ban']);
+  const [members, roles, bans] = await Promise.all([
+    listMembers(db, community.id),
+    listRoles(db, community.id),
+    listBans(db, viewer.actor, community.id),
+  ]);
 
   return (
     <>
@@ -23,6 +27,8 @@ export default async function MembersPage({ params }: { params: Promise<{ commun
         viewerTop={admin.top}
         canAssign={holds(['role.manage'])}
         canRemove={holds(['member.kick'])}
+        canBan={holds(['member.ban'])}
+        bans={bans}
       />
     </>
   );

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { authClient } from '@/lib/auth-client';
 
-export function SignInForm() {
+export function SignInForm({ next }: { next: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -24,7 +24,7 @@ export function SignInForm() {
       setPending(false);
       return;
     }
-    router.push('/home');
+    router.push(next);
     router.refresh();
   };
 

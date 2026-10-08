@@ -8,7 +8,7 @@ export type OAuthProvider = 'discord' | 'google';
 const labels: Record<OAuthProvider, string> = { discord: 'Discord', google: 'Google' };
 
 /** One button per configured provider. Renders nothing when none is configured. */
-export function OAuthButtons({ providers }: { providers: OAuthProvider[] }) {
+export function OAuthButtons({ providers, next }: { providers: OAuthProvider[]; next: string }) {
   if (providers.length === 0) return null;
   return (
     <div className="mb-6 flex flex-col gap-3">
@@ -16,7 +16,7 @@ export function OAuthButtons({ providers }: { providers: OAuthProvider[] }) {
         <Button
           key={provider}
           variant="secondary"
-          onClick={() => authClient.signIn.social({ provider, callbackURL: '/home' })}
+          onClick={() => authClient.signIn.social({ provider, callbackURL: next })}
         >
           Continue with {labels[provider]}
         </Button>

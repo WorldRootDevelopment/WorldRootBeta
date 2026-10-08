@@ -15,7 +15,20 @@ const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-
  * Under 768px: a top bar and a five-item bottom bar. From 768px: an icon rail. From 1440px: a labelled rail.
  * The "What's new" menu sits at the top right at every size.
  */
-export function AppShell({ profile, children }: { profile: Profile; children: ReactNode }) {
+interface AppShellProps {
+  profile: Profile;
+  /** How many conversations have something new. Shown as a dot on Inbox. */
+  inboxUnread: number;
+  children: ReactNode;
+}
+
+const unreadDot = (
+  <span className="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-accent ring-2 ring-surface-raised">
+    <span className="sr-only">Unread messages</span>
+  </span>
+);
+
+export function AppShell({ profile, inboxUnread, children }: AppShellProps) {
   return (
     <div className="min-h-dvh md:flex">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-30 focus:rounded-lg focus:bg-surface-raised focus:px-4 focus:py-2">
@@ -35,11 +48,12 @@ export function AppShell({ profile, children }: { profile: Profile; children: Re
             <NavLink
               key={href}
               href={href}
-              className={`flex min-h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium text-ink-muted hover:bg-surface-sunken hover:text-ink wide:justify-start wide:px-3 ${focusRing}`}
+              className={`relative flex min-h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium text-ink-muted hover:bg-surface-sunken hover:text-ink wide:justify-start wide:px-3 ${focusRing}`}
               activeClassName="bg-accent-soft text-accent-text hover:bg-accent-soft hover:text-accent-text"
             >
               <Icon className="size-5 shrink-0" aria-hidden="true" />
               <span className="sr-only wide:not-sr-only">{label}</span>
+              {href === '/inbox' && inboxUnread > 0 ? unreadDot : null}
             </NavLink>
           ))}
         </nav>
@@ -74,11 +88,12 @@ export function AppShell({ profile, children }: { profile: Profile; children: Re
             {index === 2 ? <CreateMenu placement="bar" /> : null}
             <NavLink
               href={href}
-              className={`flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg text-[0.6875rem] font-medium text-ink-muted ${focusRing}`}
+              className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg text-[0.6875rem] font-medium text-ink-muted ${focusRing}`}
               activeClassName="text-accent-text"
             >
               <Icon className="size-5" aria-hidden="true" />
               {label}
+              {href === '/inbox' && inboxUnread > 0 ? unreadDot : null}
             </NavLink>
           </div>
         ))}

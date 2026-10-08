@@ -49,6 +49,12 @@ export default async function CommunityLayout({ params, children }: Props) {
         <NavLink href={base} exact className={tabClass} activeClassName="border-accent text-ink">
           Overview
         </NavLink>
+        <NavLink href={`${base}/announcements`} className={`${tabClass} shrink-0`} activeClassName="border-accent text-ink">
+          Announcements
+        </NavLink>
+        <NavLink href={`${base}/lounge`} className={`${tabClass} shrink-0`} activeClassName="border-accent text-ink">
+          Lounge
+        </NavLink>
         <NavLink href={`${base}/worlds`} className={tabClass} activeClassName="border-accent text-ink">
           Worlds
         </NavLink>

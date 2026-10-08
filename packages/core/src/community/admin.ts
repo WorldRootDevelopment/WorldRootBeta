@@ -30,8 +30,10 @@ import { communityGrants, isMember, type CharacterField, type Community, type Ro
 /** Permissions that open some part of a community's settings. */
 export const ADMIN_PERMISSIONS: PermissionKey[] = [
   'community.manage',
+  'community.invite',
   'role.manage',
   'member.kick',
+  'member.ban',
   'characterfield.manage',
   'character.approve',
   'auditlog.view',

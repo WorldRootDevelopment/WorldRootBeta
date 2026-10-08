@@ -1,6 +1,6 @@
 'use client';
 
-import type { MemberRow } from '@worldroot/core';
+import type { BanRow, MemberRow } from '@worldroot/core';
 import { Button } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -16,17 +16,19 @@ interface MembersTableProps {
   viewerTop: number;
   canAssign: boolean;
   canRemove: boolean;
+  canBan: boolean;
+  bans: BanRow[];
 }
 
-export function MembersTable({ communityId, members, assignable, viewerId, viewerTop, canAssign, canRemove }: MembersTableProps) {
+export function MembersTable({ communityId, members, assignable, viewerId, viewerTop, canAssign, canRemove, canBan, bans }: MembersTableProps) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const assignableIds = new Set(assignable.map((role) => role.id));
 
-  const act = async (key: string, method: 'PUT' | 'DELETE', url: string) => {
+  const act = async (key: string, method: 'PUT' | 'POST' | 'DELETE', url: string, body?: unknown) => {
     setBusy(key);
-    const result = await send(method, url);
+    const result = await send(method, url, body);
     setBusy(null);
     setError(result.ok ? null : result.message);
     if (result.ok) router.refresh();
@@ -46,7 +48,9 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
           const rank = Math.max(-1, ...member.roles.map((role) => role.position));
           const held = new Set(member.roles.map((role) => role.id));
           const addable = assignable.filter((role) => !held.has(role.id));
-          const removable = canRemove && member.userId !== viewerId && rank < viewerTop;
+          const outranked = member.userId !== viewerId && rank < viewerTop;
+          const removable = canRemove && outranked;
+          const bannable = canBan && outranked;
 
           return (
             <li key={member.userId} className="rounded-2xl border border-line bg-surface-raised p-5">
@@ -55,6 +59,24 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                   <span className="font-medium text-ink">{member.displayName}</span> <span className="text-sm text-ink-muted">@{member.handle}</span>
                   {member.userId === viewerId ? <span className="ml-2 text-xs text-ink-muted">(you)</span> : null}
                 </p>
+                <div className="flex flex-wrap gap-1">
+                {bannable ? (
+                  <Button
+                    variant="ghost"
+                    disabled={busy !== null}
+                    onClick={() => {
+                      const reason = window.prompt(
+                        `Ban ${member.displayName}? They are removed and cannot rejoin, even with an invite link. Their characters and posts stay.\n\nReason (optional, seen by staff only):`,
+                        '',
+                      );
+                      if (reason !== null) {
+                        void act(`ban-${member.userId}`, 'POST', `/api/v1/communities/${communityId}/bans`, { userId: member.userId, reason });
+                      }
+                    }}
+                  >
+                    Ban
+                  </Button>
+                ) : null}
                 {removable ? (
                   <Button
                     variant="ghost"
@@ -68,6 +90,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                     Remove member
                   </Button>
                 ) : null}
+                </div>
               </div>
 
               <ul className="mt-3 flex flex-wrap items-center gap-2">
@@ -115,6 +138,33 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
           );
         })}
       </ul>
+
+      {canBan && bans.length > 0 ? (
+        <section className="mt-12">
+          <h3 className="mb-4 font-serif text-xl font-semibold text-ink">Banned</h3>
+          <ul className="flex flex-col gap-3">
+            {bans.map((ban) => (
+              <li key={ban.userId} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface-raised p-5">
+                <p className="min-w-0 text-sm">
+                  <span className="font-medium text-ink">{ban.displayName ?? 'Former user'}</span>
+                  {ban.handle ? <span className="text-ink-muted"> @{ban.handle}</span> : null}
+                  <span className="block text-ink-muted">
+                    Banned {ban.createdAt.toLocaleDateString('en', { dateStyle: 'medium' })}
+                    {ban.reason ? ` · ${ban.reason}` : ''}
+                  </span>
+                </p>
+                <Button
+                  variant="secondary"
+                  disabled={busy !== null}
+                  onClick={() => act(`unban-${ban.userId}`, 'DELETE', `/api/v1/communities/${communityId}/bans/${ban.userId}`)}
+                >
+                  Lift ban
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </>
   );
 }

@@ -1,0 +1,60 @@
+import { getConversationSummary, listMessages } from '@worldroot/core';
+import { buttonClass } from '@worldroot/ui';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { cache } from 'react';
+import { MessageThread } from '@/features/messaging/message-thread';
+import { Breadcrumbs } from '@/features/shell/prose';
+import { load } from '@/lib/load';
+import { database } from '@/lib/server';
+import { requireViewer } from '@/lib/session';
+
+interface Props {
+  params: Promise<{ conversationId: string }>;
+  searchParams: Promise<{ before?: string }>;
+}
+
+const loadConversation = cache(async (conversationId: string) => {
+  const viewer = await requireViewer();
+  const { db } = await database();
+  const summary = await load(() => getConversationSummary(db, viewer.actor, conversationId));
+  return { summary, viewer, db };
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  return { title: (await loadConversation((await params).conversationId)).summary.title };
+}
+
+export default async function ConversationPage({ params, searchParams }: Props) {
+  const { conversationId } = await params;
+  const before = (await searchParams).before;
+  const { summary, viewer, db } = await loadConversation(conversationId);
+  const page = await load(() => listMessages(db, viewer.actor, conversationId, { beforeId: before }));
+
+  return (
+    <>
+      <Breadcrumbs items={[{ label: 'Inbox', href: '/inbox' }, { label: summary.title }]} />
+      <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink">{summary.title}</h1>
+          <p className="mt-1 text-sm text-ink-muted">
+            {summary.people.length === 0 ? 'Only you' : summary.people.map((person) => `@${person.handle}`).join(', ')}
+          </p>
+        </div>
+        {/* The designed way out of roleplaying in messages: take it to a scene. */}
+        <Link href="/scenes/new" className={buttonClass('secondary')}>
+          Start a scene
+        </Link>
+      </header>
+      <MessageThread
+        page={page}
+        href={`/inbox/${conversationId}`}
+        viewingEarlier={Boolean(before)}
+        emptyText="No messages yet. Say hello."
+        placeholder="Write a message…"
+        readOnlyNote="You cannot write in this conversation."
+        track
+      />
+    </>
+  );
+}

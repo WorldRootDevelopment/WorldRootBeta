@@ -7,7 +7,7 @@ import { authClient } from '@/lib/auth-client';
 
 const MIN_PASSWORD = 10;
 
-export function SignUpForm() {
+export function SignUpForm({ next }: { next: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -29,7 +29,7 @@ export function SignUpForm() {
       setPending(false);
       return;
     }
-    router.push('/welcome');
+    router.push(next === '/home' ? '/welcome' : `/welcome?next=${encodeURIComponent(next)}`);
     router.refresh();
   };
 

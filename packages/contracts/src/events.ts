@@ -13,6 +13,7 @@ export interface EventPayloads {
   'scene.post.updated': { sceneId: string; postId: string; seq: number };
   'scene.participant.added': { sceneId: string; userId: string };
   'scene.updated': { sceneId: string };
+  'message.created': { conversationId: string; messageId: string };
 }
 
 export type EventType = keyof EventPayloads;

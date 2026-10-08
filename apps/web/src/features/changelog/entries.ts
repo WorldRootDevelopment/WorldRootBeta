@@ -14,6 +14,29 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-07-messaging',
+    date: '2026-10-07',
+    title: 'Messages, Announcements and the Lounge',
+    items: [
+      'Send a direct message to any writer by their @handle, from the Inbox.',
+      'Start a group conversation with up to 12 people.',
+      'A dot on Inbox shows when a conversation has something new.',
+      'Every community now has Announcements, for news from its staff, and a Lounge for everyone.',
+      'Messages arrive live, and you can remove your own.',
+    ],
+  },
+  {
+    id: '2026-10-07-invites-bans',
+    date: '2026-10-07',
+    title: 'Invite links and bans',
+    items: [
+      'Create invite links for a community under Settings, with an expiry and a use limit.',
+      'An unlisted community can now be joined by anyone holding one of its links.',
+      'Someone new who opens an invite link is brought back to it after signing up.',
+      'Ban a member so they cannot rejoin, and lift the ban later.',
+    ],
+  },
+  {
     id: '2026-10-07-community-admin',
     date: '2026-10-07',
     title: 'Create and run a community',

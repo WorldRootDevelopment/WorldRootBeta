@@ -14,6 +14,10 @@ const ACTIONS: Record<string, string> = {
   'role.assign': 'Gave a member a role',
   'role.unassign': 'Took a role from a member',
   'member.remove': 'Removed a member',
+  'member.ban': 'Banned a member',
+  'member.unban': 'Lifted a ban',
+  'invite.create': 'Created an invite link',
+  'invite.revoke': 'Revoked an invite link',
   'characterfield.create': 'Added a character field',
   'characterfield.remove': 'Removed a character field',
   'character.add': 'Added a character',
@@ -24,6 +28,7 @@ const ACTIONS: Record<string, string> = {
   'world.update': 'Edited a world',
   'scene.status': 'Changed a scene’s status',
   'post.remove': 'Removed a post',
+  'message.remove': 'Removed a message',
 };
 
 /** A short readable summary of what an entry recorded. */
