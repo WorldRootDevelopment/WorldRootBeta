@@ -33,6 +33,12 @@
 
   --wr-focus: oklch(0.55 0.15 var(--wr-accent-hue));
 
+  /* Badge colours. Fixed in both themes and outside any community accent, so a badge always means the same thing. */
+  --wr-staff: oklch(0.47 0.17 268);
+  --wr-staff-ink: oklch(0.99 0.01 268);
+  --wr-premium: oklch(0.8 0.15 85);
+  --wr-premium-ink: oklch(0.27 0.06 85);
+
   /* The online indicator. A fixed green in both themes, and never the only cue. */
   --wr-online: oklch(0.66 0.17 150);
 

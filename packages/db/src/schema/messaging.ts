@@ -6,6 +6,13 @@ import { users } from './identity';
 export const conversationKind = pgEnum('conversation_kind', ['direct', 'group', 'community']);
 
 /**
+ * A first message between strangers is a request: `pending` until the recipient
+ * answers, `declined` if they refuse. Conversations between people who share a
+ * community, and all groups and community spaces, are `none`.
+ */
+export const messageRequestState = pgEnum('message_request_state', ['none', 'pending', 'declined']);
+
+/**
  * One engine for three things: a direct conversation between two people, a
  * small group, and a community's built-in spaces (Announcements and the Lounge).
  * Deliberately plainer than scenes: this is for coordination, not roleplay.
@@ -24,6 +31,9 @@ export const conversations = pgTable(
     // An optional name for a group.
     title: text('title'),
     createdByUserId: uuid('created_by_user_id').references(() => users.id, { onDelete: 'set null' }),
+    requestState: messageRequestState('request_state').notNull().default('none'),
+    // Who sent the request. The other person is the one who accepts or declines.
+    requestedByUserId: uuid('requested_by_user_id').references(() => users.id, { onDelete: 'set null' }),
     lastMessageId: uuid('last_message_id'),
     lastMessageAt: timestamptz('last_message_at'),
     createdAt: createdAt(),

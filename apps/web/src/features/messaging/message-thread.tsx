@@ -1,6 +1,8 @@
 import type { MessagePage } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import Link from 'next/link';
+import { Badges } from '@/features/identity/badges';
+import { ReportButton } from '@/features/moderation/report-client';
 import { ConversationLive, MessageComposer, RemoveMessageButton } from './message-client';
 
 const when = (date: Date) => date.toLocaleString('en', { dateStyle: 'medium', timeStyle: 'short' });
@@ -45,12 +47,18 @@ export function MessageThread({ page, href, viewingEarlier, emptyText, placehold
                 </p>
               ) : (
                 <>
-                  <p className="flex flex-wrap items-baseline gap-x-2 text-xs text-ink-muted">
+                  <div className="flex flex-wrap items-baseline gap-x-2 text-xs text-ink-muted">
                     <span className="text-sm font-medium text-ink">{message.authorName ?? 'Former member'}</span>
-                    {message.authorHandle ? <span>@{message.authorHandle}</span> : null}
+                    <Badges list={message.authorBadges} community={message.authorCommunityBadge} />
+                    {message.authorHandle ? (
+                      <Link href={`/u/${message.authorHandle}`} className="rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                        @{message.authorHandle}
+                      </Link>
+                    ) : null}
                     <time dateTime={message.createdAt.toISOString()}>{when(message.createdAt)}</time>
                     {message.mine || canModerate ? <RemoveMessageButton messageId={message.id} /> : null}
-                  </p>
+                    {message.mine ? null : <ReportButton targetType="message" targetId={message.id} />}
+                  </div>
                   <p className="mt-1 whitespace-pre-line break-words text-ink">{message.body}</p>
                 </>
               )}

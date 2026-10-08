@@ -5,6 +5,7 @@ import { RichTextEditor } from '@worldroot/editor/react';
 import { Button } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
+import { ReportButton } from '@/features/moderation/report-client';
 import { send } from './api';
 
 const linkButton =
@@ -40,10 +41,12 @@ interface PostBodyProps {
   doc: RichDoc | null;
   canEdit: boolean;
   canRemove: boolean;
+  /** Shown on other people’s posts. */
+  canReport: boolean;
 }
 
 /** A story post's text, with edit and remove controls for those allowed to use them. */
-export function PostBody({ postId, html, doc, canEdit, canRemove }: PostBodyProps) {
+export function PostBody({ postId, html, doc, canEdit, canRemove, canReport }: PostBodyProps) {
   const router = useRouter();
   const draft = useRef<RichDoc | null>(doc);
   const [editing, setEditing] = useState(false);
@@ -99,15 +102,16 @@ export function PostBody({ postId, html, doc, canEdit, canRemove }: PostBodyProp
   return (
     <>
       <div className="wr-prose max-w-[68ch]" dangerouslySetInnerHTML={{ __html: html }} />
-      {canEdit || canRemove ? (
-        <p className="mt-3 flex gap-4">
+      {canEdit || canRemove || canReport ? (
+        <div className="mt-3 flex items-center gap-4">
           {canEdit && doc ? (
             <button type="button" onClick={() => setEditing(true)} className={linkButton}>
               Edit
             </button>
           ) : null}
           {canRemove ? <RemovePostButton postId={postId} /> : null}
-        </p>
+          {canReport ? <ReportButton targetType="scene_post" targetId={postId} /> : null}
+        </div>
       ) : null}
     </>
   );

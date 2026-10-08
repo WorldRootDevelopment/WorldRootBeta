@@ -2,6 +2,7 @@ import type { CharacterInput } from '@worldroot/contracts';
 import { characters, communities, roleAssignments, roles, users, type Db } from '@worldroot/db';
 import { and, eq, inArray, ne } from 'drizzle-orm';
 import { addCharacterToCommunity, createCharacter } from '../characters/service';
+import { addMember } from '../community/access';
 import { addCharacterField, createCommunity, createRole, listCharacterFields } from '../community/service';
 import { createAuth } from '../identity/auth';
 import { createProfile, getProfile } from '../identity/profile';
@@ -163,6 +164,24 @@ async function addLocations(db: Db, actor: Actor, worldId: string, seeds: Locati
     const location = await createLocation(db, actor, worldId, { ...seed, parentId, position });
     if (children) await addLocations(db, actor, worldId, children, location.id);
   }
+}
+
+/**
+ * Makes someone a member and an owner of the demo community, so it shows among
+ * their communities and they can change anything in it. Does nothing if the
+ * demo is not there, and nothing new if they already own it.
+ */
+export async function grantDemoAccess(db: Db, userId: string): Promise<void> {
+  const [demo] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, DEMO_COMMUNITY_SLUG));
+  if (!demo) return;
+  await db.transaction(async (tx) => {
+    await addMember(tx, demo.id, userId);
+    const [ownerRole] = await tx
+      .select({ id: roles.id })
+      .from(roles)
+      .where(and(eq(roles.communityId, demo.id), eq(roles.isOwner, true)));
+    if (ownerRole) await tx.insert(roleAssignments).values({ communityId: demo.id, userId, roleId: ownerRole.id }).onConflictDoNothing();
+  });
 }
 
 export interface DemoSeedResult {

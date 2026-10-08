@@ -2,6 +2,7 @@ import { characterInputSchema, type CharacterInput } from '@worldroot/contracts'
 import { characters, characterWorldLinks, communities, worlds, type CharacterCustomValues, type Db } from '@worldroot/db';
 import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
 import { communityGrants, isMember, listCharacterFields } from '../community/service';
+import { membersWithPermission, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
 import { authorize, authorizeOwner, can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -147,6 +148,17 @@ export async function addCharacterToCommunity(
       after: { name: copy!.name, sourceCharacterId: source.id, approvalStatus: copy!.approvalStatus },
     });
     await emitEvent(tx, 'character.copied', { characterId: copy!.id, sourceCharacterId: source.id, communityId });
+    // A character waiting for review is brought to the reviewers' attention.
+    if (copy!.approvalStatus === 'pending') {
+      await notifyMany(tx, await membersWithPermission(tx, communityId, 'character.approve'), {
+        type: 'character.pending',
+        groupKey: `community:${communityId}:pending`,
+        subject: community.name,
+        href: `/c/${community.slug}/settings/characters`,
+        actorUserId: actor.userId,
+        preview: copy!.name,
+      });
+    }
 
     return copy!;
   });

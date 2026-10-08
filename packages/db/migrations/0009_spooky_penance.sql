@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "hide_online" boolean DEFAULT false NOT NULL;

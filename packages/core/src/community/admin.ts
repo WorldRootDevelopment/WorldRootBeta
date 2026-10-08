@@ -3,6 +3,8 @@ import {
   communitySettingsSchema,
   PERMISSION_KEYS,
   PERMISSIONS,
+  type BadgeKey,
+  type CommunityBadgeKey,
   roleInputSchema,
   type CharacterFieldInput,
   type CommunitySettingsInput,
@@ -21,9 +23,11 @@ import {
   type Db,
 } from '@worldroot/db';
 import { and, asc, desc, eq, inArray, isNull, max } from 'drizzle-orm';
+import { notify } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
 import { authorize, resolvePermissions, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
+import { communityBadgeFor, platformBadgesSql, toBadges } from '../identity/badges';
 import { parseInput } from '../platform/validate';
 import { communityGrants, isMember, type CharacterField, type Community, type Role } from './service';
 
@@ -36,6 +40,7 @@ export const ADMIN_PERMISSIONS: PermissionKey[] = [
   'member.ban',
   'characterfield.manage',
   'character.approve',
+  'report.review',
   'auditlog.view',
 ];
 
@@ -190,6 +195,10 @@ export interface MemberRow {
   userId: string;
   displayName: string;
   handle: string;
+  /** Platform badges, shown everywhere. */
+  badges: BadgeKey[];
+  /** Their standing in this community, shown only inside it. */
+  communityBadge: CommunityBadgeKey | null;
   joinedAt: Date;
   roles: Array<{ id: string; name: string; isOwner: boolean; isDefault: boolean; position: number }>;
 }
@@ -197,13 +206,27 @@ export interface MemberRow {
 /** Everyone in a community with the roles they hold, highest-ranked first. */
 export async function listMembers(db: Db, communityId: string): Promise<MemberRow[]> {
   const people = await db
-    .select({ userId: communityMembers.userId, joinedAt: communityMembers.joinedAt, displayName: profiles.displayName, handle: profiles.handle })
+    .select({
+      userId: communityMembers.userId,
+      joinedAt: communityMembers.joinedAt,
+      displayName: profiles.displayName,
+      handle: profiles.handle,
+      badges: platformBadgesSql,
+    })
     .from(communityMembers)
     .innerJoin(profiles, eq(profiles.userId, communityMembers.userId))
     .where(eq(communityMembers.communityId, communityId))
     .orderBy(asc(communityMembers.joinedAt));
   const held = await db
-    .select({ userId: roleAssignments.userId, id: roles.id, name: roles.name, isOwner: roles.isOwner, isDefault: roles.isDefault, position: roles.position })
+    .select({
+      userId: roleAssignments.userId,
+      id: roles.id,
+      name: roles.name,
+      isOwner: roles.isOwner,
+      isDefault: roles.isDefault,
+      position: roles.position,
+      permissions: roles.permissions,
+    })
     .from(roleAssignments)
     .innerJoin(roles, eq(roles.id, roleAssignments.roleId))
     .where(eq(roleAssignments.communityId, communityId))
@@ -211,7 +234,15 @@ export async function listMembers(db: Db, communityId: string): Promise<MemberRo
 
   const rank = (row: MemberRow) => Math.max(-1, ...row.roles.map((role) => role.position));
   return people
-    .map((person) => ({ ...person, roles: held.filter((role) => role.userId === person.userId).map(({ userId: _userId, ...role }) => role) }))
+    .map((person) => {
+      const theirs = held.filter((role) => role.userId === person.userId);
+      return {
+        ...person,
+        badges: toBadges(person.badges),
+        communityBadge: communityBadgeFor(theirs),
+        roles: theirs.map(({ userId: _userId, permissions: _permissions, ...role }) => role),
+      };
+    })
     .sort((a, b) => rank(b) - rank(a));
 }
 
@@ -246,6 +277,15 @@ export async function assignRole(db: Db, actor: Actor, roleId: string, userId: s
       targetId: userId,
       communityId: role.communityId,
       after: { role: role.name },
+    });
+    const [home] = await tx.select({ name: communities.name, slug: communities.slug }).from(communities).where(eq(communities.id, role.communityId));
+    await notify(tx, {
+      userId,
+      type: 'role.assigned',
+      groupKey: `community:${role.communityId}:role`,
+      subject: home?.name ?? 'a community',
+      href: `/c/${home?.slug ?? ''}`,
+      preview: role.name,
     });
   });
 }
@@ -390,6 +430,15 @@ export async function reviewCharacter(db: Db, actor: Actor, characterId: string,
       before: { approvalStatus: character.approvalStatus },
       after: { approvalStatus: decision, name: character.name },
     });
+    if (character.playerUserId) {
+      await notify(tx, {
+        userId: character.playerUserId,
+        type: decision === 'approved' ? 'character.approved' : 'character.returned',
+        groupKey: `character:${characterId}:review`,
+        subject: character.name,
+        href: `/characters/${characterId}`,
+      });
+    }
   });
 }
 
@@ -482,6 +531,14 @@ export async function deleteCommunity(db: Db, actor: Actor, communityId: string,
     });
     await tx.delete(communities).where(eq(communities.id, communityId));
   });
+}
+
+/** Every community there is, with its size. WorldRoot staff only. */
+export async function listAllCommunities(db: Db, actor: Actor): Promise<Array<Community & { memberCount: number }>> {
+  if (actor.platformRole !== 'staff') throw forbidden('Only WorldRoot staff can do that.');
+  const all = await db.select().from(communities).orderBy(asc(communities.name));
+  const sizes = await db.select({ communityId: communityMembers.communityId }).from(communityMembers);
+  return all.map((community) => ({ ...community, memberCount: sizes.filter((row) => row.communityId === community.id).length }));
 }
 
 export interface AdminView {

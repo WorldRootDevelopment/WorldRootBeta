@@ -1,7 +1,9 @@
 import type { MessagePage, PresenceRow } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import Link from 'next/link';
+import { Badges } from '@/features/identity/badges';
 import { ChatComposer, ChatLog } from './chat-client';
+import { ReportButton } from '@/features/moderation/report-client';
 import { RemoveMessageButton } from './message-client';
 
 type Message = MessagePage['messages'][number];
@@ -49,7 +51,12 @@ function ChatMessage({ message, previous, canModerate }: { message: Message; pre
   }
 
   const name = message.authorName ?? 'Former member';
-  const remove = message.mine || canModerate ? <RemoveMessageButton messageId={message.id} /> : null;
+  const remove = (
+    <span className="inline-flex items-center gap-3">
+      {message.mine || canModerate ? <RemoveMessageButton messageId={message.id} /> : null}
+      {message.mine ? null : <ReportButton targetType="message" targetId={message.id} />}
+    </span>
+  );
 
   if (continues(message, previous)) {
     return (
@@ -70,13 +77,20 @@ function ChatMessage({ message, previous, canModerate }: { message: Message; pre
       <li className="group mt-3 flex gap-3 rounded py-0.5 first:mt-0 hover:bg-surface-sunken">
         <Avatar name={name} />
         <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-baseline gap-x-2">
-            <span className="font-medium text-ink">{name}</span>
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            {message.authorHandle ? (
+              <Link href={`/u/${message.authorHandle}`} className="font-medium text-ink rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                {name}
+              </Link>
+            ) : (
+              <span className="font-medium text-ink">{name}</span>
+            )}
+            <Badges list={message.authorBadges} community={message.authorCommunityBadge} />
             <time dateTime={message.createdAt.toISOString()} className="text-xs text-ink-muted">
               {time(message.createdAt)}
             </time>
             <span className="opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">{remove}</span>
-          </p>
+          </div>
           <p className="whitespace-pre-line break-words text-ink">{message.body}</p>
         </div>
       </li>
@@ -103,7 +117,12 @@ function MemberList({ title, members }: { title: string; members: PresenceRow[] 
               />
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-sm font-medium text-ink">{member.displayName}</span>
+              <span className="flex items-center gap-1.5 text-sm font-medium text-ink">
+                <Link href={`/u/${member.handle}`} className="truncate rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                  {member.displayName}
+                </Link>
+                <Badges list={member.badges} community={member.communityBadge} compact />
+              </span>
               {member.role ? <span className="block truncate text-xs text-ink-muted">{member.role}</span> : null}
             </span>
           </li>

@@ -13,6 +13,8 @@ export const users = pgTable('users', {
   emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image'),
   platformRole: platformRole('platform_role').notNull().default('user'),
+  // Set while the account is a Premium member. There is no billing yet, so staff set this by hand.
+  premiumSince: timestamptz('premium_since'),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });
@@ -84,6 +86,10 @@ export const profiles = pgTable('profiles', {
   adultConfirmedAt: timestamptz('adult_confirmed_at').notNull(),
   // When this person last had WorldRoot open. Drives the online list in community lounges.
   lastSeenAt: timestamptz('last_seen_at'),
+  // When set, this person is never shown as online to anyone else.
+  hideOnline: boolean('hide_online').notNull().default(false),
+  // When the handle was last changed, for the cooldown between changes.
+  handleChangedAt: timestamptz('handle_changed_at'),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });

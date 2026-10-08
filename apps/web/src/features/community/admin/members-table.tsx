@@ -2,8 +2,10 @@
 
 import type { BanRow, MemberRow } from '@worldroot/core';
 import { Button } from '@worldroot/ui';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Badges } from '@/features/identity/badges';
 import { send } from '@/features/scenes/api';
 
 interface MembersTableProps {
@@ -56,7 +58,11 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
             <li key={member.userId} className="rounded-2xl border border-line bg-surface-raised p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <p className="min-w-0">
-                  <span className="font-medium text-ink">{member.displayName}</span> <span className="text-sm text-ink-muted">@{member.handle}</span>
+                  <Link href={`/u/${member.handle}`} className="font-medium text-ink rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                    {member.displayName}
+                  </Link>{' '}
+                  <span className="text-sm text-ink-muted">@{member.handle}</span>{' '}
+                  <Badges list={member.badges} community={member.communityBadge} />
                   {member.userId === viewerId ? <span className="ml-2 text-xs text-ink-muted">(you)</span> : null}
                 </p>
                 <div className="flex flex-wrap gap-1">

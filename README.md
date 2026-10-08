@@ -23,6 +23,10 @@ http://localhost:3000/c/demo-town. Any account can browse and join it. To see it
 `host@worldroot.test` with the password `welcome-to-demo-town`. Set `WORLDROOT_DEMO=off` to skip it.
 The demo account has a published password, so the demo must not run on a public deployment.
 
+To make yourself a platform administrator, set `WORLDROOT_ADMIN_EMAIL` (and, to have the account created for you,
+`WORLDROOT_ADMIN_PASSWORD`) in `apps/web/.env.local`. That file is ignored by git. Administrators can see and manage
+every community, carry an Admin badge, and are made an owner of the demo community.
+
 To use a real PostgreSQL server, copy `.env.example` to `apps/web/.env.local`, set
 `DATABASE_URL`, then run `pnpm db:migrate`.
 

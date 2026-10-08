@@ -24,6 +24,10 @@
   --color-danger-soft: var(--wr-danger-soft);
   --color-focus: var(--wr-focus);
   --color-online: var(--wr-online);
+  --color-staff: var(--wr-staff);
+  --color-staff-ink: var(--wr-staff-ink);
+  --color-premium: var(--wr-premium);
+  --color-premium-ink: var(--wr-premium-ink);
 
   --shadow-raised: var(--wr-shadow-raised);
 

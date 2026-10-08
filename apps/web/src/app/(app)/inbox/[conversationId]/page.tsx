@@ -3,6 +3,7 @@ import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cache } from 'react';
+import { RequestBar } from '@/features/identity/account-client';
 import { MessageThread } from '@/features/messaging/message-thread';
 import { Breadcrumbs } from '@/features/shell/prose';
 import { load } from '@/lib/load';
@@ -38,7 +39,16 @@ export default async function ConversationPage({ params, searchParams }: Props) 
         <div className="min-w-0">
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink">{summary.title}</h1>
           <p className="mt-1 text-sm text-ink-muted">
-            {summary.people.length === 0 ? 'Only you' : summary.people.map((person) => `@${person.handle}`).join(', ')}
+            {summary.people.length === 0
+              ? 'Only you'
+              : summary.people.map((person, index) => (
+                  <span key={person.userId}>
+                    {index > 0 ? ', ' : null}
+                    <Link href={`/u/${person.handle}`} className="rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                      @{person.handle}
+                    </Link>
+                  </span>
+                ))}
           </p>
         </div>
         {/* The designed way out of roleplaying in messages: take it to a scene. */}
@@ -46,6 +56,13 @@ export default async function ConversationPage({ params, searchParams }: Props) 
           Start a scene
         </Link>
       </header>
+      {summary.request === 'incoming' ? <RequestBar conversationId={conversationId} name={summary.title} /> : null}
+      {summary.request === 'outgoing' ? (
+        <p role="status" className="mb-6 max-w-3xl rounded-lg bg-surface-sunken px-4 py-3 text-sm text-ink">
+          You do not share a community with {summary.title}, so this is a message request. You can send up to three messages before they
+          accept.
+        </p>
+      ) : null}
       <MessageThread
         page={page}
         href={`/inbox/${conversationId}`}

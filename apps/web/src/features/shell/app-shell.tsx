@@ -18,14 +18,14 @@ const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-
  */
 interface AppShellProps {
   profile: Profile;
-  /** How many conversations have something new. Shown as a dot on Inbox. */
+  /** How many conversations and notifications are unread. Shown as a dot on Inbox. */
   inboxUnread: number;
   children: ReactNode;
 }
 
 const unreadDot = (
   <span className="absolute right-1.5 top-1.5 size-2.5 rounded-full bg-accent ring-2 ring-surface-raised">
-    <span className="sr-only">Unread messages</span>
+    <span className="sr-only">Something new</span>
   </span>
 );
 

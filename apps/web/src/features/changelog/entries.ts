@@ -14,6 +14,60 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-notifications',
+    date: '2026-10-08',
+    title: 'Notifications',
+    items: [
+      'The Inbox has a Notifications tab. The dot on Inbox now shows for new notifications as well as new messages.',
+      'You hear when someone posts in a scene you are writing, invites you to one, or posts an announcement in a community you belong to.',
+      'You also hear when a character of yours is approved or returned, when you are given a role or a badge, and when a moderator removes a post of yours.',
+      'Several posts in the same scene arrive as one line, not one each.',
+      'Reviewers and moderators hear when a character or a report is waiting for them.',
+      'Nothing reaches you from someone you have blocked.',
+    ],
+  },
+  {
+    id: '2026-10-08-reports',
+    date: '2026-10-08',
+    title: 'Reporting',
+    items: [
+      'A Report link now sits beside other people’s posts and messages, and on profiles and characters.',
+      'Choose a reason and add a note if you wish. The person you report is not told who reported them.',
+      'Community moderators have a Reports section in Settings for what happens in their community.',
+      'Reports about direct messages, private scenes, profiles, or possible harm go to WorldRoot staff.',
+    ],
+  },
+  {
+    id: '2026-10-08-accounts-badges-blocks',
+    date: '2026-10-08',
+    title: 'Account settings, badges, blocking and message requests',
+    items: [
+      'Settings now has an Account tab: change your handle and password, sign out other devices, and manage who you have blocked.',
+      'New badges. WorldRoot staff have a filled Staff badge; a community’s own owner, admins and moderators have an outlined one in the community’s colour, shown only inside it.',
+      'More badges: Founder, Premium, Early supporter and Beta tester.',
+      'Block someone from their profile. Neither of you can message the other or invite the other to a private scene, and they are not told.',
+      'A first message from someone you share no community with now arrives as a request you can accept or decline.',
+      'WorldRoot can be installed as an app from your browser’s menu.',
+    ],
+  },
+  {
+    id: '2026-10-08-profiles',
+    date: '2026-10-08',
+    title: 'Profiles',
+    items: [
+      'Every writer now has a profile page with their name, pronouns, an about section, their characters and their communities.',
+      'Edit yours from the account menu: display name, pronouns and what you like to write.',
+      'Names across WorldRoot now link to profiles, and each profile has a Message button.',
+      'A new privacy setting, Appear offline, keeps you out of the online list in community lounges.',
+    ],
+  },
+  {
+    id: '2026-10-08-staff-badge',
+    date: '2026-10-08',
+    title: 'Staff badge',
+    items: ['WorldRoot staff now carry a badge beside their name in chats, messages, scenes and member lists.'],
+  },
+  {
     id: '2026-10-08-varrowmere-archive',
     date: '2026-10-08',
     title: 'Varrowmere, and archiving communities',

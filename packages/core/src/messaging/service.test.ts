@@ -81,6 +81,11 @@ describe('direct and group conversations', () => {
 
   it('support small groups, and removing your own message', async () => {
     const { db } = connection;
+    // Groups have no request step, so they are only for people who share a community.
+    await expect(startConversation(db, thea, { handles: ['marcus', 'sarah'] })).rejects.toMatchObject({ code: 'forbidden' });
+    const shared = await createCommunity(db, thea, { slug: 'group-valley', name: 'Group Valley', listed: true });
+    await joinCommunity(db, marcus, shared.id);
+    await joinCommunity(db, sarah, shared.id);
     const group = await startConversation(db, thea, { handles: ['marcus', 'sarah'], title: 'Late Train planning' });
     expect(group.kind).toBe('group');
     const sent = await sendMessage(db, sarah, group.id, 'Count me in.');

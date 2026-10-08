@@ -6,6 +6,7 @@ import {
   type PostInput,
   type SceneInput,
   type SceneStatus,
+  type BadgeKey,
 } from '@worldroot/contracts';
 import {
   characters,
@@ -24,6 +25,9 @@ import {
 import { EMPTY_DOC, InvalidDocumentError, isBlank, parseDoc, renderHtml, toPlainText, type RichDoc } from '@worldroot/editor';
 import { and, asc, desc, eq, inArray, isNull, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
+import { isBlockedBetween } from '../identity/account';
+import { platformBadgesSql, toBadges } from '../identity/badges';
+import { notify, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
 import { authorize, can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -268,6 +272,9 @@ export async function inviteToScene(db: Db, actor: Actor, sceneId: string, handl
   const clean = handle.trim().replace(/^@/, '').toLowerCase();
   const [profile] = clean ? await db.select({ userId: profiles.userId }).from(profiles).where(eq(profiles.handleLower, clean)) : [];
   if (!profile) throw new DomainError('not_found', 'No one has that handle.', { fields: { handle: 'No one has that handle.' } });
+  if (await isBlockedBetween(db, actor.userId, profile.userId)) {
+    throw new DomainError('forbidden', 'You cannot invite this person.', { fields: { handle: 'You cannot invite this person.' } });
+  }
 
   await db.transaction(async (tx) => {
     const added = await tx
@@ -275,7 +282,17 @@ export async function inviteToScene(db: Db, actor: Actor, sceneId: string, handl
       .values({ sceneId, userId: profile.userId, invitedByUserId: actor.userId })
       .onConflictDoNothing()
       .returning({ userId: sceneParticipants.userId });
-    if (added.length > 0) await emitEvent(tx, 'scene.participant.added', { sceneId, userId: profile.userId });
+    if (added.length > 0) {
+      await emitEvent(tx, 'scene.participant.added', { sceneId, userId: profile.userId });
+      await notify(tx, {
+        userId: profile.userId,
+        type: 'scene.invite',
+        groupKey: `scene:${sceneId}:invite`,
+        subject: scene.title,
+        href: `/scenes/${sceneId}`,
+        actorUserId: actor.userId,
+      });
+    }
   });
 }
 
@@ -329,6 +346,19 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
       doc,
     });
     await tx.delete(sceneDrafts).where(and(eq(sceneDrafts.sceneId, sceneId), eq(sceneDrafts.userId, actor.userId)));
+    const others = await tx.select({ userId: sceneParticipants.userId }).from(sceneParticipants).where(eq(sceneParticipants.sceneId, sceneId));
+    await notifyMany(
+      tx,
+      others.map((other) => other.userId),
+      {
+        type: 'scene.post',
+        groupKey: `scene:${sceneId}:posts`,
+        subject: scene.title,
+        href: `/scenes/${sceneId}#post-${post.seq}`,
+        actorUserId: actor.userId,
+        preview: post.contentText,
+      },
+    );
     return post;
   });
 }
@@ -400,6 +430,15 @@ export async function removePost(db: Db, actor: Actor, postId: string): Promise<
         communityId: scene.communityId,
         before: { authorUserId: post.authorUserId, seq: post.seq, kind: post.kind },
       });
+      if (post.authorUserId) {
+        await notify(tx, {
+          userId: post.authorUserId,
+          type: 'post.removed',
+          groupKey: `scene:${post.sceneId}:removed`,
+          subject: scene.title,
+          href: `/scenes/${post.sceneId}#post-${post.seq}`,
+        });
+      }
     }
     await emitEvent(tx, 'scene.post.updated', { sceneId: post.sceneId, postId, seq: post.seq });
   });
@@ -411,6 +450,7 @@ export interface PostPage {
     ScenePost & {
       authorName: string | null;
       authorHandle: string | null;
+      authorBadges: BadgeKey[];
       /** Written by the viewer. */
       mine: boolean;
       /** Who removed it, when it has been removed. Its content is then withheld. */
@@ -436,7 +476,7 @@ export async function listPosts(
   const scene = await requireVisibleScene(db, actor, sceneId);
   const limit = Math.min(options.limit ?? 50, 100);
   const rows = await db
-    .select({ post: scenePosts, authorName: profiles.displayName, authorHandle: profiles.handle })
+    .select({ post: scenePosts, authorName: profiles.displayName, authorHandle: profiles.handle, authorBadges: platformBadgesSql })
     .from(scenePosts)
     .leftJoin(profiles, eq(profiles.userId, scenePosts.authorUserId))
     .where(
@@ -453,12 +493,13 @@ export async function listPosts(
     posts: rows
       .slice(0, limit)
       .reverse()
-      .map(({ post, authorName, authorHandle }) => ({
+      .map(({ post, authorName, authorHandle, authorBadges }) => ({
         ...post,
         // A removed post keeps its place in the scene, but its words are not sent to anyone.
         ...(post.removedAt ? { contentJson: EMPTY_DOC, contentHtml: '', contentText: '' } : {}),
         authorName,
         authorHandle,
+        authorBadges: toBadges(authorBadges),
         mine: post.authorUserId === actor.userId,
         removedBy: post.removedAt ? (post.removedByUserId === post.authorUserId ? ('author' as const) : ('moderator' as const)) : null,
       })),
@@ -475,7 +516,7 @@ export interface SceneView {
     world: { slug: string; name: string } | null;
     location: { id: string; name: string } | null;
   } | null;
-  participants: Array<{ userId: string; displayName: string; handle: string }>;
+  participants: Array<{ userId: string; displayName: string; handle: string; badges: BadgeKey[] }>;
   cast: Array<{ id: string; name: string; playerUserId: string | null }>;
   viewer: {
     isParticipant: boolean;
@@ -516,6 +557,7 @@ export async function getSceneView(db: Db, actor: Actor, sceneId: string): Promi
       userId: sceneParticipants.userId,
       displayName: profiles.displayName,
       handle: profiles.handle,
+      badges: platformBadgesSql,
       lastReadSeq: sceneParticipants.lastReadSeq,
     })
     .from(sceneParticipants)
@@ -555,7 +597,7 @@ export async function getSceneView(db: Db, actor: Actor, sceneId: string): Promi
   return {
     scene,
     place,
-    participants: people.map(({ userId, displayName, handle }) => ({ userId, displayName, handle })),
+    participants: people.map(({ userId, displayName, handle, badges }) => ({ userId, displayName, handle, badges: toBadges(badges) })),
     cast,
     viewer: {
       isParticipant: Boolean(me),

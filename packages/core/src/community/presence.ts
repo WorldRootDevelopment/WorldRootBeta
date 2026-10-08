@@ -1,3 +1,4 @@
+import type { BadgeKey, CommunityBadgeKey } from '@worldroot/contracts';
 import { communityMembers, profiles, type Db } from '@worldroot/db';
 import { and, eq, sql } from 'drizzle-orm';
 import type { Actor } from '../platform/authorize';
@@ -26,6 +27,8 @@ export interface PresenceRow {
   userId: string;
   displayName: string;
   handle: string;
+  badges: BadgeKey[];
+  communityBadge: CommunityBadgeKey | null;
   online: boolean;
   /** The member's highest role, when it is something more than the built-in Member role. */
   role: string | null;
@@ -35,18 +38,23 @@ export interface PresenceRow {
 export async function listMemberPresence(db: Db, communityId: string): Promise<PresenceRow[]> {
   const members = await listMembers(db, communityId);
   const seen = await db
-    .select({ userId: profiles.userId, lastSeenAt: profiles.lastSeenAt })
+    .select({ userId: profiles.userId, lastSeenAt: profiles.lastSeenAt, hideOnline: profiles.hideOnline })
     .from(communityMembers)
     .innerJoin(profiles, eq(profiles.userId, communityMembers.userId))
     .where(eq(communityMembers.communityId, communityId));
   const cutoff = Date.now() - ONLINE_WINDOW_SECONDS * 1000;
-  const online = new Set(seen.filter((row) => row.lastSeenAt && row.lastSeenAt.getTime() >= cutoff).map((row) => row.userId));
+  // Someone who has chosen to appear offline is never listed as online, whatever their last check-in.
+  const online = new Set(
+    seen.filter((row) => !row.hideOnline && row.lastSeenAt && row.lastSeenAt.getTime() >= cutoff).map((row) => row.userId),
+  );
 
   return members
     .map((member, rank) => ({
       userId: member.userId,
       displayName: member.displayName,
       handle: member.handle,
+      badges: member.badges,
+      communityBadge: member.communityBadge,
       online: online.has(member.userId),
       role: member.roles.find((role) => !role.isDefault)?.name ?? null,
       rank,

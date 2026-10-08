@@ -1,3 +1,4 @@
+export * from './badges';
 export * from './errors';
 export * from './events';
 export * from './identity';
@@ -5,3 +6,5 @@ export * from './permissions';
 export * from './library';
 export * from './scenes';
 export * from './community';
+export * from './reports';
+export * from './notifications';

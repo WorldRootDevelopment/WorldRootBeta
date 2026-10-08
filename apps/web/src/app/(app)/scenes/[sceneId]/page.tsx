@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { cache } from 'react';
+import { Badges } from '@/features/identity/badges';
 import { RatingBadge, StatusBadge } from '@/features/scenes/badges';
 import { Composer } from '@/features/scenes/composer';
 import { OocMessage, StoryPost } from '@/features/scenes/post';
@@ -161,7 +162,10 @@ export default async function ScenePage({ params, searchParams }: Props) {
             <ul className="flex flex-col gap-2 text-sm">
               {participants.map((person) => (
                 <li key={person.userId} className="text-ink">
-                  {person.displayName} <span className="text-ink-muted">@{person.handle}</span>
+                  <Link href={`/u/${person.handle}`} className="rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                    {person.displayName}
+                  </Link>{' '}
+                  <span className="text-ink-muted">@{person.handle}</span> <Badges list={person.badges} compact />
                 </li>
               ))}
             </ul>

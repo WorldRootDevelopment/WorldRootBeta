@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { BADGE_KEYS, type BadgeKey } from './badges';
 
 export const HANDLE_MIN = 3;
 export const HANDLE_MAX = 24;
@@ -25,6 +26,28 @@ export const profileSchema = z.object({
   displayName: z.string(),
   pronouns: z.string().nullable(),
   bio: z.string().nullable(),
+  /** WorldRoot staff. Kept beside `badges` because code asks this question directly. */
+  isStaff: z.boolean(),
+  /** Platform badges shown beside their name everywhere, most significant first. */
+  badges: z.array(z.enum(BADGE_KEYS as [BadgeKey, ...BadgeKey[]])),
 });
 
 export type Profile = z.infer<typeof profileSchema>;
+
+const optionalLine = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, `Use at most ${max.toLocaleString('en')} characters.`)
+    .nullish()
+    .transform((value) => value || null);
+
+/** What a person may change about their own profile. The handle is fixed for now. */
+export const updateProfileSchema = z.object({
+  displayName: z.string().trim().min(1, 'Enter a display name.').max(50, 'Use at most 50 characters.'),
+  pronouns: optionalLine(40),
+  bio: optionalLine(2_000),
+  hideOnline: z.boolean(),
+});
+
+export type UpdateProfileInput = z.input<typeof updateProfileSchema>;

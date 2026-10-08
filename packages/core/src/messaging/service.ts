@@ -1,7 +1,11 @@
-import type { PermissionKey } from '@worldroot/contracts';
+import type { BadgeKey, CommunityBadgeKey, PermissionKey } from '@worldroot/contracts';
 import { communities, conversationMembers, conversations, messages, profiles, type Db } from '@worldroot/db';
 import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
+import { listMembers } from '../community/admin';
+import { isBlockedBetween, shareCommunity } from '../identity/account';
+import { platformBadgesSql, toBadges } from '../identity/badges';
+import { communityMemberIds, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
 import { can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -19,6 +23,10 @@ export type SpaceKey = keyof typeof SPACES;
 
 export const MAX_MESSAGE_CHARACTERS = 4_000;
 export const MAX_GROUP_SIZE = 12;
+/** How many messages someone may send in a request before the other person answers. */
+export const MAX_REQUEST_MESSAGES = 3;
+
+const noContact = () => new DomainError('forbidden', 'You cannot message this person.');
 
 const missing = () => new DomainError('not_found', 'That conversation does not exist.');
 
@@ -106,9 +114,30 @@ export async function startConversation(db: Db, actor: Actor, input: { handles: 
       const directKey = [actor.userId, others[0]!].sort().join(':');
       const [existing] = await tx.select().from(conversations).where(eq(conversations.directKey, directKey));
       if (existing) return existing;
-      const [direct] = await tx.insert(conversations).values({ kind: 'direct', directKey, createdByUserId: actor.userId }).returning();
+      if (await isBlockedBetween(tx, actor.userId, others[0]!)) throw noContact();
+      // People who share a community, and staff, can simply talk. Anyone else starts with a request.
+      const known = actor.platformRole === 'staff' || (await shareCommunity(tx, actor.userId, others[0]!));
+      const [direct] = await tx
+        .insert(conversations)
+        .values({
+          kind: 'direct',
+          directKey,
+          createdByUserId: actor.userId,
+          requestState: known ? 'none' : 'pending',
+          requestedByUserId: known ? null : actor.userId,
+        })
+        .returning();
       await tx.insert(conversationMembers).values([actor.userId, others[0]!].map((userId) => ({ conversationId: direct!.id, userId })));
       return direct!;
+    }
+    // Nobody is added to a group with someone they have blocked, or who has blocked them.
+    for (const other of others) {
+      if (await isBlockedBetween(tx, actor.userId, other)) throw noContact();
+      // A group has no request step, so it is only for people who already share a community with you.
+      if (actor.platformRole !== 'staff' && !(await shareCommunity(tx, actor.userId, other))) {
+        const message = 'You can start a group only with people you share a community with. Message the others one to one first.';
+        throw new DomainError('forbidden', message, { fields: { handles: message } });
+      }
     }
     const [group] = await tx
       .insert(conversations)
@@ -126,6 +155,29 @@ export async function sendMessage(db: Db, actor: Actor, conversationId: string, 
     const space = SPACES[access.conversation.spaceKey as SpaceKey];
     throw new DomainError('forbidden', `You cannot post in ${space.label}.`, { permission: space.post });
   }
+  const { conversation } = access;
+  let accepting = false;
+  if (conversation.kind === 'direct') {
+    const [other] = await db
+      .select({ userId: conversationMembers.userId })
+      .from(conversationMembers)
+      .where(and(eq(conversationMembers.conversationId, conversationId), ne(conversationMembers.userId, actor.userId)));
+    if (other && (await isBlockedBetween(db, actor.userId, other.userId))) throw noContact();
+    // The same answer as a block, so declining a request never tells the sender more than a block would.
+    if (conversation.requestState === 'declined') throw noContact();
+    if (conversation.requestState === 'pending') {
+      if (conversation.requestedByUserId === actor.userId) {
+        const [sent] = await db.select({ value: sql<number>`count(*)::int` }).from(messages).where(eq(messages.conversationId, conversationId));
+        if ((sent?.value ?? 0) >= MAX_REQUEST_MESSAGES) {
+          throw new DomainError('conflict', 'They have not answered your message request yet. You can write more once they accept.');
+        }
+      } else {
+        // Replying is accepting.
+        accepting = true;
+      }
+    }
+  }
+
   const text = typeof body === 'string' ? body.replace(/\r\n?/g, '\n').trim() : '';
   if (!text) throw new DomainError('invalid_input', 'Write a message first.', { fields: { body: 'Write a message first.' } });
   if (text.length > MAX_MESSAGE_CHARACTERS) {
@@ -135,13 +187,28 @@ export async function sendMessage(db: Db, actor: Actor, conversationId: string, 
 
   return db.transaction(async (tx) => {
     const [message] = await tx.insert(messages).values({ conversationId, authorUserId: actor.userId, body: text }).returning();
-    await tx.update(conversations).set({ lastMessageId: message!.id, lastMessageAt: message!.createdAt }).where(eq(conversations.id, conversationId));
+    await tx
+      .update(conversations)
+      .set({ lastMessageId: message!.id, lastMessageAt: message!.createdAt, ...(accepting ? { requestState: 'none' as const } : {}) })
+      .where(eq(conversations.id, conversationId));
     // Your own message is, by definition, read.
     await tx
       .insert(conversationMembers)
       .values({ conversationId, userId: actor.userId, lastReadMessageId: message!.id })
       .onConflictDoUpdate({ target: [conversationMembers.conversationId, conversationMembers.userId], set: { lastReadMessageId: message!.id } });
     await emitEvent(tx, 'message.created', { conversationId, messageId: message!.id });
+    // Announcements are the one kind of message that tells people it has arrived. The Lounge and direct messages do not.
+    if (conversation.kind === 'community' && conversation.spaceKey === 'announcements') {
+      const [home] = await tx.select({ name: communities.name, slug: communities.slug }).from(communities).where(eq(communities.id, conversation.communityId!));
+      await notifyMany(tx, await communityMemberIds(tx, conversation.communityId!), {
+        type: 'announcement',
+        groupKey: `community:${conversation.communityId}:announcements`,
+        subject: home?.name ?? 'a community',
+        href: `/c/${home?.slug ?? ''}/announcements`,
+        actorUserId: actor.userId,
+        preview: text,
+      });
+    }
     return message!;
   });
 }
@@ -183,6 +250,9 @@ export interface MessageRow {
   body: string;
   authorName: string | null;
   authorHandle: string | null;
+  authorBadges: BadgeKey[];
+  /** In a community space: the author’s standing in that community. Null everywhere else. */
+  authorCommunityBadge: CommunityBadgeKey | null;
   mine: boolean;
   /** Who removed it, when it has been removed. Its words are then withheld. */
   removedBy: 'author' | 'moderator' | null;
@@ -202,12 +272,18 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
   const access = await requireAccess(db, actor, conversationId);
   const limit = Math.min(options.limit ?? 50, 100);
   const rows = await db
-    .select({ message: messages, authorName: profiles.displayName, authorHandle: profiles.handle })
+    .select({ message: messages, authorName: profiles.displayName, authorHandle: profiles.handle, authorBadges: platformBadgesSql })
     .from(messages)
     .leftJoin(profiles, eq(profiles.userId, messages.authorUserId))
     .where(and(eq(messages.conversationId, conversationId), options.beforeId ? lt(messages.id, options.beforeId) : undefined))
     .orderBy(desc(messages.id))
     .limit(limit + 1);
+
+  // In a community space, each author's standing there is shown beside their name.
+  const standing =
+    access.conversation.kind === 'community'
+      ? new Map((await listMembers(db, access.conversation.communityId!)).map((member) => [member.userId, member.communityBadge]))
+      : null;
 
   return {
     ...access,
@@ -215,12 +291,14 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
     messages: rows
       .slice(0, limit)
       .reverse()
-      .map(({ message, authorName, authorHandle }) => ({
+      .map(({ message, authorName, authorHandle, authorBadges }) => ({
         id: message.id,
         authorUserId: message.authorUserId,
         body: message.removedAt ? '' : message.body,
         authorName,
         authorHandle,
+        authorBadges: toBadges(authorBadges),
+        authorCommunityBadge: (message.authorUserId && standing?.get(message.authorUserId)) || null,
         mine: message.authorUserId === actor.userId,
         removedBy: message.removedAt ? (message.removedByUserId === message.authorUserId ? 'author' : 'moderator') : null,
         createdAt: message.createdAt,
@@ -249,6 +327,8 @@ export interface ConversationSummary {
   people: Array<{ userId: string; displayName: string; handle: string }>;
   lastMessage: { body: string; authorName: string | null; mine: boolean; createdAt: Date } | null;
   unread: boolean;
+  /** `incoming`: a stranger wrote and is waiting on the actor. `outgoing`: the actor wrote and is waiting. */
+  request: 'incoming' | 'outgoing' | null;
 }
 
 const nameConversation = (conversation: Conversation, others: ConversationSummary['people']): string =>
@@ -298,8 +378,31 @@ export async function listConversations(db: Db, actor: Actor): Promise<Conversat
           }
         : null,
       unread: Boolean(conversation.lastMessageId) && (!lastReadMessageId || conversation.lastMessageId! > lastReadMessageId),
+      request: conversation.requestState === 'pending' ? (conversation.requestedByUserId === actor.userId ? ('outgoing' as const) : ('incoming' as const)) : null,
     };
-  });
+  })
+    // A request the actor declined is gone from their Inbox. One of theirs that was declined just looks unanswered.
+    .filter((summary, index) => !(mine[index]!.conversation.requestState === 'declined' && mine[index]!.conversation.requestedByUserId !== actor.userId));
+}
+
+async function requireIncomingRequest(db: Db, actor: Actor, conversationId: string): Promise<Conversation> {
+  const { conversation } = await requireAccess(db, actor, conversationId);
+  if (conversation.requestState !== 'pending' || conversation.requestedByUserId === actor.userId) {
+    throw new DomainError('conflict', 'There is no message request to answer here.');
+  }
+  return conversation;
+}
+
+/** Accepts a message request. The conversation becomes an ordinary one. */
+export async function acceptRequest(db: Db, actor: Actor, conversationId: string): Promise<void> {
+  await requireIncomingRequest(db, actor, conversationId);
+  await db.update(conversations).set({ requestState: 'none' }).where(eq(conversations.id, conversationId));
+}
+
+/** Declines a message request. It leaves the actor's Inbox, and the sender can write no more. They are not told. */
+export async function declineRequest(db: Db, actor: Actor, conversationId: string): Promise<void> {
+  await requireIncomingRequest(db, actor, conversationId);
+  await db.update(conversations).set({ requestState: 'declined' }).where(eq(conversations.id, conversationId));
 }
 
 /** One of the actor's direct or group conversations, with who is in it. */
@@ -320,6 +423,7 @@ export async function countUnreadConversations(db: Db, userId: string): Promise<
         eq(conversationMembers.userId, userId),
         ne(conversations.kind, 'community'),
         sql`${conversations.lastMessageId} is not null`,
+        sql`not (${conversations.requestState} = 'declined' and ${conversations.requestedByUserId} is distinct from ${userId})`,
         sql`(${conversationMembers.lastReadMessageId} is null or ${conversations.lastMessageId} > ${conversationMembers.lastReadMessageId})`,
       ),
     );

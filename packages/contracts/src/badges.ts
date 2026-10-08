@@ -1,0 +1,48 @@
+/**
+ * The badge registry. A badge is a small label beside a person's name.
+ *
+ * Platform badges belong to the account and are shown everywhere. Community
+ * badges describe a person's standing in one community and are shown only
+ * inside it. The two are drawn differently, so WorldRoot staff are never
+ * mistaken for a community's own admins, or the other way round.
+ */
+
+interface BadgeDefinition {
+  label: string;
+  /** Shown on hover and read by screen readers. */
+  title: string;
+  /** Which fixed colour the badge takes. Never the community's accent. */
+  tone: 'staff' | 'premium' | 'special';
+  /** Staff may hand this out by hand. Staff and Premium are derived from the account instead. */
+  grantable: boolean;
+}
+
+/** In display order: the most significant badge comes first. */
+export const BADGES = {
+  staff: { label: 'Staff', title: 'WorldRoot staff', tone: 'staff', grantable: false },
+  founder: { label: 'Founder', title: 'Founded WorldRoot', tone: 'special', grantable: true },
+  premium: { label: 'Premium', title: 'WorldRoot Premium member', tone: 'premium', grantable: false },
+  early_supporter: { label: 'Early supporter', title: 'Supported WorldRoot from the start', tone: 'special', grantable: true },
+  beta_tester: { label: 'Beta tester', title: 'Helped test WorldRoot before launch', tone: 'special', grantable: true },
+} as const satisfies Record<string, BadgeDefinition>;
+
+export type BadgeKey = keyof typeof BADGES;
+
+export const BADGE_KEYS = Object.keys(BADGES) as BadgeKey[];
+
+export const GRANTABLE_BADGES = BADGE_KEYS.filter((key) => BADGES[key].grantable);
+
+export const isBadgeKey = (value: unknown): value is BadgeKey => typeof value === 'string' && value in BADGES;
+
+/** Keeps the badges this version knows, in registry order. */
+export const toBadges = (values: readonly unknown[] | null | undefined): BadgeKey[] =>
+  BADGE_KEYS.filter((key) => (values ?? []).includes(key));
+
+/** A person's standing in one community. At most one is shown: the highest they hold. */
+export const COMMUNITY_BADGES = {
+  owner: { label: 'Owner', title: 'Owns this community' },
+  admin: { label: 'Admin', title: 'Runs this community' },
+  moderator: { label: 'Mod', title: 'Moderates this community' },
+} as const;
+
+export type CommunityBadgeKey = keyof typeof COMMUNITY_BADGES;

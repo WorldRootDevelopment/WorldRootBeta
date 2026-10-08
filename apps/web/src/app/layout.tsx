@@ -20,6 +20,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  // Tints the browser or app window to match the page in each theme.
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fbfaf8' },
+    { media: '(prefers-color-scheme: dark)', color: '#17161a' },
+  ],
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {

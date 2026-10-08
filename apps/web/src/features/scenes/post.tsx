@@ -1,6 +1,9 @@
 import type { PostPage } from '@worldroot/core';
 import type { RichDoc } from '@worldroot/editor';
+import Link from 'next/link';
 import { CharacterAvatar } from '@/features/characters/character-card';
+import { Badges } from '@/features/identity/badges';
+import { ReportButton } from '@/features/moderation/report-client';
 import { PostBody, RemovePostButton } from './post-body';
 
 type Post = PostPage['posts'][number];
@@ -39,7 +42,22 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
             {narration ? 'Narration' : post.characterName}
           </p>
           <p className="text-xs text-ink-muted">
-            {post.authorHandle ? `Written by @${post.authorHandle}` : 'Written by a former member'}
+            {post.authorHandle ? (
+              <>
+                Written by{' '}
+                <Link href={`/u/${post.authorHandle}`} className="rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                  @{post.authorHandle}
+                </Link>
+              </>
+            ) : (
+              'Written by a former member'
+            )}
+            {post.authorBadges.length > 0 ? (
+              <>
+                {' '}
+                <Badges list={post.authorBadges} compact />
+              </>
+            ) : null}
             <span aria-hidden="true"> · </span>
             <time dateTime={post.createdAt.toISOString()}>{when(post.createdAt)}</time>
             {post.editedAt ? (
@@ -58,6 +76,7 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
         doc={post.mine && editable ? (post.contentJson as RichDoc) : null}
         canEdit={post.mine && editable}
         canRemove={post.mine || canModerate}
+        canReport={!post.mine}
       />
     </article>
   );
@@ -68,11 +87,13 @@ export function OocMessage({ post, canModerate }: { post: Post; canModerate: boo
   if (post.removedBy) return <li className="text-xs italic text-ink-muted">{removedLine(post, 'message')}</li>;
   return (
     <li className="text-sm">
-      <p className="flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
+      <div className="flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
         <span className="font-medium text-ink">{post.authorName ?? 'Former member'}</span>
+        <Badges list={post.authorBadges} compact />
         <time dateTime={post.createdAt.toISOString()}>{when(post.createdAt)}</time>
         {post.mine || canModerate ? <RemovePostButton postId={post.id} what="message" /> : null}
-      </p>
+        {post.mine ? null : <ReportButton targetType="scene_post" targetId={post.id} />}
+      </div>
       <p className="mt-0.5 whitespace-pre-line text-ink">{post.contentText}</p>
     </li>
   );

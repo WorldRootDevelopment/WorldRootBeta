@@ -31,6 +31,8 @@ const ACTIONS: Record<string, string> = {
   'scene.status': 'Changed a scene’s status',
   'post.remove': 'Removed a post',
   'message.remove': 'Removed a message',
+  'report.resolve': 'Resolved a report',
+  'report.dismiss': 'Dismissed a report',
 };
 
 /** A short readable summary of what an entry recorded. */

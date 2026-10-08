@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { cache } from 'react';
 import { CharacterAvatar } from '@/features/characters/character-card';
+import { ReportButton } from '@/features/moderation/report-client';
 import { Breadcrumbs, Prose, SectionHeading } from '@/features/shell/prose';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
@@ -80,7 +81,11 @@ export default async function CharacterPage({ params }: Props) {
           <Link href={`/characters/${character.id}/edit`} className={buttonClass('secondary')}>
             Edit
           </Link>
-        ) : null}
+        ) : (
+          <span className="inline-flex min-h-11 items-center px-2">
+            <ReportButton targetType="character" targetId={character.id} />
+          </span>
+        )}
       </header>
 
       {character.approvalStatus === 'pending' || character.approvalStatus === 'returned' ? (

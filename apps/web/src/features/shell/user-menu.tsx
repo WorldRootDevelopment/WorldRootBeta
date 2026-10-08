@@ -5,6 +5,7 @@ import { cn } from '@worldroot/ui';
 import { LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { Badges } from '@/features/identity/badges';
 import { authClient } from '@/lib/auth-client';
 import { NAV_ITEMS } from './nav-items';
 import { ThemeToggle } from './theme-toggle';
@@ -57,7 +58,10 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
         )}
       >
         <div className="px-3 py-2">
-          <p className="truncate text-sm font-medium text-ink">{profile.displayName}</p>
+          <p className="flex items-center gap-2 text-sm font-medium text-ink">
+            <span className="truncate">{profile.displayName}</span>
+            <Badges list={profile.badges} />
+          </p>
           <p className="truncate text-xs text-ink-muted">@{profile.handle}</p>
         </div>
 
@@ -71,6 +75,26 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
               </Link>
             </li>
           ))}
+        </ul>
+
+        <ul className="border-t border-line py-1.5">
+          <li>
+            <Link href={`/u/${profile.handle}`} className={itemClass}>
+              Your profile
+            </Link>
+          </li>
+          <li>
+            <Link href="/settings/profile" className={itemClass}>
+              Settings
+            </Link>
+          </li>
+          {profile.isStaff ? (
+            <li>
+              <Link href="/staff" className={itemClass}>
+                Staff portal
+              </Link>
+            </li>
+          ) : null}
         </ul>
 
         <ul className="border-t border-line py-1.5">
