@@ -179,6 +179,7 @@ export async function removeMessage(db: Db, actor: Actor, messageId: string): Pr
 
 export interface MessageRow {
   id: string;
+  authorUserId: string | null;
   body: string;
   authorName: string | null;
   authorHandle: string | null;
@@ -216,6 +217,7 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
       .reverse()
       .map(({ message, authorName, authorHandle }) => ({
         id: message.id,
+        authorUserId: message.authorUserId,
         body: message.removedAt ? '' : message.body,
         authorName,
         authorHandle,

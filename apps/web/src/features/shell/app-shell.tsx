@@ -6,6 +6,7 @@ import { ChangelogMenu } from '@/features/changelog/changelog-menu';
 import { CreateMenu } from './create-menu';
 import { NAV_ITEMS } from './nav-items';
 import { NavLink } from './nav-link';
+import { PresencePing } from './presence-ping';
 import { UserMenu } from './user-menu';
 
 const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
@@ -31,6 +32,7 @@ const unreadDot = (
 export function AppShell({ profile, inboxUnread, children }: AppShellProps) {
   return (
     <div className="min-h-dvh md:flex">
+      <PresencePing />
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-30 focus:rounded-lg focus:bg-surface-raised focus:px-4 focus:py-2">
         Skip to content
       </a>

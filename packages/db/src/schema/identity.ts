@@ -82,6 +82,8 @@ export const profiles = pgTable('profiles', {
   bio: text('bio'),
   // Only the confirmation is stored. No date of birth is collected.
   adultConfirmedAt: timestamptz('adult_confirmed_at').notNull(),
+  // When this person last had WorldRoot open. Drives the online list in community lounges.
+  lastSeenAt: timestamptz('last_seen_at'),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });

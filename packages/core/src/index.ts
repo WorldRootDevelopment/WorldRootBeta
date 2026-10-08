@@ -19,3 +19,4 @@ export * from './scenes/service';
 export * from './community/admin';
 export * from './community/access';
 export * from './messaging/service';
+export * from './community/presence';

@@ -16,6 +16,8 @@ export const worlds = pgTable(
     ownerCommunityId: uuid('owner_community_id').references(() => communities.id, { onDelete: 'cascade' }),
     sourceWorldId: uuid('source_world_id').references((): AnyPgColumn => worlds.id, { onDelete: 'set null' }),
     copiedAt: timestamptz('copied_at'),
+    // Set while a library world's owner is sharing it. Anyone holding this id may take their own copy.
+    shareCode: text('share_code').unique(),
     slug: text('slug').notNull(),
     name: text('name').notNull(),
     summary: text('summary'),

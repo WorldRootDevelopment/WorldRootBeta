@@ -1,23 +1,11 @@
 import 'server-only';
-import { getSpace, listMessages, SPACES, type SpaceKey } from '@worldroot/core';
+import { getSpace, listMemberPresence, listMessages, SPACES, type SpaceKey } from '@worldroot/core';
 import { loadCommunity } from '@/features/community/community-view';
 import { load } from '@/lib/load';
+import { ChatRoom } from './chat-room';
 import { MessageThread } from './message-thread';
 
-const COPY: Record<SpaceKey, { lead: string; empty: string; placeholder: string; readOnly: (member: boolean) => string }> = {
-  announcements: {
-    lead: 'News from the people who run this community.',
-    empty: 'No announcements yet.',
-    placeholder: 'Write an announcement…',
-    readOnly: () => 'Only community staff post here.',
-  },
-  lounge: {
-    lead: 'Out-of-character talk for the whole community. Roleplay happens in scenes.',
-    empty: 'Nobody has said anything yet.',
-    placeholder: 'Say something to the community…',
-    readOnly: (member) => (member ? 'You do not have permission to post in the Lounge.' : 'Join the community to take part.'),
-  },
-};
+const loungeNote = (member: boolean) => (member ? 'You do not have permission to post in the Lounge.' : 'Join the community to chat.');
 
 interface SpacePageProps {
   slug: string;
@@ -25,24 +13,48 @@ interface SpacePageProps {
   before?: string;
 }
 
-/** One of a community's two built-in spaces. Both are the same thread with different rules about who posts. */
+/**
+ * One of a community's two built-in spaces. Announcements is a quiet notice
+ * board. The Lounge is a live chat room with the member list beside it.
+ */
 export async function SpacePage({ slug, spaceKey, before }: SpacePageProps) {
   const { community, isMember, viewer, db } = await loadCommunity(slug);
   const { conversation } = await load(() => getSpace(db, viewer.actor, community.id, spaceKey));
-  const page = await load(() => listMessages(db, viewer.actor, conversation.id, { beforeId: before }));
-  const copy = COPY[spaceKey];
+  const href = `/c/${community.slug}/${spaceKey}`;
 
+  if (spaceKey === 'lounge') {
+    const [page, members] = await Promise.all([
+      load(() => listMessages(db, viewer.actor, conversation.id, { beforeId: before, limit: 100 })),
+      listMemberPresence(db, community.id),
+    ]);
+    return (
+      <>
+        <h2 className="sr-only">{SPACES.lounge.label}</h2>
+        <ChatRoom
+          page={page}
+          members={members}
+          href={href}
+          viewingEarlier={Boolean(before)}
+          placeholder={`Message the ${community.name} lounge`}
+          readOnlyNote={loungeNote(isMember)}
+          track={isMember}
+        />
+      </>
+    );
+  }
+
+  const page = await load(() => listMessages(db, viewer.actor, conversation.id, { beforeId: before }));
   return (
     <>
       <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">{SPACES[spaceKey].label}</h2>
-      <p className="mb-8 mt-2 text-ink-muted">{copy.lead}</p>
+      <p className="mb-8 mt-2 text-ink-muted">News from the people who run this community.</p>
       <MessageThread
         page={page}
-        href={`/c/${community.slug}/${spaceKey}`}
+        href={href}
         viewingEarlier={Boolean(before)}
-        emptyText={copy.empty}
-        placeholder={copy.placeholder}
-        readOnlyNote={copy.readOnly(isMember)}
+        emptyText="No announcements yet."
+        placeholder="Write an announcement…"
+        readOnlyNote="Only community staff post here."
         track={isMember}
       />
     </>

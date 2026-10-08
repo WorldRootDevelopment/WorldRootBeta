@@ -1,5 +1,6 @@
 import { locationInputSchema, worldInputSchema, type LocationInput, type WorldInput } from '@worldroot/contracts';
 import { locations, worlds, type Db } from '@worldroot/db';
+import { randomBytes } from 'node:crypto';
 import { and, asc, eq, max } from 'drizzle-orm';
 import { assertSlug, communityGrants } from '../community/service';
 import { recordAudit } from '../platform/audit';
@@ -18,12 +19,14 @@ export type CreateWorldInput = WorldInput & {
   slug?: string;
 };
 
-/** A slug no other world of this owner uses: the name's slug, numbered if taken. */
-async function freeSlug(db: Db, userId: string, name: string): Promise<string> {
+type WorldOwner = { userId: string } | { communityId: string };
+
+const ownedBy = (owner: WorldOwner) => ('userId' in owner ? eq(worlds.ownerUserId, owner.userId) : eq(worlds.ownerCommunityId, owner.communityId));
+
+/** A slug no other world of this owner uses: the given one, numbered if taken. */
+async function freeSlug(db: Db, owner: WorldOwner, name: string): Promise<string> {
   const base = slugify(name) || 'world';
-  const taken = new Set(
-    (await db.select({ slug: worlds.slug }).from(worlds).where(eq(worlds.ownerUserId, userId))).map((row) => row.slug),
-  );
+  const taken = new Set((await db.select({ slug: worlds.slug }).from(worlds).where(ownedBy(owner))).map((row) => row.slug));
   if (!taken.has(base)) return base;
   for (let n = 2; ; n += 1) if (!taken.has(`${base}-${n}`)) return `${base}-${n}`;
 }
@@ -41,7 +44,7 @@ export async function createWorld(db: Db, actor: Actor, input: CreateWorldInput)
   }
   const [world] = await db
     .insert(worlds)
-    .values({ ...values, slug: input.slug ?? (await freeSlug(db, actor.userId, values.name)), ownerUserId: actor.userId })
+    .values({ ...values, slug: input.slug ?? (await freeSlug(db, { userId: actor.userId }, values.name)), ownerUserId: actor.userId })
     .returning();
   return world!;
 }
@@ -167,71 +170,132 @@ export async function getCommunityWorld(db: Db, communityId: string, slug: strin
   return world;
 }
 
+/** World ids use letters and digits that are hard to misread: no I, L, O or U. */
+const SHARE_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
+const newShareCode = () => {
+  const letters = [...randomBytes(8)].map((byte) => SHARE_ALPHABET[byte % SHARE_ALPHABET.length]).join('');
+  return `${letters.slice(0, 4)}-${letters.slice(4)}`;
+};
+
+/** Accepts an id however it was typed or pasted: any case, with or without the hyphen or spaces. */
+const normaliseShareCode = (value: string) => {
+  const letters = value.toUpperCase().replace(/[^0-9A-Z]/g, '');
+  return letters.length === 8 ? `${letters.slice(0, 4)}-${letters.slice(4)}` : null;
+};
+
 /**
- * Gives a community its own copy of a library world, with its whole location tree.
- * The copy remembers its source and is otherwise independent: later edits on
- * either side never reach the other.
+ * Turns sharing of a library world on or off. While it is on, the world has an
+ * id that lets anyone holding it take their own copy. Turning it off retires
+ * the id; copies already made are not affected.
  */
-export async function copyWorldToCommunity(db: Db, actor: Actor, worldId: string, communityId: string): Promise<World> {
-  const source = await requireWorld(db, worldId);
-  if (!source.ownerUserId) throw new DomainError('invalid_input', 'Only a library world can be added to a community.');
-  authorizeOwner(actor, source.ownerUserId);
+export async function setWorldSharing(db: Db, actor: Actor, worldId: string, shared: boolean): Promise<World> {
+  const world = await getLibraryWorld(db, actor, worldId);
+  authorizeOwner(actor, world.ownerUserId!);
+  if (shared === Boolean(world.shareCode)) return world;
+  const [updated] = await db
+    .update(worlds)
+    .set({ shareCode: shared ? newShareCode() : null })
+    .where(eq(worlds.id, worldId))
+    .returning();
+  return updated!;
+}
+
+/** The library world a share id points at. An unknown or retired id tells the caller nothing more. */
+async function requireSharedWorld(db: Db, code: string): Promise<World> {
+  const clean = normaliseShareCode(code);
+  const [world] = clean ? await db.select().from(worlds).where(eq(worlds.shareCode, clean)) : [];
+  if (!world?.ownerUserId) {
+    const message = 'No world is shared under that ID. Check it with whoever gave it to you.';
+    throw new DomainError('not_found', message, { fields: { worldId: message } });
+  }
+  return world;
+}
+
+/** Copies a world and its whole location tree to a new owner. The copy remembers its source. Call inside a transaction. */
+async function cloneWorld(tx: Db, source: World, owner: WorldOwner): Promise<{ copy: World; locationCount: number }> {
+  const [copy] = await tx
+    .insert(worlds)
+    .values({
+      ...('userId' in owner ? { ownerUserId: owner.userId } : { ownerCommunityId: owner.communityId }),
+      sourceWorldId: source.id,
+      copiedAt: new Date(),
+      slug: await freeSlug(tx, owner, source.slug),
+      name: source.name,
+      summary: source.summary,
+      description: source.description,
+    })
+    .returning();
+
+  // Parents are inserted before children so each copy can point at its new parent.
+  const originals = await listLocations(tx, source.id);
+  const newIds = new Map<string, string>();
+  let pending = originals;
+  while (pending.length > 0) {
+    const ready = pending.filter((location) => !location.parentId || newIds.has(location.parentId));
+    if (ready.length === 0) break;
+    const inserted = await tx
+      .insert(locations)
+      .values(
+        ready.map((location) => ({
+          worldId: copy!.id,
+          parentId: location.parentId ? newIds.get(location.parentId)! : null,
+          name: location.name,
+          summary: location.summary,
+          description: location.description,
+          position: location.position,
+        })),
+      )
+      .returning({ id: locations.id });
+    ready.forEach((location, index) => newIds.set(location.id, inserted[index]!.id));
+    pending = pending.filter((location) => !newIds.has(location.id));
+  }
+  return { copy: copy!, locationCount: newIds.size };
+}
+
+/** Where a community's new world comes from: one of the actor's own library worlds, or a world someone shared by id. */
+export type WorldSource = { worldId: string } | { shareCode: string };
+
+/**
+ * Gives a community its own copy of a world, with its whole location tree.
+ * Only someone who holds "Add worlds" in that community may. The copy
+ * remembers its source and is otherwise independent: later edits on either
+ * side never reach the other.
+ */
+export async function copyWorldToCommunity(db: Db, actor: Actor, from: string | WorldSource, communityId: string): Promise<World> {
   await authorize(actor, 'world.add', { communityId }, communityGrants(db));
+  const source = typeof from === 'string' ? { worldId: from } : from;
+
+  let world: World;
+  if ('shareCode' in source) {
+    world = await requireSharedWorld(db, source.shareCode);
+  } else {
+    world = await requireWorld(db, source.worldId);
+    if (!world.ownerUserId) throw new DomainError('invalid_input', 'Only a library world can be added to a community.');
+    authorizeOwner(actor, world.ownerUserId);
+  }
 
   return db.transaction(async (tx) => {
-    const [taken] = await tx
-      .select({ id: worlds.id })
-      .from(worlds)
-      .where(and(eq(worlds.ownerCommunityId, communityId), eq(worlds.slug, source.slug)));
-    if (taken) throw new DomainError('conflict', 'This community already has a world at that address.');
-
-    const [copy] = await tx
-      .insert(worlds)
-      .values({
-        ownerCommunityId: communityId,
-        sourceWorldId: source.id,
-        copiedAt: new Date(),
-        slug: source.slug,
-        name: source.name,
-        summary: source.summary,
-        description: source.description,
-      })
-      .returning();
-
-    // Parents are inserted before children so each copy can point at its new parent.
-    const originals = await listLocations(tx, source.id);
-    const newIds = new Map<string, string>();
-    let pending = originals;
-    while (pending.length > 0) {
-      const ready = pending.filter((location) => !location.parentId || newIds.has(location.parentId));
-      if (ready.length === 0) break;
-      const inserted = await tx
-        .insert(locations)
-        .values(
-          ready.map((location) => ({
-            worldId: copy!.id,
-            parentId: location.parentId ? newIds.get(location.parentId)! : null,
-            name: location.name,
-            summary: location.summary,
-            description: location.description,
-            position: location.position,
-          })),
-        )
-        .returning({ id: locations.id });
-      ready.forEach((location, index) => newIds.set(location.id, inserted[index]!.id));
-      pending = pending.filter((location) => !newIds.has(location.id));
-    }
-
+    const { copy, locationCount } = await cloneWorld(tx, world, { communityId });
     await recordAudit(tx, {
       actor,
       action: 'world.add',
       targetType: 'world',
-      targetId: copy!.id,
+      targetId: copy.id,
       communityId,
-      after: { name: copy!.name, sourceWorldId: source.id, locations: newIds.size },
+      after: { name: copy.name, sourceWorldId: world.id, locations: locationCount, byWorldId: 'shareCode' in source },
     });
-    await emitEvent(tx, 'world.copied', { worldId: copy!.id, sourceWorldId: source.id, communityId });
-
-    return copy!;
+    await emitEvent(tx, 'world.copied', { worldId: copy.id, sourceWorldId: world.id, communityId });
+    return copy;
   });
+}
+
+/** Takes a copy of a shared world into the actor's own library, to keep, change or add to a community. */
+export async function importSharedWorld(db: Db, actor: Actor, shareCode: string): Promise<World> {
+  const world = await requireSharedWorld(db, shareCode);
+  if (world.ownerUserId === actor.userId) {
+    const message = 'That is your own world. It is already in your library.';
+    throw new DomainError('invalid_input', message, { fields: { worldId: message } });
+  }
+  return db.transaction(async (tx) => (await cloneWorld(tx, world, { userId: actor.userId })).copy);
 }

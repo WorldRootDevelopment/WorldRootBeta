@@ -14,6 +14,27 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-world-ids',
+    date: '2026-10-08',
+    title: 'Share a world by ID',
+    items: [
+      'Create a world ID from any world in your library and give it to other writers.',
+      'A community admin can add a shared world to their community by entering its ID.',
+      'Enter an ID on your Library page to take your own copy of a shared world.',
+      'Stop sharing at any time. Copies already made are not affected.',
+    ],
+  },
+  {
+    id: '2026-10-07-lounge-chat',
+    date: '2026-10-07',
+    title: 'The Lounge is now a chat room',
+    items: [
+      'Each community lounge is a live chat room that follows the conversation as it moves.',
+      'A member list beside the chat shows who is online right now.',
+      'Messages from the same person are grouped, with a divider between days.',
+    ],
+  },
+  {
     id: '2026-10-07-messaging',
     date: '2026-10-07',
     title: 'Messages, Announcements and the Lounge',
