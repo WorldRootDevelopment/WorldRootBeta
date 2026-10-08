@@ -21,12 +21,15 @@ export const settingsSections = (slug: string): SettingsSection[] => [
   { href: `/c/${slug}/settings/audit`, label: 'Audit log', needs: ['auditlog.view'] },
 ];
 
-/** The community and the viewer's standing in it, for the settings pages. 404s for anyone with no admin permission. */
+/**
+ * The community and the viewer's standing in it, for the settings pages. 404s for anyone with no admin
+ * permission. The owner always gets in: an archived community grants no permissions, and they must still reach it.
+ */
 export const loadAdmin = cache(async (slug: string) => {
   const loaded = await loadCommunity(slug);
   const admin = await getAdminView(loaded.db, loaded.viewer.actor, loaded.community.id);
   const holds = (keys: PermissionKey[]) => keys.some((key) => admin.permissions.includes(key));
-  if (!holds(ADMIN_PERMISSIONS)) notFound();
+  if (!holds(ADMIN_PERMISSIONS) && !admin.isOwner) notFound();
   return { ...loaded, admin, holds };
 });
 

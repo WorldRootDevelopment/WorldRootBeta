@@ -27,6 +27,8 @@ export async function isBanned(db: Db, userId: string, communityId: string): Pro
 export async function addMember(tx: Db, communityId: string, userId: string): Promise<boolean> {
   if (await isBanned(tx, userId, communityId)) throw new DomainError('forbidden', 'You cannot join this community.');
   if (await isMember(tx, userId, communityId)) return false;
+  const [community] = await tx.select({ archivedAt: communities.archivedAt }).from(communities).where(eq(communities.id, communityId));
+  if (community?.archivedAt) throw new DomainError('conflict', 'This community is archived and is not taking new members.');
 
   await tx.insert(communityMembers).values({ communityId, userId });
   const defaults = await tx

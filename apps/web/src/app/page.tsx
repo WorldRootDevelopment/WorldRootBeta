@@ -1,6 +1,5 @@
 import { buttonClass, Wordmark } from '@worldroot/ui';
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { getViewer } from '@/lib/session';
 
 const PILLARS = [
@@ -10,15 +9,20 @@ const PILLARS = [
   { title: 'Write together', body: 'Scenes made for long-form prose, kept as living history.' },
 ];
 
+/**
+ * The landing page. Shown to everyone, signed in or not, so it always has one
+ * address to share. Someone already signed in is offered their Home instead of
+ * the sign-in buttons.
+ */
 export default async function LandingPage() {
-  if (await getViewer()) redirect('/home');
+  const viewer = await getViewer();
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 md:px-8">
       <header className="flex h-16 items-center justify-between">
         <Wordmark />
-        <Link href="/sign-in" className={buttonClass('ghost')}>
-          Sign in
+        <Link href={viewer ? '/home' : '/sign-in'} className={buttonClass('ghost')}>
+          {viewer ? 'Go to Home' : 'Sign in'}
         </Link>
       </header>
 
@@ -31,12 +35,20 @@ export default async function LandingPage() {
           scenes you write together, in one place built for writing.
         </p>
         <div className="mt-10 flex flex-wrap gap-3">
-          <Link href="/sign-up" className={buttonClass('primary', 'lg')}>
-            Create an account
-          </Link>
-          <Link href="/sign-in" className={buttonClass('secondary', 'lg')}>
-            Sign in
-          </Link>
+          {viewer ? (
+            <Link href="/home" className={buttonClass('primary', 'lg')}>
+              Go to your Home
+            </Link>
+          ) : (
+            <>
+              <Link href="/sign-up" className={buttonClass('primary', 'lg')}>
+                Create an account
+              </Link>
+              <Link href="/sign-in" className={buttonClass('secondary', 'lg')}>
+                Sign in
+              </Link>
+            </>
+          )}
         </div>
 
         <ul className="mt-20 grid gap-8 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -47,6 +59,20 @@ export default async function LandingPage() {
             </li>
           ))}
         </ul>
+
+        <Link
+          href="/alternatives"
+          className="group mt-12 block rounded-2xl border border-line bg-surface-raised p-6 transition-colors hover:border-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          <h2 className="font-serif text-xl font-semibold text-ink">Alternatives to boycotted franchises</h2>
+          <p className="mt-2 max-w-2xl leading-relaxed text-ink-muted">
+            Love a kind of story but stepped away from the franchise behind it? Start with Varrowmere, an original school of magic that is
+            free for anyone to use.
+          </p>
+          <p className="mt-3 font-medium text-accent-text group-hover:underline">
+            See the alternatives <span aria-hidden="true">→</span>
+          </p>
+        </Link>
       </main>
     </div>
   );

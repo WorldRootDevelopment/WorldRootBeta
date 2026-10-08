@@ -8,6 +8,8 @@ export const metadata: Metadata = { title: 'Audit log' };
 const ACTIONS: Record<string, string> = {
   'community.create': 'Created the community',
   'community.update': 'Changed community settings',
+  'community.archive': 'Archived the community',
+  'community.restore': 'Restored the community',
   'role.create': 'Created a role',
   'role.update': 'Changed a role',
   'role.delete': 'Deleted a role',

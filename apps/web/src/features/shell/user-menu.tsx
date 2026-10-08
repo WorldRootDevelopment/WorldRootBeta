@@ -73,6 +73,19 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
           ))}
         </ul>
 
+        <ul className="border-t border-line py-1.5">
+          <li>
+            <Link href="/" className={itemClass}>
+              About WorldRoot
+            </Link>
+          </li>
+          <li>
+            <Link href="/alternatives" className={itemClass}>
+              Alternative universes
+            </Link>
+          </li>
+        </ul>
+
         <div className="border-t border-line px-1.5 py-2.5">
           <ThemeToggle />
         </div>

@@ -284,6 +284,10 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
   const values = parseInput(postInputSchema, input);
   const scene = await requireVisibleScene(db, actor, sceneId);
   if (!(await isParticipant(db, actor.userId, sceneId))) throw new DomainError('forbidden', 'Join the scene before posting.');
+  if (scene.communityId) {
+    const [home] = await db.select({ archivedAt: communities.archivedAt }).from(communities).where(eq(communities.id, scene.communityId));
+    if (home?.archivedAt) throw new DomainError('conflict', 'This community is archived, so its scenes are closed.');
+  }
 
   if (values.kind === 'ooc') {
     if (scene.status === 'archived') throw new DomainError('conflict', 'This scene is archived.');

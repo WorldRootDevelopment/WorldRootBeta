@@ -18,10 +18,10 @@ No database install is needed for local development. With `DATABASE_URL` unset, 
 uses an embedded PostgreSQL (PGlite) stored in `.data/pglite` and migrates it on start.
 Delete `.data/` to start from an empty database.
 
-The embedded database also loads a demo community on start: **USS Meridian**, an original crew in the
-Star Trek setting, at http://localhost:3000/c/meridian. Any account can browse and join it. To see it as
-its owner, sign in as `demo@worldroot.test` with the password `engage-warp-nine`. Set `WORLDROOT_DEMO=off`
-to skip it. The demo is for local use only.
+The embedded database also loads a demo community on start: **Demo Town**, a small ordinary town with a single Narrator character, at
+http://localhost:3000/c/demo-town. Any account can browse and join it. To see it as its owner, sign in as
+`host@worldroot.test` with the password `welcome-to-demo-town`. Set `WORLDROOT_DEMO=off` to skip it.
+The demo account has a published password, so the demo must not run on a public deployment.
 
 To use a real PostgreSQL server, copy `.env.example` to `apps/web/.env.local`, set
 `DATABASE_URL`, then run `pnpm db:migrate`.

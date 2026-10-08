@@ -14,6 +14,38 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-varrowmere-archive',
+    date: '2026-10-08',
+    title: 'Varrowmere, and archiving communities',
+    items: [
+      'A new page, Alternatives to boycotted franchises, linked from the landing page and your account menu.',
+      'Its first universe is Varrowmere: an original school of magic, free for anyone to use. The Wizarding School template is now built on it.',
+      'Community owners can archive a community to freeze it without losing anything, and restore it later.',
+      'Owners can also delete a community for good, after typing its name to confirm.',
+      'The landing page can now be opened while signed in.',
+    ],
+  },
+  {
+    id: '2026-10-08-templates',
+    date: '2026-10-08',
+    title: 'World templates',
+    items: [
+      'Start a world from a template instead of a blank page. Find them under Library, then World templates.',
+      'Seven to begin with: Basic Town, Dungeons & Dragons, Wizarding School: Varrowmere, Star Wars, Jurassic Park, DC Comics and Marvel Comics.',
+      'Each comes with its places already laid out and a list of character fields a community might want.',
+      'The copy is yours: rename it, change anything, share it by ID or add it to a community.',
+    ],
+  },
+  {
+    id: '2026-10-08-demo-town',
+    date: '2026-10-08',
+    title: 'Demo Town',
+    items: [
+      'The demo community is now Demo Town: a small, ordinary town with a square, a main street, a station and a park.',
+      'One Narrator character and two scenes to read or join. No setting to learn first.',
+    ],
+  },
+  {
     id: '2026-10-08-world-ids',
     date: '2026-10-08',
     title: 'Share a world by ID',
@@ -111,8 +143,8 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-demo',
     date: '2026-10-07',
-    title: 'USS Meridian demo community',
-    items: ['A sample community with two worlds, a crew of seven and two scenes. Find it under Communities.'],
+    title: 'Demo community',
+    items: ['A sample community with a world, characters and scenes to explore. Find it under Communities.'],
   },
   {
     id: '2026-10-07-foundations',

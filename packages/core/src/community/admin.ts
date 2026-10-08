@@ -425,6 +425,65 @@ export async function listAuditLog(db: Db, actor: Actor, communityId: string, li
     .limit(Math.min(limit, 200));
 }
 
+async function requireOwner(db: Db, actor: Actor, communityId: string): Promise<Community> {
+  const [community] = await db.select().from(communities).where(eq(communities.id, communityId));
+  if (!community) throw new DomainError('not_found', 'That community does not exist.');
+  // Ownership is read from the role itself, so it still holds while an archived community grants no permissions.
+  if (!(await standingOf(db, actor, communityId)).isOwner) throw forbidden('Only the community’s owner can do that.');
+  return community;
+}
+
+/**
+ * Archives a community, or restores it. An archived community is frozen:
+ * nobody can post, join, start scenes or change anything, and only its
+ * members can still see it. Nothing is deleted, and restoring undoes it fully.
+ */
+export async function setCommunityArchived(db: Db, actor: Actor, communityId: string, archived: boolean): Promise<Community> {
+  const community = await requireOwner(db, actor, communityId);
+  if (archived === Boolean(community.archivedAt)) return community;
+  return db.transaction(async (tx) => {
+    const [updated] = await tx
+      .update(communities)
+      .set({ archivedAt: archived ? new Date() : null })
+      .where(eq(communities.id, communityId))
+      .returning();
+    await recordAudit(tx, {
+      actor,
+      action: archived ? 'community.archive' : 'community.restore',
+      targetType: 'community',
+      targetId: communityId,
+      communityId,
+    });
+    return updated!;
+  });
+}
+
+/**
+ * Deletes a community for good, with its worlds, locations, characters,
+ * scenes, posts, spaces, roles, invites and bans. The caller must repeat the
+ * community's name, so it cannot happen by a stray click. Library originals
+ * that were copied into it are not affected.
+ */
+export async function deleteCommunity(db: Db, actor: Actor, communityId: string, confirmName: string): Promise<void> {
+  const community = await requireOwner(db, actor, communityId);
+  if (confirmName.trim().toLowerCase() !== community.name.trim().toLowerCase()) {
+    const message = 'Type the community’s name exactly to confirm.';
+    throw new DomainError('invalid_input', message, { fields: { confirmName: message } });
+  }
+  await db.transaction(async (tx) => {
+    // The audit log has no foreign key to communities, so this record outlives what it describes.
+    await recordAudit(tx, {
+      actor,
+      action: 'community.delete',
+      targetType: 'community',
+      targetId: communityId,
+      communityId,
+      before: { slug: community.slug, name: community.name },
+    });
+    await tx.delete(communities).where(eq(communities.id, communityId));
+  });
+}
+
 export interface AdminView {
   /** The actor's rank. Roles and members at or above it are out of their reach. */
   top: number;

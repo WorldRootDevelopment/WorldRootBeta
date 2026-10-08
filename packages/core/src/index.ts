@@ -14,9 +14,12 @@ export * from './characters/service';
 export * from './community/service';
 export * from './worlds/service';
 
-export { DEMO_ACCOUNT, seedStarTrekDemo } from './demo/star-trek';
+export { DEMO_ACCOUNT, DEMO_COMMUNITY_SLUG, seedDemo } from './demo/demo-town';
 export * from './scenes/service';
 export * from './community/admin';
 export * from './community/access';
 export * from './messaging/service';
 export * from './community/presence';
+
+export * from './templates/catalog';
+export * from './templates/service';

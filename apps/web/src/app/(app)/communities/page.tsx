@@ -22,6 +22,7 @@ function CommunityCard({ community }: { community: Community }) {
         {community.name.charAt(0)}
       </span>
       <h3 className="mt-3 font-serif text-lg font-semibold text-ink">{community.name}</h3>
+      {community.archivedAt ? <p className="mt-1 text-xs font-medium uppercase tracking-wide text-ink-muted">Archived</p> : null}
       {community.tagline ? <p className="mt-1 text-sm leading-relaxed text-ink-muted">{community.tagline}</p> : null}
     </Link>
   );

@@ -1,9 +1,9 @@
 import { connect } from '@worldroot/db';
-import { DEMO_ACCOUNT, seedStarTrekDemo } from './star-trek';
+import { DEMO_ACCOUNT, seedDemo } from './demo-town';
 
 const connection = connect();
 await connection.migrate();
-const result = await seedStarTrekDemo(connection.db);
+const result = await seedDemo(connection.db);
 await connection.close();
 
 console.log(result.created ? 'Demo community created.' : 'Demo community already exists. Nothing changed.');

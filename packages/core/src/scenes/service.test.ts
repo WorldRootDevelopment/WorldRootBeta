@@ -5,7 +5,7 @@ import { and, eq, isNotNull } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { addCharacterToCommunity, createCharacter, listCommunityCharacters } from '../characters/service';
 import { getCommunityView, joinCommunity, listCharacterFields } from '../community/service';
-import { DEMO_ACCOUNT, seedStarTrekDemo } from '../demo/star-trek';
+import { DEMO_ACCOUNT, DEMO_COMMUNITY_SLUG, seedDemo } from '../demo/demo-town';
 import { createProfile } from '../identity/profile';
 import type { Actor } from '../platform/authorize';
 import {
@@ -40,7 +40,7 @@ const say = (text: string) => docFromText(text);
 
 beforeAll(async () => {
   connection = await createTestDb();
-  await seedStarTrekDemo(connection.db);
+  await seedDemo(connection.db);
   thea = await addUser('thea');
   marcus = await addUser('marcus');
   outsider = await addUser('outsider');
@@ -203,24 +203,24 @@ describe('editing and removing posts', () => {
     const { db } = connection;
     const [owner] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
     const gm: Actor = { userId: owner!.id, platformRole: 'user' };
-    const { community } = await getCommunityView(db, gm, 'meridian');
-    const [lounge] = await db
+    const { community } = await getCommunityView(db, gm, DEMO_COMMUNITY_SLUG);
+    const [hall] = await db
       .select({ id: locations.id })
       .from(locations)
       .innerJoin(worlds, eq(worlds.id, locations.worldId))
-      .where(and(eq(locations.name, 'Holodecks'), isNotNull(worlds.ownerCommunityId)));
+      .where(and(eq(locations.name, 'Town Hall'), isNotNull(worlds.ownerCommunityId)));
 
     const member = await addUser('ensign');
     await joinCommunity(db, member, community.id);
     const fields = await listCharacterFields(db, community.id);
-    const original = await createCharacter(db, member, { name: 'Ensign Trouble' });
+    const original = await createCharacter(db, member, { name: 'Local Trouble' });
     const copy = await addCharacterToCommunity(db, member, original.id, community.id, {
-      customValues: Object.fromEntries(fields.map((field) => [field.id, field.options?.[1] ?? 'Holodeck Technician'])),
+      customValues: Object.fromEntries(fields.map((field) => [field.id, field.options?.[1] ?? 'Odd-job hand'])),
     });
     const scene = await createScene(db, member, {
-      title: 'Program Nine',
+      title: 'Out of Order',
       rating: 'everyone',
-      locationId: lounge!.id,
+      locationId: hall!.id,
       characterIds: [copy.id],
       openingPost: say('Something the rules do not allow.'),
     });
@@ -246,29 +246,29 @@ describe('a community scene', () => {
     const { db } = connection;
     const [owner] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
     const gm: Actor = { userId: owner!.id, platformRole: 'user' };
-    const { community } = await getCommunityView(db, gm, 'meridian');
-    const [bridge] = await db
+    const { community } = await getCommunityView(db, gm, DEMO_COMMUNITY_SLUG);
+    const [square] = await db
       .select({ id: locations.id })
       .from(locations)
       .innerJoin(worlds, eq(worlds.id, locations.worldId))
-      .where(and(eq(locations.name, 'Main Bridge'), isNotNull(worlds.ownerCommunityId)));
+      .where(and(eq(locations.name, 'Town Square'), isNotNull(worlds.ownerCommunityId)));
     const crew = await listCommunityCharacters(db, community.id);
-    const voss = crew.find((c) => c.name === 'Ilara Voss')!;
+    const narrator = crew.find((c) => c.name === 'Narrator')!;
 
     const scene = await createScene(db, gm, {
-      title: 'Into the Expanse',
-      description: 'The Meridian crosses the line on every chart.',
+      title: 'Market Day',
+      description: 'The square fills up with stalls.',
       rating: 'teen',
-      locationId: bridge!.id,
-      characterIds: [voss.id],
-      openingPost: say('"Take us in, Ensign. Slowly."'),
+      locationId: square!.id,
+      characterIds: [narrator.id],
+      openingPost: say('The first stall went up before the clock struck seven.'),
     });
-    expect(scene).toMatchObject({ communityId: community.id, locationId: bridge!.id });
-    expect((await listLocationScenes(db, bridge!.id)).map((s) => s.scene.title)).toContain('Into the Expanse');
+    expect(scene).toMatchObject({ communityId: community.id, locationId: square!.id });
+    expect((await listLocationScenes(db, square!.id)).map((s) => s.scene.title)).toContain('Market Day');
 
     // A library original cannot be used in a community scene, and a non-member cannot start one.
-    const loose = await createCharacter(db, thea, { name: 'Unassigned Officer' });
-    const draft = { title: 'Mutiny', rating: 'teen' as const, locationId: bridge!.id, openingPost: say('Hm.') };
+    const loose = await createCharacter(db, thea, { name: 'Passing Stranger' });
+    const draft = { title: 'Rival Market', rating: 'teen' as const, locationId: square!.id, openingPost: say('Hm.') };
     await expect(createScene(db, thea, { ...draft, characterIds: [loose.id] })).rejects.toMatchObject({
       code: 'forbidden',
       permission: 'scene.create',
@@ -276,7 +276,7 @@ describe('a community scene', () => {
 
     // Anyone who can see the community can read. Joining needs membership and an approved community character.
     const reading = await getSceneView(db, thea, scene.id);
-    expect(reading.place).toMatchObject({ community: { slug: 'meridian' }, location: { name: 'Main Bridge' }, world: { name: 'USS Meridian' } });
+    expect(reading.place).toMatchObject({ community: { slug: DEMO_COMMUNITY_SLUG }, location: { name: 'Town Square' }, world: { name: 'Demo Town' } });
     expect(reading.viewer).toMatchObject({ isParticipant: false, canPost: false, canBring: [] });
     await expect(joinScene(db, thea, scene.id, [loose.id])).rejects.toMatchObject({ code: 'forbidden', permission: 'scene.join' });
 
@@ -284,12 +284,12 @@ describe('a community scene', () => {
     await expect(joinScene(db, thea, scene.id, [loose.id])).rejects.toMatchObject({ code: 'invalid_input' });
     const fields = await listCharacterFields(db, community.id);
     const aboard = await addCharacterToCommunity(db, thea, loose.id, community.id, {
-      customValues: Object.fromEntries(fields.map((field) => [field.id, field.options?.[1] ?? 'Relief Helm'])),
+      customValues: Object.fromEntries(fields.map((field) => [field.id, field.options?.[1] ?? 'Newcomer'])),
     });
     await joinScene(db, thea, scene.id, [aboard.id]);
-    await expect(createPost(db, thea, scene.id, { kind: 'ic', characterId: aboard.id, content: say('"Aye, Captain."') })).resolves.toMatchObject({
+    await expect(createPost(db, thea, scene.id, { kind: 'ic', characterId: aboard.id, content: say('"Is this where the market is?"') })).resolves.toMatchObject({
       seq: 2,
-      characterName: 'Unassigned Officer',
+      characterName: 'Passing Stranger',
     });
 
     // A member cannot close someone else's scene. The creator can, and it is recorded.

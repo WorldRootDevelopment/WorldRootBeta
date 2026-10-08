@@ -20,8 +20,9 @@ const tabClass =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 export default async function CommunityLayout({ params, children }: Props) {
-  const { community, isMember, memberCount, permissions } = await loadCommunity((await params).community);
-  const canAdminister = ADMIN_PERMISSIONS.some((key) => permissions.includes(key));
+  const { community, isMember, isOwner, memberCount, permissions } = await loadCommunity((await params).community);
+  const canAdminister = isOwner || ADMIN_PERMISSIONS.some((key) => permissions.includes(key));
+  const archived = Boolean(community.archivedAt);
   const base = `/c/${community.slug}`;
 
   return (
@@ -36,7 +37,7 @@ export default async function CommunityLayout({ params, children }: Props) {
             <span className="inline-flex min-h-8 items-center rounded-full bg-surface-raised px-3 text-sm font-medium text-accent-text">
               You are a member
             </span>
-          ) : (
+          ) : archived ? null : (
             <JoinButton communityId={community.id} />
           )}
           <span className="text-sm text-ink-muted">
@@ -44,6 +45,13 @@ export default async function CommunityLayout({ params, children }: Props) {
           </span>
         </div>
       </header>
+
+      {archived ? (
+        <p role="status" className="mt-4 rounded-xl border border-line-strong bg-surface-sunken px-4 py-3 text-sm text-ink">
+          <span className="font-medium">This community is archived.</span> Everything in it can still be read, but nothing can be posted,
+          joined or changed.{isOwner ? ' You can restore or delete it under Settings.' : ''}
+        </p>
+      ) : null}
 
       <nav aria-label={community.name} className="mb-8 mt-2 flex gap-6 overflow-x-auto border-b border-line">
         <NavLink href={base} exact className={tabClass} activeClassName="border-accent text-ink">

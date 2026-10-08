@@ -32,6 +32,9 @@ export default async function LibraryPage() {
         <Link href="/library/worlds/new" className={buttonClass('secondary')}>
           New world
         </Link>
+        <Link href="/library/worlds/templates" className={buttonClass('secondary')}>
+          World templates
+        </Link>
       </div>
       <div className="mb-10">
         <ImportWorldForm />

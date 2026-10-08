@@ -1,5 +1,5 @@
 import 'server-only';
-import { connect, createAuth, seedStarTrekDemo, type Auth, type DbConnection } from '@worldroot/core';
+import { connect, createAuth, seedDemo, type Auth, type DbConnection } from '@worldroot/core';
 
 // Held on globalThis so development hot reloads reuse one connection.
 const globals = globalThis as { __worldrootDb?: Promise<DbConnection>; __worldrootAuth?: Promise<Auth> };
@@ -20,7 +20,7 @@ export function database(): Promise<DbConnection> {
     const embedded = !/^postgres(ql)?:\/\//.test(process.env.DATABASE_URL ?? '');
     if (embedded) {
       await connection.migrate();
-      if (process.env.WORLDROOT_DEMO !== 'off') await seedStarTrekDemo(connection.db);
+      if (process.env.WORLDROOT_DEMO !== 'off') await seedDemo(connection.db);
     }
     return connection;
   })();

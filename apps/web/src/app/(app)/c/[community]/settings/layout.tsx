@@ -11,8 +11,9 @@ interface Props {
 }
 
 export default async function SettingsLayout({ params, children }: Props) {
-  const { community, holds } = await loadAdmin((await params).community);
-  const sections = settingsSections(community.slug).filter((section) => holds(section.needs));
+  const { community, admin, holds } = await loadAdmin((await params).community);
+  // General is where the owner archives, restores and deletes, so the owner always has it.
+  const sections = settingsSections(community.slug).filter((section) => holds(section.needs) || (section.label === 'General' && admin.isOwner));
 
   return (
     <div className="grid gap-8 lg:grid-cols-[12rem_minmax(0,1fr)]">

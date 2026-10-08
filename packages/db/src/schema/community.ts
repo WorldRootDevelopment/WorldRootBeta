@@ -15,6 +15,8 @@ export const communities = pgTable('communities', {
   // Listed communities appear in Discover and can be joined without an invite.
   listed: boolean('listed').notNull().default(false),
   requireCharacterApproval: boolean('require_character_approval').notNull().default(false),
+  // Set while the community is archived: kept and readable by its members, but frozen and hidden from everyone else.
+  archivedAt: timestamptz('archived_at'),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });

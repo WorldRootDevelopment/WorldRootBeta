@@ -35,6 +35,8 @@ export const communityGrants = (db: Db): GrantSource => ({
       .select({ permissions: roles.permissions, isOwner: roles.isOwner, scopeWorldId: roleAssignments.scopeWorldId })
       .from(roleAssignments)
       .innerJoin(roles, eq(roles.id, roleAssignments.roleId))
+      // An archived community grants nothing, to anyone, so every permission-gated action stops at once.
+      .innerJoin(communities, and(eq(communities.id, roleAssignments.communityId), isNull(communities.archivedAt)))
       .where(and(eq(roleAssignments.userId, userId), eq(roleAssignments.communityId, communityId)));
     return rows.map((row) => ({ ...row, permissions: row.permissions.filter(isPermissionKey) }));
   },
@@ -173,7 +175,7 @@ export async function joinCommunity(db: Db, actor: Actor, communityId: string): 
   await db.transaction(async (tx) => {
     const [community] = await tx.select().from(communities).where(eq(communities.id, communityId));
     if (!community) throw new DomainError('not_found', 'That community does not exist.');
-    if (!community.listed) throw new DomainError('forbidden', 'This community is joined by invitation.');
+    if (!community.listed || community.archivedAt) throw new DomainError('forbidden', 'This community is joined by invitation.');
     await addMember(tx, communityId, actor.userId);
   });
 }
@@ -181,6 +183,8 @@ export async function joinCommunity(db: Db, actor: Actor, communityId: string): 
 export interface CommunityView {
   community: Community;
   isMember: boolean;
+  /** Holds the built-in Owner role. Owners keep control of a community even while it is archived. */
+  isOwner: boolean;
   /** The viewer's effective community-wide permissions. */
   permissions: PermissionKey[];
   memberCount: number;
@@ -190,10 +194,17 @@ export interface CommunityView {
 export async function getCommunityView(db: Db, actor: Actor, slug: string): Promise<CommunityView> {
   const [community] = await db.select().from(communities).where(eq(communities.slug, slug));
   const member = community ? await isMember(db, actor.userId, community.id) : false;
-  if (!community || !(member || community.listed || actor.platformRole === 'staff')) {
+  // An archived community is seen only by the people who were in it.
+  const open = community ? community.listed && !community.archivedAt : false;
+  if (!community || !(member || open || actor.platformRole === 'staff')) {
     throw new DomainError('not_found', 'That community does not exist.');
   }
   const grants = await communityGrants(db).getGrants(actor.userId, community.id);
+  const [ownership] = await db
+    .select({ id: roles.id })
+    .from(roleAssignments)
+    .innerJoin(roles, eq(roles.id, roleAssignments.roleId))
+    .where(and(eq(roleAssignments.userId, actor.userId), eq(roleAssignments.communityId, community.id), eq(roles.isOwner, true)));
   const [members] = await db
     .select({ value: count() })
     .from(communityMembers)
@@ -201,6 +212,7 @@ export async function getCommunityView(db: Db, actor: Actor, slug: string): Prom
   return {
     community,
     isMember: member,
+    isOwner: Boolean(ownership) || actor.platformRole === 'staff',
     permissions: [...resolvePermissions(grants)],
     memberCount: members?.value ?? 0,
   };
@@ -217,7 +229,11 @@ export async function listMyCommunities(db: Db, userId: string): Promise<Communi
 }
 
 export async function listListedCommunities(db: Db): Promise<Community[]> {
-  return db.select().from(communities).where(eq(communities.listed, true)).orderBy(asc(communities.name));
+  return db
+    .select()
+    .from(communities)
+    .where(and(eq(communities.listed, true), isNull(communities.archivedAt)))
+    .orderBy(asc(communities.name));
 }
 
 export async function listRoles(db: Db, communityId: string): Promise<Role[]> {
