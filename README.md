@@ -66,3 +66,7 @@ Three rules are enforced by lint: apps never import `db`; `contracts` and `ui` n
   and outbox event in the same transaction as the change.
 - Permission keys live in `packages/contracts/src/permissions.ts`. Granting is data; the keys are code.
 - Components use semantic colour tokens (`bg-surface`, `text-ink`, `bg-accent`) and never a raw colour.
+
+## Deploying
+
+See [docs/deploy/railway.md](docs/deploy/railway.md) for putting WorldRoot on Railway, with Discord and Google sign-in. The `Dockerfile` builds the same image for any other host.

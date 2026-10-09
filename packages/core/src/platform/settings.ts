@@ -1,11 +1,16 @@
 import { isSeasonMode, seasonForDate, type SeasonKey, type SeasonMode } from '@worldroot/contracts';
 import { platformSettings, type Db } from '@worldroot/db';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { recordAudit } from './audit';
 import type { Actor } from './authorize';
 import { DomainError } from './errors';
 
 const SEASON = 'season';
+
+/** Asks the database the simplest possible question. Throws if it cannot be reached. For the host's health check. */
+export async function pingDatabase(db: Db): Promise<void> {
+  await db.execute(sql`select 1`);
+}
 
 /**
  * What staff have chosen for the site look: a particular look held on, or

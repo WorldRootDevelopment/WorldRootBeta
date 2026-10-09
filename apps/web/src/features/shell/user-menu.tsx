@@ -97,6 +97,11 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
 
         <ul className="border-t border-line py-1.5">
           <li>
+            <Link href="/install" className={itemClass}>
+              Get The App
+            </Link>
+          </li>
+          <li>
             <Link href="/" className={itemClass}>
               About WorldRoot
             </Link>

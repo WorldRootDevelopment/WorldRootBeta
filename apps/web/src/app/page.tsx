@@ -21,9 +21,14 @@ export default async function LandingPage() {
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 md:px-8">
       <header className="flex h-16 items-center justify-between">
         <Wordmark />
-        <Link href={viewer ? '/home' : '/sign-in'} className={buttonClass('ghost')}>
-          {viewer ? 'Go to Home' : 'Sign in'}
-        </Link>
+        <div className="flex items-center gap-1">
+          <Link href="/install" className={buttonClass('ghost')}>
+            Get The App
+          </Link>
+          <Link href={viewer ? '/home' : '/sign-in'} className={buttonClass('ghost')}>
+            {viewer ? 'Go to Home' : 'Sign in'}
+          </Link>
+        </div>
       </header>
 
       <main className="flex flex-1 flex-col justify-center py-16">

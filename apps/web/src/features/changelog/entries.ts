@@ -14,6 +14,21 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-get-the-app',
+    date: '2026-10-09',
+    title: 'Get The App',
+    items: ['A new Get The App page installs WorldRoot as an app with its own window and icon, with one press in Chrome or Edge, and steps for iPhone, iPad and Android. It is linked from the front page and from your account menu.'],
+  },
+  {
+    id: '2026-10-09-connected-accounts',
+    date: '2026-10-09',
+    title: 'Connect Discord Or Google',
+    items: [
+      'Where it is switched on, you can sign in with Discord or Google.',
+      'Settings, Account has a Connected Accounts section to connect or disconnect them on an account you already have.',
+    ],
+  },
+  {
     id: '2026-10-09-looks-by-calendar',
     date: '2026-10-09',
     title: 'Banners That Follow The Calendar',

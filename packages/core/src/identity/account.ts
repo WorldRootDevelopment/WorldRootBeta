@@ -1,5 +1,5 @@
 import { handleSchema, type Profile } from '@worldroot/contracts';
-import { communityMembers, handleHistory, profiles, friendships, userBlocks, users, type Db } from '@worldroot/db';
+import { accounts, communityMembers, handleHistory, profiles, friendships, userBlocks, users, type Db } from '@worldroot/db';
 import { and, eq, inArray, or } from 'drizzle-orm';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -146,4 +146,17 @@ export async function shareCommunity(db: Db, a: string, b: string): Promise<bool
     )
     .limit(1);
   return Boolean(shared);
+}
+
+export interface SignInMethod {
+  /** `credential` for a password, otherwise the provider's name, such as `discord` or `google`. */
+  provider: string;
+  /** The id of this connection, needed to disconnect it. */
+  id: string;
+}
+
+/** The ways an account can sign in: a password, and each provider connected to it. */
+export async function listSignInMethods(db: Db, actor: Actor): Promise<SignInMethod[]> {
+  const rows = await db.select({ id: accounts.id, provider: accounts.providerId }).from(accounts).where(eq(accounts.userId, actor.userId));
+  return rows.sort((a, b) => a.provider.localeCompare(b.provider));
 }

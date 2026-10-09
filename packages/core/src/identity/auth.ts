@@ -35,6 +35,17 @@ export function createAuth(config: AuthConfig) {
       ...(config.discord ? { discord: config.discord } : {}),
       ...(config.google ? { google: config.google } : {}),
     },
+    account: {
+      accountLinking: {
+        enabled: true,
+        // Signing in with Discord or Google never quietly joins itself to an existing account that happens to
+        // have the same email. WorldRoot does not verify email addresses, so anyone could have made that
+        // account. A provider is connected only from Settings, by someone already signed in.
+        disableImplicitLinking: true,
+        // The person connecting is already signed in, so their Discord email need not match.
+        allowDifferentEmails: true,
+      },
+    },
     user: {
       additionalFields: {
         platformRole: { type: 'string', required: false, defaultValue: 'user', input: false },
