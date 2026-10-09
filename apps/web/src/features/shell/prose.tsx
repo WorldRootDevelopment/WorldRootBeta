@@ -47,7 +47,7 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
 }
 
 export function SectionHeading({ children }: { children: ReactNode }) {
-  return <h2 className="mb-4 mt-12 font-display text-xl font-semibold text-ink first:mt-0">{children}</h2>;
+  return <h2 className="mb-4 mt-12 font-display text-xl font-semibold capitalize text-ink first:mt-0">{children}</h2>;
 }
 
 export const cardClass =

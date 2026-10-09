@@ -41,20 +41,20 @@ export default async function ScenesPage() {
       </div>
 
       {scenes.length === 0 ? (
-        <EmptyState icon={<BookOpen className="size-8" aria-hidden="true" />} title="No scenes yet">
+        <EmptyState icon={<BookOpen className="size-8" aria-hidden="true" />} title="No Scenes Yet">
           Start a private scene and invite a partner, or open a location in a community and start one there.
         </EmptyState>
       ) : (
         <>
           {waiting.length > 0 ? (
             <>
-              <SectionHeading>Waiting on you</SectionHeading>
+              <SectionHeading>Waiting On You</SectionHeading>
               {grid(waiting)}
             </>
           ) : null}
           {others.length > 0 ? (
             <>
-              <SectionHeading>In progress</SectionHeading>
+              <SectionHeading>In Progress</SectionHeading>
               {grid(others)}
             </>
           ) : null}

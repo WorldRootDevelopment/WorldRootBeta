@@ -4,32 +4,32 @@ import { CONTENT_RATINGS } from './scenes';
 /** What a "Looking for RP" listing can be about. Shown as filters on the board. */
 export const LFRP_GENRES = {
   fantasy: 'Fantasy',
-  scifi: 'Science fiction',
-  modern: 'Modern day',
+  scifi: 'Science Fiction',
+  modern: 'Modern Day',
   historical: 'Historical',
   horror: 'Horror',
   mystery: 'Mystery',
   romance: 'Romance',
   adventure: 'Adventure',
-  slice_of_life: 'Slice of life',
+  slice_of_life: 'Slice Of Life',
   superhero: 'Superhero',
   fandom: 'Fandom',
-  other: 'Something else',
+  other: 'Something Else',
 } as const;
 
 export type LfrpGenre = keyof typeof LFRP_GENRES;
 export const LFRP_GENRE_KEYS = Object.keys(LFRP_GENRES) as [LfrpGenre, ...LfrpGenre[]];
 export const isLfrpGenre = (value: unknown): value is LfrpGenre => typeof value === 'string' && value in LFRP_GENRES;
 
-export const LFRP_KINDS = { one_on_one: 'One partner', group: 'A group' } as const;
+export const LFRP_KINDS = { one_on_one: 'One Partner', group: 'A Group' } as const;
 export type LfrpKind = keyof typeof LFRP_KINDS;
 
 /** How often the writer expects to post. Mismatched pace ends more roleplay than anything else. */
 export const LFRP_PACES = {
-  live: 'Live, back and forth',
-  daily: 'About once a day',
-  weekly: 'A few times a week',
-  relaxed: 'Whenever we can',
+  live: 'Live, Back And Forth',
+  daily: 'About Once A Day',
+  weekly: 'A Few Times A Week',
+  relaxed: 'Whenever We Can',
 } as const;
 export type LfrpPace = keyof typeof LFRP_PACES;
 

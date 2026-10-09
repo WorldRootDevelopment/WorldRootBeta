@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { AddToCommunityForm } from '@/features/characters/add-to-community-form';
 import { loadCommunity } from '@/features/community/community-view';
 
-export const metadata: Metadata = { title: 'Add a character' };
+export const metadata: Metadata = { title: 'Add A Character' };
 
 export default async function AddCharacterPage({ params }: { params: Promise<{ community: string }> }) {
   const { community, permissions, viewer, db } = await loadCommunity((await params).community);
@@ -17,11 +17,11 @@ export default async function AddCharacterPage({ params }: { params: Promise<{ c
 
   return (
     <>
-      <h2 className="mb-6 font-display text-2xl font-semibold tracking-tight text-ink">Add a character</h2>
+      <h2 className="mb-6 font-display text-2xl font-semibold tracking-tight text-ink">Add A Character</h2>
       {!permissions.includes('character.submit') ? (
-        <EmptyState title="Join the community first">Members of {community.name} can add their characters.</EmptyState>
+        <EmptyState title="Join The Community First">Members of {community.name} can add their characters.</EmptyState>
       ) : characters.length === 0 ? (
-        <EmptyState icon={<UserRound className="size-8" aria-hidden="true" />} title="Your library has no characters yet">
+        <EmptyState icon={<UserRound className="size-8" aria-hidden="true" />} title="Your Library Has No Characters Yet">
           Create a character in your library, then bring them here.
           <span className="mt-6 block">
             <Link href="/library/characters/new" className={buttonClass('primary')}>

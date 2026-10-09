@@ -128,9 +128,9 @@ export function Composer({ sceneId, characters, draft }: ComposerProps) {
   };
 
   return (
-    <section aria-label="Write a post" className="flex flex-col gap-3">
+    <section aria-label="Write A Post" className="flex flex-col gap-3">
       <label className="flex flex-wrap items-center gap-3 text-sm font-medium text-ink">
-        Writing as
+        Writing As
         <select
           value={who}
           onChange={(event) => {
@@ -151,7 +151,7 @@ export function Composer({ sceneId, characters, draft }: ComposerProps) {
         </select>
       </label>
 
-      <RichTextEditor initial={draft?.content} onChange={onChange} onReady={onReady} label="Your post" placeholder="Continue the story…" />
+      <RichTextEditor initial={draft?.content} onChange={onChange} onReady={onReady} label="Your Post" placeholder="Continue the story…" />
 
       {error ? (
         <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">

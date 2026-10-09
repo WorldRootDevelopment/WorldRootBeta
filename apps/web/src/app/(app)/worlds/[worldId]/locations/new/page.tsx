@@ -5,7 +5,7 @@ import { Breadcrumbs } from '@/features/shell/prose';
 import { loadLibraryWorld } from '@/features/worlds/library-world';
 import { WorldLocationForm } from '@/features/worlds/world-form';
 
-export const metadata: Metadata = { title: 'Add location' };
+export const metadata: Metadata = { title: 'Add Location' };
 
 interface Props {
   params: Promise<{ worldId: string }>;
@@ -25,7 +25,7 @@ export default async function NewLocationPage({ params, searchParams }: Props) {
           { label: 'Library', href: '/library' },
           { label: world.name, href: `/worlds/${world.id}` },
           ...(parent ? [{ label: parent.name, href: `/worlds/${world.id}/l/${parent.id}` }] : []),
-          { label: 'Add location' },
+          { label: 'Add Location' },
         ]}
       />
       <PageHeader title={parent ? `Add a location inside ${parent.name}` : 'Add a location'} lead="Only a name is needed. Describe it now or later." />

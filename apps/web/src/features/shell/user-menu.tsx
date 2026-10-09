@@ -19,7 +19,7 @@ interface UserMenuProps {
 }
 
 const itemClass =
-  'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-ink hover:bg-surface-sunken ' +
+  'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm capitalize text-ink hover:bg-surface-sunken ' +
   'focus-visible:outline-2 focus-visible:outline-focus';
 
 export function UserMenu({ profile, placement }: UserMenuProps) {
@@ -89,7 +89,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
           {profile.isStaff ? (
             <li>
               <Link href="/staff" className={itemClass}>
-                Staff portal
+                Rootwarden portal
               </Link>
             </li>
           ) : null}

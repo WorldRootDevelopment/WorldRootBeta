@@ -171,7 +171,7 @@ export async function seedDndDemo(db: Db): Promise<DemoSeedResult> {
   await createRole(db, actor, community.id, {
     name: 'Dungeon Master',
     position: 100,
-    permissions: ['post.remove', 'message.remove', 'character.approve', 'scene.manage', 'announcement.post'],
+    permissions: ['post.remove', 'message.remove', 'character.approve', 'scene.manage', 'announcement.post', 'world.manage', 'location.create', 'location.manage'],
   });
 
   const classField = await addCharacterField(db, actor, community.id, { label: 'Class', type: 'single_choice', options: CLASSES, required: true, position: 0 });

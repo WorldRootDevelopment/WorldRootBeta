@@ -16,7 +16,7 @@ export function TextArea({ label, hint, error, className, id, rows = 5, ...props
 
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
-      <label htmlFor={inputId} className="text-sm font-medium text-ink">
+      <label htmlFor={inputId} className="text-sm font-medium capitalize text-ink">
         {label}
       </label>
       <textarea

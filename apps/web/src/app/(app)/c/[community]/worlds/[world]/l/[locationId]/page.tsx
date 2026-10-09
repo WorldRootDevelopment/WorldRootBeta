@@ -1,14 +1,13 @@
-import { getCommunityWorld, listLocations, listLocationScenes } from '@worldroot/core';
+import { listLocationScenes } from '@worldroot/core';
 import { buttonClass, EmptyState } from '@worldroot/ui';
 import { BookOpen } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { loadCommunity } from '@/features/community/community-view';
 import { SceneCard } from '@/features/scenes/scene-card';
 import { Breadcrumbs, Prose, SectionHeading } from '@/features/shell/prose';
+import { loadCommunityWorld } from '@/features/worlds/community-world';
 import { ancestryOf, childrenOf, LocationTree } from '@/features/worlds/location-tree';
-import { load } from '@/lib/load';
 
 interface Props {
   params: Promise<{ community: string; world: string; locationId: string }>;
@@ -16,14 +15,12 @@ interface Props {
 
 const loadLocation = async ({ params }: Props) => {
   const { community: slug, world: worldSlug, locationId } = await params;
-  const { community, permissions, db } = await loadCommunity(slug);
-  const world = await load(() => getCommunityWorld(db, community.id, worldSlug));
-  const locations = await listLocations(db, world.id);
+  const { community, permissions, world, locations, powers, db } = await loadCommunityWorld(slug, worldSlug);
   const ancestry = ancestryOf(locations, locationId);
   const location = ancestry.at(-1);
   if (!location) notFound();
   const scenes = await listLocationScenes(db, location.id);
-  return { community, world, locations, ancestry, location, scenes, canStart: permissions.includes('scene.create') };
+  return { community, world, locations, ancestry, location, scenes, powers, canStart: permissions.includes('scene.create') };
 };
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
@@ -31,7 +28,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 export default async function LocationPage(props: Props) {
-  const { community, world, locations, ancestry, location, scenes, canStart } = await loadLocation(props);
+  const { community, world, locations, ancestry, location, scenes, powers, canStart } = await loadLocation(props);
   const worldHref = `/c/${community.slug}/worlds/${world.slug}`;
   const hrefFor = (target: { id: string }) => `${worldHref}/l/${target.id}`;
 
@@ -45,8 +42,27 @@ export default async function LocationPage(props: Props) {
           { label: location.name },
         ]}
       />
-      <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{location.name}</h2>
-      {location.summary ? <p className="mt-2 max-w-2xl text-lg text-ink-muted">{location.summary}</p> : null}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{location.name}</h2>
+          {location.summary ? <p className="mt-2 max-w-2xl text-lg text-ink-muted">{location.summary}</p> : null}
+        </div>
+        {/* Shown to the community staff who hold the matching permission. */}
+        {powers.editLocations || powers.addLocations ? (
+          <div className="flex flex-wrap gap-2">
+            {powers.addLocations ? (
+              <Link href={`${worldHref}/locations/new?parent=${location.id}`} className={buttonClass('secondary')}>
+                Add location here
+              </Link>
+            ) : null}
+            {powers.editLocations ? (
+              <Link href={`${hrefFor(location)}/edit`} className={buttonClass('secondary')}>
+                Edit location
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
       {location.description ? <Prose text={location.description} className="mt-8" /> : null}
 
       {childrenOf(locations, location.id).length > 0 ? (
@@ -75,7 +91,7 @@ export default async function LocationPage(props: Props) {
           ))}
         </ul>
       ) : (
-        <EmptyState icon={<BookOpen className="size-8" aria-hidden="true" />} title="No scenes here yet">
+        <EmptyState icon={<BookOpen className="size-8" aria-hidden="true" />} title="No Scenes Here Yet">
           {canStart ? `Be the first to set a scene in ${location.name}.` : `Members can start a scene in ${location.name}.`}
         </EmptyState>
       )}

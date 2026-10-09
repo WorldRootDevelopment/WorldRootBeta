@@ -53,7 +53,7 @@ export function OnboardingForm({ next }: { next: string }) {
         required
       />
       <TextField
-        label="Display name"
+        label="Display Name"
         name="displayName"
         autoComplete="nickname"
         maxLength={50}

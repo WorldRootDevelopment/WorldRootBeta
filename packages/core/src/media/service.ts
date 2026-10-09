@@ -49,7 +49,7 @@ export async function setAvatar(db: Db, storage: MediaStorage, actor: Actor, upl
 /** Removes a profile picture: your own, or anyone's if you are WorldRoot staff, which is recorded. */
 export async function removeAvatar(db: Db, storage: MediaStorage, actor: Actor, userId: string = actor.userId): Promise<void> {
   const self = userId === actor.userId;
-  if (!self && actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only WorldRoot staff can do that.');
+  if (!self && actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only Rootwardens, the WorldRoot staff, can do that.');
   const [profile] = await db.select().from(profiles).where(eq(profiles.userId, userId));
   if (!profile) throw new DomainError('not_found', 'That account does not exist.');
   if (!profile.avatarMediaId) return;
@@ -73,7 +73,7 @@ export async function setBanner(db: Db, storage: MediaStorage, actor: Actor, upl
 /** Removes a profile banner: your own, or anyone's if you are WorldRoot staff, which is recorded. */
 export async function removeBanner(db: Db, storage: MediaStorage, actor: Actor, userId: string = actor.userId): Promise<void> {
   const self = userId === actor.userId;
-  if (!self && actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only WorldRoot staff can do that.');
+  if (!self && actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only Rootwardens, the WorldRoot staff, can do that.');
   const [profile] = await db.select().from(profiles).where(eq(profiles.userId, userId));
   if (!profile) throw new DomainError('not_found', 'That account does not exist.');
   if (!profile.bannerMediaId) return;

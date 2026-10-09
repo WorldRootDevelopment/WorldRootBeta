@@ -13,7 +13,7 @@ import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'Manage account' };
+export const metadata: Metadata = { title: 'Manage Account' };
 
 const day = (date: Date) => date.toLocaleDateString('en', { dateStyle: 'medium' });
 const moment = (date: Date) => date.toLocaleString('en', { dateStyle: 'medium', timeStyle: 'short' });
@@ -50,11 +50,11 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
   const account = await load(() => getAccountForStaff(db, viewer.actor, userId));
   const name = account.profile?.displayName ?? account.email;
   const isSelf = account.userId === viewer.actor.userId;
-  const cannotSuspend = isSelf ? 'This is your own account. You cannot suspend yourself.' : account.isStaff ? 'This is a member of WorldRoot staff. Staff are set in the server’s settings and cannot be suspended from here.' : null;
+  const cannotSuspend = isSelf ? 'This is your own account. You cannot suspend yourself.' : account.isStaff ? 'This is a Rootwarden. Rootwardens are set in the server’s settings and cannot be suspended from here.' : null;
 
   return (
     <>
-      <Breadcrumbs items={[{ label: 'Staff', href: '/staff' }, { label: name }]} />
+      <Breadcrumbs items={[{ label: 'Rootwardens', href: '/staff' }, { label: name }]} />
 
       <header className="wr-glass flex flex-wrap items-center gap-5 rounded-3xl p-5 md:p-6">
         <Picture mediaId={account.profile?.avatarId} name={name} className="size-20 text-3xl" />
@@ -82,15 +82,15 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
 
       <dl className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <Fact label="Joined">{day(account.createdAt)}</Fact>
-        <Fact label="Last seen">{account.profile?.lastSeenAt ? moment(account.profile.lastSeenAt) : 'Never'}</Fact>
-        <Fact label="Signed in on">
+        <Fact label="Last Seen">{account.profile?.lastSeenAt ? moment(account.profile.lastSeenAt) : 'Never'}</Fact>
+        <Fact label="Signed In On">
           {account.sessions} {account.sessions === 1 ? 'device' : 'devices'}
         </Fact>
-        <Fact label="Open reports about them">{account.openReports}</Fact>
+        <Fact label="Open Reports About Them">{account.openReports}</Fact>
         <Fact label="Characters">{account.characters}</Fact>
         <Fact label="Posts">{account.posts}</Fact>
-        <Fact label="Status line">{account.profile?.status ?? 'None'}</Fact>
-        <Fact label="Role">{account.isStaff ? 'WorldRoot staff' : 'Member'}</Fact>
+        <Fact label="Status Line">{account.profile?.status ?? 'None'}</Fact>
+        <Fact label="Role">{account.isStaff ? 'Rootwarden' : 'Member'}</Fact>
       </dl>
 
       <SectionHeading>Suspension</SectionHeading>
@@ -99,11 +99,11 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
       </p>
       <SuspensionPanel userId={account.userId} name={name} suspended={Boolean(account.suspendedAt)} blocked={cannotSuspend} />
 
-      <SectionHeading>Sign-in</SectionHeading>
+      <SectionHeading>Sign-In</SectionHeading>
       <p className="mb-4 max-w-2xl text-sm text-ink-muted">If the account may be in the wrong hands, sign it out everywhere. The owner can sign in again with their password.</p>
       <SignOutEverywhereButton userId={account.userId} sessions={account.sessions} />
 
-      <SectionHeading>Badges and Premium</SectionHeading>
+      <SectionHeading>Badges And Premium</SectionHeading>
       <p className="mb-4 text-sm text-ink-muted">Press a label to give or take away that badge.</p>
       <AccountControls userId={account.userId} badges={account.badges} />
 
@@ -112,7 +112,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
           <SectionHeading>Pictures</SectionHeading>
           <div className="flex flex-col gap-5">
             {account.profile.avatarId ? (
-              <ImageUpload url={`/api/v1/staff/accounts/${account.userId}/avatar`} mediaId={account.profile.avatarId} name={name} label="Profile picture" removeOnly />
+              <ImageUpload url={`/api/v1/staff/accounts/${account.userId}/avatar`} mediaId={account.profile.avatarId} name={name} label="Profile Picture" removeOnly />
             ) : null}
             {account.profile.bannerId ? (
               <ImageUpload url={`/api/v1/staff/accounts/${account.userId}/banner`} mediaId={account.profile.bannerId} name={name} label="Banner" shape="banner" removeOnly />
@@ -139,7 +139,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
 
       <SectionHeading>History</SectionHeading>
       {account.history.length === 0 ? (
-        <p className="text-ink-muted">Staff have not done anything to this account.</p>
+        <p className="text-ink-muted">The Rootwardens have not done anything to this account.</p>
       ) : (
         <ol className="wr-glass flex max-w-3xl flex-col divide-y divide-line rounded-2xl">
           {account.history.map((entry, index) => (

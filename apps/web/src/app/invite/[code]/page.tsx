@@ -8,7 +8,7 @@ import { AcceptInviteButton } from '@/features/community/accept-invite-button';
 import { database } from '@/lib/server';
 import { getViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'You are invited' };
+export const metadata: Metadata = { title: 'You Are Invited' };
 
 /**
  * Where an invite link lands. A visitor who is signed out, or has not finished
@@ -40,7 +40,7 @@ export default async function InvitePage({ params }: { params: Promise<{ code: s
 
       {!preview || !community ? (
         <>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">This invite is not valid</h1>
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">This Invite Is Not Valid</h1>
           <p className="mt-2 text-ink-muted">The link may have been mistyped or withdrawn. Ask whoever sent it for a new one.</p>
           <Link href="/home" className={`${buttonClass('secondary', 'lg')} mt-8 self-start`}>
             Go to Home

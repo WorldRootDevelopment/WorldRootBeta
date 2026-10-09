@@ -77,8 +77,8 @@ export function FieldsEditor({ communityId, fields }: { communityId: string; fie
       )}
 
       <form onSubmit={add} className="flex max-w-2xl flex-col gap-4 rounded-2xl border border-dashed border-line-strong p-5" noValidate>
-        <h3 className="font-display text-lg font-semibold text-ink">Add a field</h3>
-        <TextField label="Field name" name="label" error={errors.label} maxLength={60} placeholder="Rank" />
+        <h3 className="font-display text-lg font-semibold text-ink">Add A Field</h3>
+        <TextField label="Field Name" name="label" error={errors.label} maxLength={60} placeholder="Rank" />
         <div className="flex flex-col gap-1.5">
           <label htmlFor="field-type" className="text-sm font-medium text-ink">
             Kind of answer

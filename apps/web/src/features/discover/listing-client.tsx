@@ -90,7 +90,7 @@ export function ListingForm() {
       </fieldset>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1.5 text-sm font-medium text-ink">Writing with</legend>
+        <legend className="mb-1.5 text-sm font-medium text-ink">Writing With</legend>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(LFRP_KINDS) as LfrpKind[]).map((kind, index) => (
             <label key={kind} className={choice}>
@@ -116,7 +116,7 @@ export function ListingForm() {
         </div>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="listing-rating" className="text-sm font-medium text-ink">
-            Content rating
+            Content Rating
           </label>
           <select id="listing-rating" name="rating" defaultValue="teen" className={select}>
             {CONTENT_RATINGS.map((rating) => (
@@ -129,7 +129,7 @@ export function ListingForm() {
       </div>
 
       <p className="text-sm text-ink-muted">Your listing stays up for {LFRP_DAYS} days, or until you take it down.</p>
-      <FormFooter error={error} pending={pending} submitLabel="Post listing" cancelHref="/discover/partners" />
+      <FormFooter error={error} pending={pending} submitLabel="Post Listing" cancelHref="/discover/partners" />
     </form>
   );
 }
@@ -153,7 +153,7 @@ export function MessageAuthorButton({ handle }: { handle: string }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button variant="secondary" onClick={open} disabled={pending}>
+      <Button variant="secondary" className="normal-case" onClick={open} disabled={pending}>
         {pending ? 'Opening…' : `Message @${handle}`}
       </Button>
       {error ? (

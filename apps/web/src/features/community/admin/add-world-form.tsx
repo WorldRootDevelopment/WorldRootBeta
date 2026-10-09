@@ -49,10 +49,10 @@ export function AddWorldForm({ communityId, communityName, worlds }: AddWorldFor
 
   return (
     <form onSubmit={submit} className="mt-8 flex max-w-2xl flex-col gap-4 rounded-2xl border border-dashed border-line-strong p-5">
-      <h3 className="font-display text-lg font-semibold text-ink">Add a world</h3>
+      <h3 className="font-display text-lg font-semibold text-ink">Add A World</h3>
 
       <fieldset className="flex flex-col">
-        <legend className="sr-only">Where the world comes from</legend>
+        <legend className="sr-only">Where The World Comes From</legend>
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
           <input type="radio" name="source" checked={source === 'library'} onChange={() => setSource('library')} className="size-5 accent-accent" />
           From my library

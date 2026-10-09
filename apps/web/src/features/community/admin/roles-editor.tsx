@@ -176,7 +176,7 @@ function NewRole({ communityId, grantable }: { communityId: string; grantable: P
 
   return (
     <section className="flex flex-col gap-5 rounded-2xl border border-dashed border-line-strong p-5">
-      <h3 className="font-display text-lg font-semibold text-ink">New role</h3>
+      <h3 className="font-display text-lg font-semibold text-ink">New Role</h3>
       <div className="flex flex-col gap-1.5">
         <label htmlFor="new-role-name" className="text-sm font-medium text-ink">
           Role name

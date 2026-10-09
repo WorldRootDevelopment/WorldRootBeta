@@ -27,7 +27,7 @@ export default async function CharacterSettingsPage({ params }: { params: Promis
 
       {holds(['characterfield.manage']) ? (
         <section>
-          <h2 className={heading}>Character template</h2>
+          <h2 className={heading}>Character Template</h2>
           <p className="mb-6 mt-2 max-w-2xl text-ink-muted">
             Fields every character in this community is asked for, on top of the standard profile. Adding a required field does not
             remove characters already here.

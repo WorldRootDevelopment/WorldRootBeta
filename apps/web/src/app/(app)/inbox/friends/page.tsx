@@ -95,7 +95,7 @@ export default async function FriendsPage() {
         {friends.length > 0 ? <span className="ml-2 text-sm font-normal text-ink-muted">{online} online</span> : null}
       </SectionHeading>
       {friends.length === 0 ? (
-        <EmptyState icon={<UserPlus className="size-8" aria-hidden="true" />} title="No friends yet" className="max-w-3xl">
+        <EmptyState icon={<UserPlus className="size-8" aria-hidden="true" />} title="No Friends Yet" className="max-w-3xl">
           Add someone by their @handle above, or use “Add friend” on their profile.
         </EmptyState>
       ) : (

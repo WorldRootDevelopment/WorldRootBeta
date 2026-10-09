@@ -17,7 +17,7 @@ export default async function CustomizationPage() {
       <SettingsTabs />
       <p className="mb-2 mt-6 text-ink-muted">How WorldRoot looks for you.</p>
 
-      <SectionHeading>Dice style</SectionHeading>
+      <SectionHeading>Dice Style</SectionHeading>
       <p className="mb-5 max-w-2xl text-sm text-ink-muted">
         Used wherever you roll dice. A style only changes how your dice look to you: WorldRoot makes every roll, and the result in the story is the
         same for everyone.

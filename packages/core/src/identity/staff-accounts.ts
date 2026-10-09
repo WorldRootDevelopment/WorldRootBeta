@@ -9,7 +9,7 @@ import { platformBadgesSql } from './badges';
 const MAX_REASON = 500;
 
 const requireStaff = (actor: Actor) => {
-  if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only WorldRoot staff can do that.');
+  if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only Rootwardens, the WorldRoot staff, can do that.');
 };
 
 async function requireUser(db: Db, userId: string) {
@@ -114,7 +114,7 @@ export async function suspendAccount(db: Db, actor: Actor, userId: string, reaso
   requireStaff(actor);
   const user = await requireUser(db, userId);
   if (userId === actor.userId) throw new DomainError('invalid_input', 'You cannot suspend your own account.');
-  if (user.platformRole === 'staff') throw new DomainError('forbidden', 'A member of staff cannot be suspended from here. Their staff role must be removed first.');
+  if (user.platformRole === 'staff') throw new DomainError('forbidden', 'A Rootwarden cannot be suspended from here. Their role must be removed first.');
   const why = typeof reason === 'string' ? reason.trim() : '';
   if (!why) throw new DomainError('invalid_input', 'Say why, for the record.', { fields: { reason: 'Say why, for the record.' } });
   if (why.length > MAX_REASON) throw new DomainError('invalid_input', `Use at most ${MAX_REASON} characters.`, { fields: { reason: `Use at most ${MAX_REASON} characters.` } });

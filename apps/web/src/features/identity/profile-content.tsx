@@ -58,14 +58,15 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
             style={{ '--tw-gradient-via': 'var(--wr-accent-light)' } as CSSProperties}
           />
         )}
-        <div className={`flex flex-wrap items-end gap-5 px-5 pb-5 ${popup ? '' : 'md:px-8'}`}>
+        <div className={`flex flex-wrap items-end gap-x-5 gap-y-4 px-5 pb-5 ${popup ? '' : 'md:px-8'}`}>
           <Picture
             mediaId={profile.avatarId}
             name={profile.displayName}
             className={popup ? '-mt-10 size-20 text-3xl ring-4 ring-surface-raised' : '-mt-10 size-24 text-4xl ring-4 ring-surface-raised md:-mt-12 md:size-28'}
           />
-          <div className="min-w-0 flex-1 pt-3">
-            <Name id={popup ? 'profile-popup-name' : undefined} className={`flex flex-wrap items-center gap-3 font-display font-bold tracking-tight text-ink ${popup ? 'text-2xl' : 'text-3xl md:text-4xl'}`}>
+          {/* The name keeps a sensible width; anything that does not fit beside it moves to the next row instead of squeezing it. */}
+          <div className="min-w-56 flex-1 pt-3">
+            <Name id={popup ? 'profile-popup-name' : undefined} className={`flex flex-wrap items-center gap-x-3 gap-y-1 break-words font-display font-bold tracking-tight text-ink ${popup ? 'text-2xl' : 'text-3xl md:text-4xl'}`}>
               {profile.displayName}
               <Badges list={profile.badges} all />
             </Name>
@@ -81,7 +82,7 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
               Edit profile
             </Link>
           ) : (
-            <div className="flex flex-wrap items-start gap-2">
+            <div className={`flex flex-wrap items-center gap-2 ${popup ? 'basis-full' : 'basis-full xl:basis-auto'}`}>
               {blocked ? null : <MessageButton handle={profile.handle} />}
               {blocked ? null : <FriendButton userId={profile.userId} handle={profile.handle} state={friendship} />}
               <BlockButton userId={profile.userId} name={profile.displayName} blocked={blocked} />
@@ -93,16 +94,16 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
         </div>
       </header>
 
-      <div className={popup ? 'px-5 pb-6' : undefined}>
+      <div className={popup ? 'px-5 pb-6 pt-2' : 'mt-10'}>
         {/* Removing someone's pictures is done from the full page or the staff portal, not the pop-up. */}
         {!popup && viewerIsStaff && !isSelf && profile.bannerId ? (
           <div className="mt-6 rounded-lg border border-line px-4 py-3">
-            <ImageUpload url={`/api/v1/staff/accounts/${profile.userId}/banner`} mediaId={profile.bannerId} name={profile.displayName} label="Staff: remove this banner" shape="banner" removeOnly />
+            <ImageUpload url={`/api/v1/staff/accounts/${profile.userId}/banner`} mediaId={profile.bannerId} name={profile.displayName} label="Rootwarden: Remove This Banner" shape="banner" removeOnly />
           </div>
         ) : null}
         {!popup && viewerIsStaff && !isSelf && profile.avatarId ? (
           <div className="mt-6 rounded-lg border border-line px-4 py-3">
-            <ImageUpload url={`/api/v1/staff/accounts/${profile.userId}/avatar`} mediaId={profile.avatarId} name={profile.displayName} label="Staff: remove this profile picture" removeOnly />
+            <ImageUpload url={`/api/v1/staff/accounts/${profile.userId}/avatar`} mediaId={profile.avatarId} name={profile.displayName} label="Rootwarden: Remove This Profile Picture" removeOnly />
           </div>
         ) : null}
 
@@ -166,11 +167,11 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
           <p className="text-ink-muted">{isSelf ? 'You have not joined a community yet.' : 'No communities you can see.'}</p>
         )}
 
-        {/* For staff, at the foot of the profile, out of the way of what everyone else sees. */}
+        {/* For Rootwardens (WorldRoot staff), at the foot of the profile, out of the way of what everyone else sees. */}
         {viewerIsStaff ? (
           <p className="mt-12 border-t border-line pt-6">
             <Link href={`/staff/accounts/${profile.userId}`} className={buttonClass('secondary')}>
-              Staff: manage this account
+              Rootwarden: manage this account
             </Link>
           </p>
         ) : null}

@@ -2,7 +2,7 @@ import { listAuditLog } from '@worldroot/core';
 import type { Metadata } from 'next';
 import { requireSection } from '@/features/community/admin/admin-view';
 
-export const metadata: Metadata = { title: 'Audit log' };
+export const metadata: Metadata = { title: 'Audit Log' };
 
 /** Plain-language names for the action keys written by the services. */
 const ACTIONS: Record<string, string> = {
@@ -28,6 +28,8 @@ const ACTIONS: Record<string, string> = {
   'character.return': 'Returned a character',
   'world.add': 'Added a world',
   'world.update': 'Edited a world',
+  'location.create': 'Added a location',
+  'location.update': 'Edited a location',
   'scene.status': 'Changed a scene’s status',
   'post.remove': 'Removed a post',
   'message.remove': 'Removed a message',
@@ -49,7 +51,7 @@ export default async function AuditLogPage({ params }: { params: Promise<{ commu
 
   return (
     <>
-      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Audit log</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Audit Log</h2>
       <p className="mb-6 mt-2 max-w-2xl text-ink-muted">
         Every privileged action in this community, newest first. Entries cannot be edited or deleted. Showing the latest {entries.length}.
       </p>

@@ -16,7 +16,7 @@ export function StatusBadge({ status }: { status: SceneStatus }) {
 
 export function RatingBadge({ rating }: { rating: ContentRating }) {
   return (
-    <span className={cn(pill, 'border border-line-strong text-ink-muted')} title="Content rating">
+    <span className={cn(pill, 'border border-line-strong text-ink-muted')} title="Content Rating">
       {CONTENT_RATING_LABELS[rating]}
     </span>
   );

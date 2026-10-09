@@ -55,7 +55,7 @@ function AlsoBadge({ id }: { id: AchievementKey }) {
   return (
     <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 align-middle text-[0.6875rem] font-semibold text-accent-text">
       <Award className="size-3" aria-hidden="true" />
-      Gives a badge
+      Gives A Badge
     </span>
   );
 }

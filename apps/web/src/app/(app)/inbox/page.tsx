@@ -34,7 +34,7 @@ export default async function InboxPage() {
       <InboxTabs messages={all.filter((conversation) => conversation.unread).length} friends={friendRequests} notifications={unreadNotifications} />
 
       {onlineFriends.length > 0 ? (
-        <section aria-label="Friends online" className="mb-8">
+        <section aria-label="Friends Online" className="mb-8">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-muted">Online now — {onlineFriends.length}</h2>
           <ul className="flex flex-wrap gap-3">
             {onlineFriends.map((friend) => (
@@ -60,7 +60,7 @@ export default async function InboxPage() {
 
       {requests.length > 0 ? (
         <>
-          <SectionHeading>Message requests</SectionHeading>
+          <SectionHeading>Message Requests</SectionHeading>
           <p className="mb-3 max-w-3xl text-sm text-ink-muted">From people you share no community with. Open one to accept or decline. They are not told if you decline.</p>
           <ul className="mb-10 flex max-w-3xl flex-col gap-3">
             {requests.map((conversation) => (
@@ -76,7 +76,7 @@ export default async function InboxPage() {
       ) : null}
 
       {conversations.length === 0 ? (
-        <EmptyState icon={<MessagesSquare className="size-8" aria-hidden="true" />} title="No messages yet">
+        <EmptyState icon={<MessagesSquare className="size-8" aria-hidden="true" />} title="No Messages Yet">
           Start a conversation with another writer by their @handle, or add them as a friend.
         </EmptyState>
       ) : (

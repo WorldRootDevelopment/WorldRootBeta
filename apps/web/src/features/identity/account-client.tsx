@@ -68,9 +68,9 @@ export function PasswordForm() {
 
   return (
     <form onSubmit={submit} className="flex max-w-md flex-col gap-3">
-      <TextField label="Current password" name="current" type="password" autoComplete="current-password" required />
-      <TextField label="New password" name="next" type="password" autoComplete="new-password" minLength={10} hint="At least 10 characters." required />
-      <TextField label="New password again" name="confirm" type="password" autoComplete="new-password" minLength={10} required />
+      <TextField label="Current Password" name="current" type="password" autoComplete="current-password" required />
+      <TextField label="New Password" name="next" type="password" autoComplete="new-password" minLength={10} hint="At least 10 characters." required />
+      <TextField label="New Password Again" name="confirm" type="password" autoComplete="new-password" minLength={10} required />
       {message ? (
         <p role={message.ok ? 'status' : 'alert'} className={note(message.ok)}>
           {message.text}
@@ -173,7 +173,7 @@ export function RequestBar({ conversationId, name }: { conversationId: string; n
   };
 
   return (
-    <div role="region" aria-label="Message request" className="mb-6 max-w-3xl rounded-2xl border border-line-strong bg-surface-sunken p-5">
+    <div role="region" aria-label="Message Request" className="mb-6 max-w-3xl rounded-2xl border border-line-strong bg-surface-sunken p-5">
       <p className="font-medium text-ink">{name} would like to message you.</p>
       <p className="mt-1 text-sm text-ink-muted">
         You do not share a community, so this is a request. If you decline, they are not told, and they cannot write to you again here.

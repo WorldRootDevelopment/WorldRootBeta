@@ -5,7 +5,7 @@ import { Breadcrumbs, SectionHeading } from '@/features/shell/prose';
 import { UseTemplateButton } from '@/features/worlds/use-template-button';
 import { requireViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'World templates' };
+export const metadata: Metadata = { title: 'World Templates' };
 
 function TemplateCard({ template }: { template: WorldTemplate }) {
   const places = countLocations(template.locations);
@@ -50,9 +50,9 @@ export default async function WorldTemplatesPage() {
 
   return (
     <>
-      <Breadcrumbs items={[{ label: 'Library', href: '/library' }, { label: 'World templates' }]} />
+      <Breadcrumbs items={[{ label: 'Library', href: '/library' }, { label: 'World Templates' }]} />
       <PageHeader
-        title="World templates"
+        title="World Templates"
         lead="Ready-made worlds to start from. Using one puts your own copy in your library, where you can rename it, change every place in it, and add it to a community."
       />
       {TEMPLATE_CATEGORIES.map((category) => {

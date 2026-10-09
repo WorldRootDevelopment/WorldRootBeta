@@ -76,7 +76,7 @@ export function InvitesPanel({ communityId, invites }: { communityId: string; in
   return (
     <div className="flex flex-col gap-8">
       <form onSubmit={create} className="flex max-w-2xl flex-col gap-4 rounded-2xl border border-dashed border-line-strong p-5">
-        <h3 className="font-display text-lg font-semibold text-ink">New invite link</h3>
+        <h3 className="font-display text-lg font-semibold text-ink">New Invite Link</h3>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="expiresInDays" className="text-sm font-medium text-ink">

@@ -12,7 +12,7 @@ import { SeasonPicker } from '@/features/staff/season-picker';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'Staff' };
+export const metadata: Metadata = { title: 'Rootwardens' };
 
 const link = 'rounded font-medium text-ink hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
@@ -31,7 +31,7 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
 
   return (
     <>
-      <PageHeader title="Staff" lead="For WorldRoot staff only. Everything done here is written to the audit log." />
+      <PageHeader title="Rootwardens" lead="For the Rootwardens, WorldRoot’s staff, only. Everything done here is written to the audit log." />
 
       <SectionHeading>Reports</SectionHeading>
       <p className="mb-4 max-w-2xl text-sm text-ink-muted">
@@ -40,7 +40,7 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
       </p>
       <ReportQueue reports={reports} emptyText="Nothing is waiting for review." />
 
-      <SectionHeading>Site look</SectionHeading>
+      <SectionHeading>Site Look</SectionHeading>
       <p className="mb-4 max-w-2xl text-sm text-ink-muted">
         Dress the whole site for an occasion. It changes the logo, the WorldRoot name and adds a stripe across the top of every page, for
         everyone, at once. Nothing else changes.
@@ -91,7 +91,7 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
       </ul>
 
       <SectionHeading>Communities</SectionHeading>
-      <p className="mb-3 text-sm text-ink-muted">Every community, including unlisted and archived ones. As staff you can open and manage any of them.</p>
+      <p className="mb-3 text-sm text-ink-muted">Every community, including unlisted and archived ones. As a Rootwarden you can open and manage any of them.</p>
       <ul className="flex flex-col divide-y divide-line wr-glass rounded-2xl">
         {communities.map((community) => (
           <li key={community.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm">

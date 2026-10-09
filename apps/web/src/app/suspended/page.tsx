@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { SignOutButton } from '@/features/identity/sign-out-button';
 import { getViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'Account suspended' };
+export const metadata: Metadata = { title: 'Account Suspended' };
 
 /** The one page a suspended account can see. Anyone else is sent on their way. */
 export default async function SuspendedPage() {
@@ -17,8 +17,8 @@ export default async function SuspendedPage() {
       <div className="mb-8">
         <Wordmark />
       </div>
-      <h1 className="font-display text-3xl font-bold tracking-tight text-ink">This account is suspended</h1>
-      <p className="mt-3 text-ink-muted">WorldRoot staff have suspended this account, so it cannot be used for now. Your characters, worlds and writing have not been removed.</p>
+      <h1 className="font-display text-3xl font-bold tracking-tight text-ink">This Account Is Suspended</h1>
+      <p className="mt-3 text-ink-muted">The Rootwardens, WorldRoot’s staff, have suspended this account, so it cannot be used for now. Your characters, worlds and writing have not been removed.</p>
       {viewer.suspended.reason ? (
         <div className="wr-glass mt-6 rounded-2xl p-5">
           <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Reason given</p>

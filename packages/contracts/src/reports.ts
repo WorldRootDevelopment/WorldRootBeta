@@ -4,15 +4,15 @@
  * describe possible harm to a person or a breach of the law.
  */
 export const REPORT_CATEGORIES = {
-  harassment: { label: 'Harassment or bullying', escalate: false },
-  spam: { label: 'Spam or advertising', escalate: false },
-  content_rating: { label: 'Wrong content rating or missing warning', escalate: false },
-  boundaries: { label: 'Ignoring a writer’s stated boundaries', escalate: false },
-  impersonation: { label: 'Pretending to be someone else', escalate: false },
-  minor_safety: { label: 'A child may be at risk', escalate: true },
-  threat: { label: 'A threat, or someone may be in danger', escalate: true },
-  illegal: { label: 'Something illegal', escalate: true },
-  other: { label: 'Something else', escalate: false },
+  harassment: { label: 'Harassment Or Bullying', escalate: false },
+  spam: { label: 'Spam Or Advertising', escalate: false },
+  content_rating: { label: 'Wrong Content Rating Or Missing Warning', escalate: false },
+  boundaries: { label: 'Ignoring A Writer’s Stated Boundaries', escalate: false },
+  impersonation: { label: 'Pretending To Be Someone Else', escalate: false },
+  minor_safety: { label: 'A Child May Be At Risk', escalate: true },
+  threat: { label: 'A Threat, Or Someone May Be In Danger', escalate: true },
+  illegal: { label: 'Something Illegal', escalate: true },
+  other: { label: 'Something Else', escalate: false },
 } as const;
 
 export type ReportCategory = keyof typeof REPORT_CATEGORIES;

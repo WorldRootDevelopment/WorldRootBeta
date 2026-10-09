@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { getViewer } from '@/lib/session';
 
 const PILLARS = [
-  { title: 'Create characters', body: 'Rich profiles that live in your own library and travel with you.' },
-  { title: 'Build worlds', body: 'Settings, locations and lore in one place, for any genre.' },
-  { title: 'Find each other', body: 'Communities and partners, discovered by what they write.' },
-  { title: 'Write together', body: 'Scenes made for long-form prose, kept as living history.' },
+  { title: 'Create Characters', body: 'Rich profiles that live in your own library and travel with you.' },
+  { title: 'Build Worlds', body: 'Settings, locations and lore in one place, for any genre.' },
+  { title: 'Find Each Other', body: 'Communities and partners, discovered by what they write.' },
+  { title: 'Write Together', body: 'Scenes made for long-form prose, kept as living history.' },
 ];
 
 /**
@@ -64,7 +64,7 @@ export default async function LandingPage() {
           href="/alternatives"
           className="group mt-12 block wr-glass rounded-2xl p-6 transition-colors hover:border-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
-          <h2 className="font-display text-xl font-semibold text-ink">Alternatives to boycotted franchises</h2>
+          <h2 className="font-display text-xl font-semibold text-ink">Alternatives To Boycotted Franchises</h2>
           <p className="mt-2 max-w-2xl leading-relaxed text-ink-muted">
             Love a kind of story but stepped away from the franchise behind it? Start with Varrowmere, an original school of magic that is
             free for anyone to use.

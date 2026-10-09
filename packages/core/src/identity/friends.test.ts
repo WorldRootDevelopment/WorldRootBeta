@@ -149,7 +149,7 @@ describe('achievements', () => {
     expect(await grantAchievement(db, ada.userId, 'natural_20')).toBe(false);
     const told = await lines(ada);
     expect(told.filter((line) => line === 'You have a new badge: Natural 20')).toHaveLength(1);
-    expect(told).toContain('You have a new badge: Ensemble cast');
+    expect(told).toContain('You have a new badge: Ensemble Cast');
     // Most achievements are not badges. Worldbuilder is both, so it joins the badge row.
     expect((await getProfile(db, ada.userId))!.badges).toEqual(['worldbuilder']);
   });

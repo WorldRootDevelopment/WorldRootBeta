@@ -184,7 +184,7 @@ export async function createReport(db: Db, actor: Actor, input: CreateReportInpu
     await notifyMany(db, (await staffIds(db)).filter((id) => id !== actor.userId), {
       type: 'report.new',
       groupKey: 'platform:reports',
-      subject: 'the staff queue',
+      subject: 'the Rootwarden queue',
       href: '/staff',
     });
   }
@@ -212,7 +212,7 @@ export type ReportScope = { communityId: string } | 'platform';
 
 async function assertCanReview(db: Db, actor: Actor, scope: ReportScope): Promise<void> {
   if (scope === 'platform') {
-    if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only WorldRoot staff can do that.');
+    if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only Rootwardens, the WorldRoot staff, can do that.');
   } else {
     await authorize(actor, 'report.review', scope, communityGrants(db));
   }

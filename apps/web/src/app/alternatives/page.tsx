@@ -6,7 +6,7 @@ import type { CSSProperties } from 'react';
 import { getViewer } from '@/lib/session';
 
 export const metadata: Metadata = {
-  title: 'Alternatives to boycotted franchises',
+  title: 'Alternatives To Boycotted Franchises',
   description: 'Original universes, free to use, for writers who love a kind of story but have stepped away from the franchise that made it famous.',
 };
 
@@ -49,7 +49,7 @@ export default async function AlternativesPage() {
       <main>
         <section className="py-12 md:py-16">
           <h1 className="max-w-3xl font-display text-4xl font-semibold leading-tight tracking-tight text-ink md:text-5xl">
-            Alternatives to boycotted franchises
+            Alternatives To Boycotted Franchises
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
             Sometimes you love a kind of story and can no longer support the franchise that made it famous. You should not have to give up the
@@ -92,7 +92,7 @@ export default async function AlternativesPage() {
           </section>
 
           <section className="mt-12">
-            <h3 className={sectionHeading}>The academy</h3>
+            <h3 className={sectionHeading}>The Academy</h3>
             <p className={body}>
               Varrowmere Academy stands on a tidal island off a cold coast. A causeway joins it to the mainland town of Saltmarket, and the
               sea covers that causeway twice a day. Miss the tide and you wait six hours, which is the excuse behind most late homework.
@@ -104,7 +104,7 @@ export default async function AlternativesPage() {
           </section>
 
           <section className="mt-12">
-            <h3 className={sectionHeading}>Five Hearths, and you choose</h3>
+            <h3 className={sectionHeading}>Five Hearths, And You Choose</h3>
             <p className={body}>
               Students live in one of five Hearths. Nobody is sorted. New students spend their first term, the Wandering Term, living a
               fortnight in each, and at midwinter they choose where to stay. Anyone may change Hearth once, at any time, with no questions
@@ -121,7 +121,7 @@ export default async function AlternativesPage() {
           </section>
 
           <section className="mt-12">
-            <h3 className={sectionHeading}>How magic is worked</h3>
+            <h3 className={sectionHeading}>How Magic Is Worked</h3>
             <p className={body}>
               Magic is worked through a focus: a small object the student makes with their own hands in their first year, from things they
               gather on the island. A whittled ring, a bone needle, a pendant of sea-glass. It cannot be bought and it will not work for
@@ -139,7 +139,7 @@ export default async function AlternativesPage() {
           </section>
 
           <section className="mt-12">
-            <h3 className={sectionHeading}>Life on the island</h3>
+            <h3 className={sectionHeading}>Life On The Island</h3>
             <p className={body}>
               The year turns on Kindling Night, when each new student lights the lantern that will hang in the Lantern Hall until they leave.
               The Hearths compete at kitefall, racing storm-kites along the cliffs to carry the season lantern home. The library rearranges
@@ -153,7 +153,7 @@ export default async function AlternativesPage() {
 
           {template ? (
             <section className="mt-12">
-              <h3 className={sectionHeading}>What the template gives you</h3>
+              <h3 className={sectionHeading}>What The Template Gives You</h3>
               <p className={`${body} font-sans text-base text-ink-muted`}>
                 {countLocations(template.locations)} places to start from, each ready to hold scenes, and a suggested character sheet. Your copy
                 is yours to rename and reshape.
@@ -171,7 +171,7 @@ export default async function AlternativesPage() {
           ) : null}
 
           <section className="mt-12 border-t border-line pt-8">
-            <h3 className={sectionHeading}>Yours to use</h3>
+            <h3 className={sectionHeading}>Yours To Use</h3>
             <p className={`${body} font-sans text-base`}>
               Varrowmere belongs to the people who write in it. Run a community in it, change the Hearths, move the island, invent a seventh
               discipline. You do not need permission and you do not need to credit anyone.
@@ -185,7 +185,7 @@ export default async function AlternativesPage() {
         </article>
 
         <section className="py-12">
-          <h2 className={sectionHeading}>More to come</h2>
+          <h2 className={sectionHeading}>More To Come</h2>
           <p className="mt-3 max-w-2xl leading-relaxed text-ink-muted">
             Varrowmere is the first. If there is a kind of story you miss and a franchise you have stepped away from, more original universes
             are on the way.

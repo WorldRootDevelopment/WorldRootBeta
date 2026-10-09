@@ -5,7 +5,7 @@ export type SceneStatus = (typeof SCENE_STATUSES)[number];
 
 export const SCENE_STATUS_LABELS: Record<SceneStatus, string> = {
   active: 'Active',
-  on_hold: 'On hold',
+  on_hold: 'On Hold',
   completed: 'Completed',
   archived: 'Archived',
 };

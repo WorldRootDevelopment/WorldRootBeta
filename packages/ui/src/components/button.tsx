@@ -5,7 +5,7 @@ type Variant = 'primary' | 'secondary' | 'ghost';
 type Size = 'md' | 'lg';
 
 const base =
-  'inline-flex items-center justify-center gap-2 rounded-full font-medium transition ' +
+  'inline-flex items-center justify-center gap-2 rounded-full font-medium capitalize transition ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ' +
   'disabled:cursor-not-allowed disabled:opacity-50';
 

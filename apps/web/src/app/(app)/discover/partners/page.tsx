@@ -25,7 +25,7 @@ import { Prose, SectionHeading } from '@/features/shell/prose';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'Looking for RP' };
+export const metadata: Metadata = { title: 'Looking For RP' };
 
 const chip = 'rounded-full bg-surface-sunken px-2.5 py-1 text-xs font-medium text-ink-muted';
 const filterLink =
@@ -107,7 +107,7 @@ export default async function PartnersPage({ searchParams }: { searchParams: Pro
 
       {mine.length > 0 ? (
         <>
-          <SectionHeading>Your listings</SectionHeading>
+          <SectionHeading>Your Listings</SectionHeading>
           <ul className="mb-4 flex max-w-3xl flex-col gap-4">
             {mine.map((row) => (
               <li key={row.listing.id}>
@@ -115,11 +115,11 @@ export default async function PartnersPage({ searchParams }: { searchParams: Pro
               </li>
             ))}
           </ul>
-          <SectionHeading>From other writers</SectionHeading>
+          <SectionHeading>From Other Writers</SectionHeading>
         </>
       ) : null}
 
-      <nav aria-label="Filter by genre" className="mb-6 flex max-w-3xl flex-wrap gap-2">
+      <nav aria-label="Filter By Genre" className="mb-6 flex max-w-3xl flex-wrap gap-2">
         <Link href="/discover/partners" aria-current={genre ? undefined : 'true'} className={`${filterLink} ${genre ? '' : filterOn}`}>
           All
         </Link>

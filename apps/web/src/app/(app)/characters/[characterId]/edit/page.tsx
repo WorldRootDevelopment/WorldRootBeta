@@ -9,7 +9,7 @@ import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'Edit character' };
+export const metadata: Metadata = { title: 'Edit Character' };
 
 export default async function EditCharacterPage({ params }: { params: Promise<{ characterId: string }> }) {
   const viewer = await requireViewer();

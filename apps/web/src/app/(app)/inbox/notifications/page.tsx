@@ -30,7 +30,7 @@ export default async function NotificationsPage() {
       <InboxTabs messages={unreadMessages} friends={friendRequests} notifications={unread} />
 
       {notifications.length === 0 ? (
-        <EmptyState icon={<Bell className="size-8" aria-hidden="true" />} title="Nothing yet">
+        <EmptyState icon={<Bell className="size-8" aria-hidden="true" />} title="Nothing Yet">
           You will hear here when someone posts in a scene you are writing, invites you to one, or reviews a character.
         </EmptyState>
       ) : (

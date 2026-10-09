@@ -41,7 +41,7 @@ export function ProfilePopup({ handle, children }: { handle: string; children: R
         aria-modal="true"
         aria-labelledby="profile-popup-name"
         tabIndex={-1}
-        className="wr-popover relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-2xl overflow-y-auto rounded-3xl outline-none"
+        className="wr-popover relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-3xl overflow-y-auto rounded-3xl outline-none"
       >
         <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
           {/* A plain link, so it loads the full page instead of opening this pop-up again. */}

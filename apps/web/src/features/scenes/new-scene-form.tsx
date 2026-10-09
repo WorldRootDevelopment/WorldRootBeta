@@ -65,7 +65,7 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
       </div>
 
       <fieldset className="flex flex-col gap-1">
-        <legend className="mb-1 text-sm font-medium text-ink">Your characters in this scene</legend>
+        <legend className="mb-1 text-sm font-medium text-ink">Your Characters In This Scene</legend>
         {characters.map((character) => (
           <label key={character.id} className="flex min-h-11 items-start gap-3 py-2 text-sm text-ink">
             <input
@@ -91,7 +91,7 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
       </fieldset>
 
       <fieldset className="flex flex-col gap-1">
-        <legend className="mb-1 text-sm font-medium text-ink">Content rating</legend>
+        <legend className="mb-1 text-sm font-medium text-ink">Content Rating</legend>
         {CONTENT_RATINGS.map((option) => (
           <label key={option} className="flex min-h-11 items-start gap-3 py-2 text-sm text-ink">
             <input
@@ -112,7 +112,7 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
       <div className="flex flex-col gap-1.5">
         <p className="text-sm font-medium text-ink">Opening post</p>
         <RichTextEditor
-          label="Opening post"
+          label="Opening Post"
           placeholder="Set the scene…"
           minHeight="14rem"
           onChange={(doc) => {
@@ -126,7 +126,7 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
         ) : null}
       </div>
 
-      <FormFooter error={error} pending={pending} submitLabel="Start scene" cancelHref={cancelHref} />
+      <FormFooter error={error} pending={pending} submitLabel="Start Scene" cancelHref={cancelHref} />
     </form>
   );
 }

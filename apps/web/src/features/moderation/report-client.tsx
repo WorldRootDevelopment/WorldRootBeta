@@ -5,7 +5,8 @@ import type { ReportRow } from '@worldroot/core';
 import { Button } from '@worldroot/ui';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import { send } from '@/features/scenes/api';
 
 const linkButton =
@@ -16,12 +17,41 @@ const field =
   'w-full rounded-lg border border-line-strong bg-surface-raised px-3 text-sm text-ink ' +
   'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus';
 
-/** A "Report" link that opens a short form: a reason and an optional note. */
+/**
+ * A "Report" link that opens a short form: a reason and an optional note.
+ *
+ * The form opens as a dialog in the middle of the screen, attached to the
+ * page itself and not to wherever the link sits. A form hanging off the link
+ * was cut off whenever the link was inside something that scrolls or clips,
+ * such as a chat, a narrow list or the profile pop-up.
+ */
 export function ReportButton({ targetType, targetId, label = 'Report' }: { targetType: ReportTarget; targetId: string; label?: string }) {
-  const details = useRef<HTMLDetailsElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const close = useCallback(() => {
+    setOpen(false);
+    setError(null);
+    trigger.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    panel.current?.querySelector<HTMLElement>('select, button')?.focus();
+    // Heard before anything else on the page, and kept from it, so Escape closes this dialog and not a pop-up underneath.
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.stopPropagation();
+      close();
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [open, close]);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,48 +65,66 @@ export function ReportButton({ targetType, targetId, label = 'Report' }: { targe
   };
 
   return (
-    <details ref={details} className="relative inline-block">
-      <summary className={`${linkButton} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}>{label}</summary>
-      <div className="absolute right-0 z-20 mt-2 w-72 wr-popover rounded-xl p-4 text-left">
-        {sent ? (
-          <div role="status">
-            <p className="text-sm font-medium text-ink">Thank you. It has been reported.</p>
-            <p className="mt-1 text-sm text-ink-muted">The people who review reports will look at it. The person you reported is not told who reported them.</p>
-            <Button variant="secondary" className="mt-3" onClick={() => details.current?.removeAttribute('open')}>
-              Close
-            </Button>
-          </div>
-        ) : (
-          <form onSubmit={submit} className="flex flex-col gap-3">
-            <label className="flex flex-col gap-1 text-sm font-medium text-ink">
-              What is wrong?
-              <select name="category" defaultValue="" required className={`${field} min-h-11 font-normal`}>
-                <option value="" disabled>
-                  Choose a reason
-                </option>
-                {REPORT_CATEGORY_KEYS.map((key) => (
-                  <option key={key} value={key}>
-                    {REPORT_CATEGORIES[key].label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1 text-sm font-medium text-ink">
-              Anything to add? (optional)
-              <textarea name="note" rows={3} maxLength={1000} className={`${field} resize-y py-2 font-normal`} />
-            </label>
-            {error ? (
-              <p role="alert" className="text-sm text-danger">
-                {error}
-              </p>
-            ) : null}
-            <Button type="submit" disabled={pending}>
-              {pending ? 'Sending…' : 'Send report'}
-            </Button>
-          </form>
-        )}
-      </div>
-    </details>
+    <>
+      <button ref={trigger} type="button" className={linkButton} aria-haspopup="dialog" onClick={() => setOpen(true)}>
+        {label}
+      </button>
+      {open
+        ? createPortal(
+            <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4">
+              <div aria-hidden="true" onClick={close} className="fixed inset-0 bg-black/45" />
+              <div ref={panel} role="dialog" aria-modal="true" aria-labelledby={titleId} className="wr-popover relative w-full max-w-sm rounded-2xl p-5 text-left">
+                <h2 id={titleId} className="mb-3 font-display text-lg font-semibold text-ink">
+                  Report
+                </h2>
+                {sent ? (
+                  <div role="status">
+                    <p className="text-sm font-medium text-ink">Thank you. It has been reported.</p>
+                    <p className="mt-1 text-sm text-ink-muted">The people who review reports will look at it. The person you reported is not told who reported them.</p>
+                    <Button variant="secondary" className="mt-4" onClick={close}>
+                      Close
+                    </Button>
+                  </div>
+                ) : (
+                  <form onSubmit={submit} className="flex flex-col gap-3">
+                    <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+                      What is wrong?
+                      <select name="category" defaultValue="" required className={`${field} min-h-11 font-normal`}>
+                        <option value="" disabled>
+                          Choose a reason
+                        </option>
+                        {REPORT_CATEGORY_KEYS.map((key) => (
+                          <option key={key} value={key}>
+                            {REPORT_CATEGORIES[key].label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm font-medium text-ink">
+                      Anything to add? (optional)
+                      <textarea name="note" rows={3} maxLength={1000} className={`${field} resize-y py-2 font-normal`} />
+                    </label>
+                    {error ? (
+                      <p role="alert" className="text-sm text-danger">
+                        {error}
+                      </p>
+                    ) : null}
+                    <div className="flex flex-wrap gap-2">
+                      <Button type="submit" disabled={pending}>
+                        {pending ? 'Sending…' : 'Send report'}
+                      </Button>
+                      <Button variant="ghost" onClick={close}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }
 
@@ -99,7 +147,7 @@ function ReportCard({ report }: { report: ReportRow }) {
     <li className="wr-glass rounded-2xl p-5">
       <p className="flex flex-wrap items-center gap-2 text-sm">
         <span className="font-medium text-ink">{REPORT_CATEGORIES[report.category]?.label ?? report.category}</span>
-        {report.escalated ? <span className="rounded-full bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger">Sent to WorldRoot staff</span> : null}
+        {report.escalated ? <span className="rounded-full bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger">Sent to the Rootwardens</span> : null}
         {report.status !== 'open' ? <span className="rounded-full bg-surface-sunken px-2 py-0.5 text-xs font-medium text-ink-muted">{report.status === 'resolved' ? 'Resolved' : 'Dismissed'}</span> : null}
       </p>
       <p className="mt-1 text-sm text-ink-muted">

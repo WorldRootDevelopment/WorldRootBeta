@@ -28,7 +28,7 @@ export function SeasonPicker({ season: saved }: { season: SeasonKey }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div role="radiogroup" aria-label="Site look" className="grid max-w-3xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div role="radiogroup" aria-label="Site Look" className="grid max-w-3xl gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {SEASON_KEYS.map((key) => {
           const chosen = season === key;
           return (

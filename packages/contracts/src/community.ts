@@ -49,10 +49,10 @@ export type RoleInput = z.input<typeof roleInputSchema>;
 export const CHARACTER_FIELD_TYPES = ['short_text', 'long_text', 'number', 'single_choice'] as const;
 
 export const CHARACTER_FIELD_TYPE_LABELS: Record<(typeof CHARACTER_FIELD_TYPES)[number], string> = {
-  short_text: 'Short text',
-  long_text: 'Long text',
+  short_text: 'Short Text',
+  long_text: 'Long Text',
   number: 'Number',
-  single_choice: 'Choice from a list',
+  single_choice: 'Choice From A List',
 };
 
 export const characterFieldInputSchema = z

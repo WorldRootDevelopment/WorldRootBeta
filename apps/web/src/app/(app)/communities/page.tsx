@@ -51,7 +51,7 @@ export default async function CommunitiesPage() {
           ))}
         </ul>
       ) : (
-        <EmptyState icon={<Users className="size-8" aria-hidden="true" />} title="No communities yet">
+        <EmptyState icon={<Users className="size-8" aria-hidden="true" />} title="No Communities Yet">
           Start one of your own, find one in Discover, or join one when you are invited.
         </EmptyState>
       )}

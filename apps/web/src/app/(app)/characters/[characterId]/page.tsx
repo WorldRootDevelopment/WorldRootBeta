@@ -41,11 +41,11 @@ export default async function CharacterPage({ params }: Props) {
     { title: 'Appearance', field: 'appearance', text: character.appearance },
     { title: 'Personality', field: 'personality', text: character.personality },
     { title: 'Biography', field: 'biography', text: character.biography },
-    { title: 'Skills and abilities', field: 'skills', text: character.skills },
+    { title: 'Skills And Abilities', field: 'skills', text: character.skills },
     { title: 'Likes', field: 'likes', text: character.likes },
     { title: 'Dislikes', field: 'dislikes', text: character.dislikes },
     { title: 'Voice', field: 'voice', text: character.voice },
-    { title: 'Content and boundaries', field: 'boundaries', text: character.boundaries },
+    { title: 'Content And Boundaries', field: 'boundaries', text: character.boundaries },
   ].filter((section): section is { title: string; field: string; text: string } => Boolean(section.text));
 
   return (

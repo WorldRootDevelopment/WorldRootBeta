@@ -37,7 +37,7 @@ export function CharacterForm({ character }: { character?: Character }) {
       </div>
 
       <fieldset className={groupClass}>
-        <legend className={legendClass}>At a glance</legend>
+        <legend className={legendClass}>At A Glance</legend>
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField label="Pronouns" name="pronouns" defaultValue={value('pronouns')} error={fields.pronouns} maxLength={120} />
           <TextField label="Species" name="species" defaultValue={value('species')} error={fields.species} maxLength={120} />
@@ -47,7 +47,7 @@ export function CharacterForm({ character }: { character?: Character }) {
       </fieldset>
 
       <fieldset className={groupClass}>
-        <legend className={legendClass}>Who they are</legend>
+        <legend className={legendClass}>Who They Are</legend>
         <RichField label="Appearance" initial={rich.values.appearance!} onChange={(doc) => rich.set('appearance', doc)} error={fields.appearance} />
         <RichField label="Personality" initial={rich.values.personality!} onChange={(doc) => rich.set('personality', doc)} error={fields.personality} />
         <RichField
@@ -62,14 +62,14 @@ export function CharacterForm({ character }: { character?: Character }) {
 
       <fieldset className={groupClass}>
         <legend className={legendClass}>Details</legend>
-        <TextArea label="Skills and abilities" name="skills" defaultValue={value('skills')} error={fields.skills} rows={3} />
+        <TextArea label="Skills And Abilities" name="skills" defaultValue={value('skills')} error={fields.skills} rows={3} />
         <TextArea label="Likes" name="likes" defaultValue={value('likes')} error={fields.likes} rows={3} />
         <TextArea label="Dislikes" name="dislikes" defaultValue={value('dislikes')} error={fields.dislikes} rows={3} />
         <TextArea label="Voice" name="voice" defaultValue={value('voice')} error={fields.voice} rows={3} hint="How they sound and speak." />
       </fieldset>
 
       <fieldset className={groupClass}>
-        <legend className={legendClass}>Content and boundaries</legend>
+        <legend className={legendClass}>Content And Boundaries</legend>
         <TextArea
           label="Boundaries"
           name="boundaries"

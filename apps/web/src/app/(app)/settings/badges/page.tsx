@@ -44,7 +44,7 @@ export default async function BadgesPage() {
         <Link href={`/u/${viewer.profile.handle}`} className="font-medium text-accent-text underline">
           profile
         </Link>
-        . Only the Staff badge is shown beside a name everywhere else.
+        . Only the Rootwarden badge, worn by WorldRoot staff, is shown beside a name everywhere else.
       </p>
 
       <SectionHeading>Your badges — {mine.length}</SectionHeading>

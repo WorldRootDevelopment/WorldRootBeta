@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const tabClass =
-  'inline-flex min-h-11 items-center border-b-2 border-transparent px-1 text-sm font-medium text-ink-muted hover:text-ink ' +
+  'inline-flex min-h-11 items-center border-b-2 border-transparent px-1 text-sm font-medium capitalize text-ink-muted hover:text-ink ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 export default async function CommunityLayout({ params, children }: Props) {

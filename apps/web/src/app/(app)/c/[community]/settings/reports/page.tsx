@@ -16,12 +16,12 @@ export default async function CommunityReportsPage({ params }: { params: Promise
       <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Reports</h2>
       <p className="mb-6 mt-2 max-w-2xl text-ink-muted">
         Things members have reported in {community.name}. Remove a post or message from where it sits, then mark the report resolved
-        here. Reports about possible harm or law-breaking are also sent to WorldRoot staff.
+        here. Reports about possible harm or law-breaking are also sent to the Rootwardens, WorldRoot’s own staff.
       </p>
       <ReportQueue reports={open} emptyText="Nothing is waiting for review." />
       {handled.length > 0 ? (
         <>
-          <SectionHeading>Dealt with</SectionHeading>
+          <SectionHeading>Dealt With</SectionHeading>
           <ReportQueue reports={handled} emptyText="" />
         </>
       ) : null}

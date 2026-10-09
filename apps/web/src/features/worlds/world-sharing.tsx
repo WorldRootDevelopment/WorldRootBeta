@@ -34,7 +34,7 @@ export function WorldSharingPanel({ worldId, shareCode }: { worldId: string; sha
 
   return (
     <section className="mt-12 max-w-2xl wr-glass rounded-2xl p-5">
-      <h2 className="font-display text-xl font-semibold text-ink">Share this world</h2>
+      <h2 className="font-display text-xl font-semibold text-ink">Share This World</h2>
       {shareCode ? (
         <>
           <p className="mt-2 text-sm text-ink-muted">

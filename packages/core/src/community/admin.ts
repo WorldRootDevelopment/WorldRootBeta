@@ -535,7 +535,7 @@ export async function deleteCommunity(db: Db, actor: Actor, communityId: string,
 
 /** Every community there is, with its size. WorldRoot staff only. */
 export async function listAllCommunities(db: Db, actor: Actor): Promise<Array<Community & { memberCount: number }>> {
-  if (actor.platformRole !== 'staff') throw forbidden('Only WorldRoot staff can do that.');
+  if (actor.platformRole !== 'staff') throw forbidden('Only Rootwardens, the WorldRoot staff, can do that.');
   const all = await db.select().from(communities).orderBy(asc(communities.name));
   const sizes = await db.select({ communityId: communityMembers.communityId }).from(communityMembers);
   return all.map((community) => ({ ...community, memberCount: sizes.filter((row) => row.communityId === community.id).length }));

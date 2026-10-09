@@ -39,7 +39,7 @@ export default async function AccountSettingsPage() {
       <SectionHeading>Devices</SectionHeading>
       <SessionsPanel />
 
-      <SectionHeading>Blocked people</SectionHeading>
+      <SectionHeading>Blocked People</SectionHeading>
       <BlockedList people={blocked} />
     </>
   );

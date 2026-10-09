@@ -11,7 +11,7 @@ import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'New scene' };
+export const metadata: Metadata = { title: 'New Scene' };
 
 export default async function NewScenePage({ searchParams }: { searchParams: Promise<{ location?: string }> }) {
   const viewer = await requireViewer();
@@ -31,9 +31,9 @@ export default async function NewScenePage({ searchParams }: { searchParams: Pro
                 { label: place.communityName, href: `/c/${place.communitySlug}` },
                 { label: place.worldName, href: `/c/${place.communitySlug}/worlds/${place.worldSlug}` },
                 { label: place.locationName, href: locationHref! },
-                { label: 'New scene' },
+                { label: 'New Scene' },
               ]
-            : [{ label: 'Scenes', href: '/scenes' }, { label: 'New scene' }]
+            : [{ label: 'Scenes', href: '/scenes' }, { label: 'New Scene' }]
         }
       />
       <PageHeader
@@ -46,7 +46,7 @@ export default async function NewScenePage({ searchParams }: { searchParams: Pro
       />
 
       {!canCreate ? (
-        <EmptyState title="Join the community to start a scene">
+        <EmptyState title="Join The Community To Start A Scene">
           Members of {place?.communityName} can start scenes here.
           <span className="mt-6 block">
             <Link href={`/c/${place?.communitySlug}`} className={buttonClass('primary')}>
@@ -55,7 +55,7 @@ export default async function NewScenePage({ searchParams }: { searchParams: Pro
           </span>
         </EmptyState>
       ) : characters.length === 0 ? (
-        <EmptyState icon={<UserRound className="size-8" aria-hidden="true" />} title="You need a character first">
+        <EmptyState icon={<UserRound className="size-8" aria-hidden="true" />} title="You Need A Character First">
           {place
             ? `A scene in ${place.communityName} is written with characters you have added to that community.`
             : 'A scene is written with characters from your library.'}

@@ -8,7 +8,7 @@ import { safeNext } from '@/lib/next-path';
 import { oauthProviders } from '@/lib/server';
 import { getViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'Sign in' };
+export const metadata: Metadata = { title: 'Sign In' };
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const next = safeNext((await searchParams).next, '/home');
@@ -18,7 +18,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
 
   return (
     <AuthCard
-      title="Welcome back"
+      title="Welcome Back"
       footer={
         <>
           New to WorldRoot?{' '}

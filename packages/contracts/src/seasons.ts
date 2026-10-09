@@ -10,7 +10,7 @@
 export const SEASONS = {
   none: { label: 'Standard', note: 'The usual WorldRoot look.' },
   pride: { label: 'Pride', note: 'The six-stripe rainbow flag.' },
-  trans: { label: 'Trans pride', note: 'Light blue, pink and white.' },
+  trans: { label: 'Trans Pride', note: 'Light blue, pink and white.' },
   halloween: { label: 'Halloween', note: 'Orange, purple and black.' },
   easter: { label: 'Easter', note: 'Soft spring pastels.' },
   holidays: { label: 'Holidays', note: 'Red, green, white and gold.' },

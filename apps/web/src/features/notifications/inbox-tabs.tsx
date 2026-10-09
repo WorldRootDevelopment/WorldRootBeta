@@ -1,7 +1,7 @@
 import { NavLink } from '@/features/shell/nav-link';
 
 const tab =
-  'inline-flex min-h-11 items-center gap-2 border-b-2 border-transparent px-1 text-sm font-medium text-ink-muted hover:text-ink ' +
+  'inline-flex min-h-11 items-center gap-2 border-b-2 border-transparent px-1 text-sm font-medium capitalize text-ink-muted hover:text-ink ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 const Count = ({ value }: { value: number }) =>

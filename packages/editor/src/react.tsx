@@ -95,7 +95,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       <Tool label="Quote" active={state.quote} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
         <span className="font-serif text-lg leading-none">&ldquo;</span>
       </Tool>
-      <Tool label="Scene break" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+      <Tool label="Scene Break" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
         <span aria-hidden="true">&mdash;</span>
       </Tool>
       <Tool label={state.link ? 'Remove link' : 'Link'} active={state.link} onClick={setLink}>

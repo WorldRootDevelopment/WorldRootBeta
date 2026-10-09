@@ -41,7 +41,7 @@ export default async function LibraryPage() {
       </div>
 
       {characters.length === 0 && worlds.length === 0 ? (
-        <EmptyState icon={<LibraryIcon className="size-8" aria-hidden="true" />} title="Your library is empty">
+        <EmptyState icon={<LibraryIcon className="size-8" aria-hidden="true" />} title="Your Library Is Empty">
           Characters and worlds you make live here, independent of any community. Start with a character: all it needs is a name.
         </EmptyState>
       ) : (

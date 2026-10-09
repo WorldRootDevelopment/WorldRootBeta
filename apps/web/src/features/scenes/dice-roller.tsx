@@ -151,7 +151,7 @@ export function DiceRoller({ sceneId, characters, theme: savedTheme }: DiceRolle
   const resting = Math.min(count, MAX_SHOWN);
 
   return (
-    <form onSubmit={roll} aria-label="Roll dice" className={`wr-glass wr-dice-${theme} mt-8 overflow-hidden rounded-3xl`}>
+    <form onSubmit={roll} aria-label="Roll Dice" className={`wr-glass wr-dice-${theme} mt-8 overflow-hidden rounded-3xl`}>
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4">
         <h3 className="font-display text-lg font-semibold text-ink">Dice</h3>
         <span className="rounded-full bg-accent-soft px-3 py-1 font-display text-sm font-bold tabular-nums text-accent-text" aria-label={`Rolling ${notation}`}>
@@ -161,7 +161,7 @@ export function DiceRoller({ sceneId, characters, theme: savedTheme }: DiceRolle
       </div>
 
       {/* Which die. Each button is the die itself. */}
-      <div role="radiogroup" aria-label="Which die" className="flex flex-wrap gap-1 px-4 pt-3">
+      <div role="radiogroup" aria-label="Which Die" className="flex flex-wrap gap-1 px-4 pt-3">
         {DICE.map((die) => (
           <button
             key={die}
@@ -178,20 +178,20 @@ export function DiceRoller({ sceneId, characters, theme: savedTheme }: DiceRolle
       </div>
 
       <div className="flex flex-wrap items-end gap-x-8 gap-y-4 px-5 pt-4">
-        <Stepper label="How many" value={count} min={1} max={MAX_COUNT} onChange={(value) => choose({ count: value })} show={String(count)} />
-        <Stepper label="Add or subtract" value={modifier} min={-MAX_MODIFIER} max={MAX_MODIFIER} onChange={(value) => choose({ modifier: value })} show={modifier === 0 ? '0' : signed(modifier)} />
+        <Stepper label="How Many" value={count} min={1} max={MAX_COUNT} onChange={(value) => choose({ count: value })} show={String(count)} />
+        <Stepper label="Add Or Subtract" value={modifier} min={-MAX_MODIFIER} max={MAX_MODIFIER} onChange={(value) => choose({ modifier: value })} show={modifier === 0 ? '0' : signed(modifier)} />
       </div>
 
       <div className="grid gap-4 px-5 pt-4 sm:grid-cols-[minmax(0,1fr)_12rem]">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="dice-reason" className={smallLabel}>
-            What for (optional)
+            What For (Optional)
           </label>
           <input id="dice-reason" value={reason} onChange={(event) => setReason(event.target.value)} maxLength={120} placeholder="to pick the lock" className={field} />
         </div>
         <div className="flex flex-col gap-1.5">
           <label htmlFor="dice-who" className={smallLabel}>
-            Rolling as
+            Rolling As
           </label>
           <select id="dice-who" value={who} onChange={(event) => setWho(event.target.value)} className={field}>
             {characters.map((character) => (
@@ -226,7 +226,7 @@ export function DiceRoller({ sceneId, characters, theme: savedTheme }: DiceRolle
         <p role="status" className="sr-only">
           {thrown?.landed ? `Rolled ${thrown.result.notation}: ${thrown.result.total}` : ''}
         </p>
-        <Button type="submit" size="lg" disabled={pending || rolling}>
+        <Button type="submit" size="lg" className="normal-case" disabled={pending || rolling}>
           {pending || rolling ? 'Rolling…' : `Roll ${count}d${sides}${signed(modifier)}`}
         </Button>
       </div>

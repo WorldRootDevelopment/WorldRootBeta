@@ -148,10 +148,10 @@ describe('community notifications', () => {
     const forOwner = (await listNotifications(db, owner))[0]!;
     expect(notificationLine(forOwner.type, forOwner.actors, forOwner.count, forOwner.subject)).toBe('A new report is waiting in Valley');
     expect(forOwner).toMatchObject({ actors: [], preview: null, href: '/c/valley/settings/reports' });
-    expect(await lines(staff)).toEqual(['A new report is waiting in the staff queue']);
+    expect(await lines(staff)).toEqual(['A new report is waiting in the Rootwarden queue']);
 
     await quiet();
     await setBadge(db, staff, player.userId, 'beta_tester', true);
-    expect((await lines(player))[0]).toBe('You have a new badge: Beta tester');
+    expect((await lines(player))[0]).toBe('You have a new badge: Seedling');
   });
 });

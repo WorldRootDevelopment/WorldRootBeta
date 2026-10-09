@@ -33,7 +33,7 @@ interface AppShellProps {
   children: ReactNode;
 }
 
-const railLink = `relative flex min-h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium text-ink-muted hover:bg-surface-sunken hover:text-ink wide:justify-start wide:px-3 ${focusRing}`;
+const railLink = `relative flex min-h-11 items-center justify-center gap-3 rounded-lg text-sm font-medium capitalize text-ink-muted hover:bg-surface-sunken hover:text-ink wide:justify-start wide:px-3 ${focusRing}`;
 const railActive = 'bg-accent-soft text-accent-text hover:bg-accent-soft hover:text-accent-text';
 // On the narrow rail a section is marked by a short rule; on the wide rail by its name.
 const sectionHeading =
@@ -147,7 +147,7 @@ export function AppShell({ profile, inboxUnread, communities, children }: AppShe
             {index === 2 ? <CreateMenu placement="bar" /> : null}
             <NavLink
               href={href}
-              className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg text-[0.6875rem] font-medium text-ink-muted ${focusRing}`}
+              className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-lg text-[0.6875rem] font-medium capitalize text-ink-muted ${focusRing}`}
               activeClassName="text-accent-text"
             >
               <Icon className="size-5" aria-hidden="true" />

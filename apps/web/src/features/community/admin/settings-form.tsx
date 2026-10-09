@@ -153,7 +153,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
 
       {community ? (
         <fieldset className="flex flex-col">
-          <legend className="mb-1 text-sm font-medium text-ink">Play style</legend>
+          <legend className="mb-1 text-sm font-medium text-ink">Play Style</legend>
           <label className={checkRow}>
             <input type="checkbox" name="dndMode" defaultChecked={community.dndMode} className="mt-0.5 size-5 shrink-0 accent-accent" />
             <span>

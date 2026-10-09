@@ -21,7 +21,7 @@ export default async function HomePage() {
     <>
       <PageHeader title={`Welcome, ${profile.displayName}`} lead="Scenes waiting on you and news from your communities will gather here." />
       {open.length === 0 ? (
-        <EmptyState icon={<Sprout className="size-8" aria-hidden="true" />} title="Nothing has taken root yet">
+        <EmptyState icon={<Sprout className="size-8" aria-hidden="true" />} title="Nothing Has Taken Root Yet">
           Create a character, then start a private scene or find a community to write in.
           <span className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/library/characters/new" className={buttonClass('primary')}>

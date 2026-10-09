@@ -6,14 +6,21 @@ import { FormFooter } from '@/features/shell/form-footer';
 import { RichField, useRichFields } from '@/features/shell/rich-field';
 import { useApiForm } from '@/lib/use-api-form';
 
-/** Create or edit a library world. Only the name is required. */
-export function WorldForm({ world }: { world?: World }) {
+interface WorldFormProps {
+  /** Present when editing. */
+  world?: World;
+  /** Where to go after saving or cancelling. For a community's copy of a world this is its page in the community. */
+  returnTo?: string;
+}
+
+/** Create a library world, or edit a world: one in a library, or a community's own copy. Only the name is required. */
+export function WorldForm({ world, returnTo }: WorldFormProps) {
   const rich = useRichFields(['description'], world?.docs, () => world?.description);
   const { onSubmit, fields, error, pending } = useApiForm<{ world: { id: string } }>({
     method: world ? 'PATCH' : 'POST',
     url: world ? `/api/v1/worlds/${world.id}` : '/api/v1/worlds',
     extra: rich.values,
-    next: (body) => `/worlds/${body.world.id}`,
+    next: (body) => returnTo ?? `/worlds/${body.world.id}`,
   });
 
   return (
@@ -39,7 +46,7 @@ export function WorldForm({ world }: { world?: World }) {
         error={error}
         pending={pending}
         submitLabel={world ? 'Save changes' : 'Create world'}
-        cancelHref={world ? `/worlds/${world.id}` : '/library'}
+        cancelHref={returnTo ?? (world ? `/worlds/${world.id}` : '/library')}
       />
     </form>
   );
@@ -51,15 +58,17 @@ interface LocationFormProps {
   location?: Location;
   /** When creating: the location this one sits inside, if any. */
   parentId?: string | null;
+  /** The world's own page, which location pages hang from. Defaults to the library's; a community's world passes its own. */
+  base?: string;
 }
 
 /** Create or edit a location. Only the name is required. */
-export function WorldLocationForm({ worldId, location, parentId = null }: LocationFormProps) {
+export function WorldLocationForm({ worldId, location, parentId = null, base = `/worlds/${worldId}` }: LocationFormProps) {
   const { onSubmit, fields, error, pending } = useApiForm<{ location: { id: string } }>({
     method: location ? 'PATCH' : 'POST',
     url: location ? `/api/v1/locations/${location.id}` : `/api/v1/worlds/${worldId}/locations`,
     extra: location ? undefined : { parentId },
-    next: (body) => `/worlds/${worldId}/l/${body.location.id}`,
+    next: (body) => `${base}/l/${body.location.id}`,
   });
 
   return (
@@ -78,7 +87,7 @@ export function WorldLocationForm({ worldId, location, parentId = null }: Locati
         error={error}
         pending={pending}
         submitLabel={location ? 'Save changes' : 'Add location'}
-        cancelHref={location ? `/worlds/${worldId}/l/${location.id}` : parentId ? `/worlds/${worldId}/l/${parentId}` : `/worlds/${worldId}`}
+        cancelHref={location ? `${base}/l/${location.id}` : parentId ? `${base}/l/${parentId}` : base}
       />
     </form>
   );

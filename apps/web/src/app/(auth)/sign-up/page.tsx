@@ -8,7 +8,7 @@ import { safeNext } from '@/lib/next-path';
 import { oauthProviders } from '@/lib/server';
 import { getViewer } from '@/lib/session';
 
-export const metadata: Metadata = { title: 'Create an account' };
+export const metadata: Metadata = { title: 'Create An Account' };
 
 export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const next = safeNext((await searchParams).next, '/home');
@@ -18,7 +18,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
 
   return (
     <AuthCard
-      title="Create your account"
+      title="Create Your Account"
       lead="One account for every character, world and community."
       footer={
         <>

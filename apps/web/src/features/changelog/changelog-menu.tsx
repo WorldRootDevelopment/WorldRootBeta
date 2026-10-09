@@ -59,17 +59,17 @@ export function ChangelogMenu() {
       <summary
         className="relative flex size-11 cursor-pointer list-none items-center justify-center rounded-lg text-ink-muted hover:bg-surface-sunken hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden"
         aria-label={unread ? `What’s new, ${newCount} unread` : 'What’s new'}
-        title="What’s new"
+        title="What’s New"
       >
         <Sparkles className="size-5" aria-hidden="true" />
         {unread ? <span aria-hidden="true" className="absolute right-2 top-2 size-2.5 rounded-full bg-accent ring-2 ring-surface-raised" /> : null}
       </summary>
 
       <section
-        aria-label="What’s new"
+        aria-label="What’s New"
         className="absolute right-0 top-full z-20 mt-2 flex max-h-[min(32rem,calc(100dvh-6rem))] w-[min(24rem,calc(100vw-2rem))] flex-col wr-popover rounded-xl"
       >
-        <h2 className="border-b border-line px-5 py-3 font-display text-lg font-semibold text-ink">What’s new</h2>
+        <h2 className="border-b border-line px-5 py-3 font-display text-lg font-semibold text-ink">What’s New</h2>
         <ol className="overflow-y-auto px-5">
           {CHANGELOG.map((entry, index) => (
             <li key={entry.id} className="border-b border-line py-4 last:border-b-0">

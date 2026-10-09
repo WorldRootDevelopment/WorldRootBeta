@@ -5,7 +5,7 @@ import { Breadcrumbs } from '@/features/shell/prose';
 import { loadLibraryWorld } from '@/features/worlds/library-world';
 import { WorldLocationForm } from '@/features/worlds/world-form';
 
-export const metadata: Metadata = { title: 'Edit location' };
+export const metadata: Metadata = { title: 'Edit Location' };
 
 export default async function EditLocationPage({ params }: { params: Promise<{ worldId: string; locationId: string }> }) {
   const { worldId, locationId } = await params;

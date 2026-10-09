@@ -34,7 +34,7 @@ export function communityBadgeFor(held: ReadonlyArray<{ isOwner: boolean; permis
 }
 
 const requireStaff = (actor: Actor) => {
-  if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only WorldRoot staff can do that.');
+  if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only Rootwardens, the WorldRoot staff, can do that.');
 };
 
 async function requireUser(db: Db, userId: string) {

@@ -69,7 +69,7 @@ export function PostBody({ postId, html, doc, canEdit, canRemove, canReport }: P
       <div className="flex max-w-[68ch] flex-col gap-3">
         <RichTextEditor
           initial={doc}
-          label="Edit your post"
+          label="Edit Your Post"
           onChange={(next) => {
             draft.current = next;
           }}

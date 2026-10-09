@@ -19,7 +19,7 @@ export const settingsSections = (slug: string): SettingsSection[] => [
   { href: `/c/${slug}/settings/invites`, label: 'Invites', needs: ['community.invite'] },
   { href: `/c/${slug}/settings/characters`, label: 'Characters', needs: ['characterfield.manage', 'character.approve'] },
   { href: `/c/${slug}/settings/reports`, label: 'Reports', needs: ['report.review'] },
-  { href: `/c/${slug}/settings/audit`, label: 'Audit log', needs: ['auditlog.view'] },
+  { href: `/c/${slug}/settings/audit`, label: 'Audit Log', needs: ['auditlog.view'] },
 ];
 
 /**

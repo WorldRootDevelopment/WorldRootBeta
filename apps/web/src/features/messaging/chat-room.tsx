@@ -114,7 +114,7 @@ export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote
   const { conversation, messages, hasEarlier, canPost, canModerate } = page;
   return (
     <div>
-      <section aria-label="Lounge chat" className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden wr-glass rounded-2xl">
+      <section aria-label="Lounge Chat" className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden wr-glass rounded-2xl">
         <ChatLog conversationId={conversation.id} latestId={viewingEarlier ? null : (messages.at(-1)?.id ?? null)} track={track && !viewingEarlier}>
           {hasEarlier && messages[0] ? (
             <p className="mb-3 text-center">

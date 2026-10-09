@@ -18,7 +18,7 @@ const CREATE_ITEMS: CreateItem[] = [
   { label: 'Scene', icon: BookOpen, href: '/scenes/new' },
   { label: 'Character', icon: UserRound, href: '/library/characters/new' },
   { label: 'World', icon: Globe, href: '/library/worlds/new' },
-  { label: 'LFRP listing', icon: Megaphone, arrives: 'Phase 4' },
+  { label: 'LFRP Listing', icon: Megaphone, arrives: 'Phase 4' },
   { label: 'Community', icon: Users, href: '/communities/new' },
 ];
 

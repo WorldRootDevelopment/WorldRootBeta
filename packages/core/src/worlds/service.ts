@@ -1,6 +1,6 @@
 import { checkAchievements } from '../identity/achievements';
 import { locationInputSchema, worldInputSchema, type LocationInput, type WorldInput } from '@worldroot/contracts';
-import { locations, worlds, type Db } from '@worldroot/db';
+import { communities, locations, worlds, type Db } from '@worldroot/db';
 import { randomBytes } from 'node:crypto';
 import { and, asc, eq, max } from 'drizzle-orm';
 import { assertSlug, communityGrants } from '../community/service';
@@ -59,6 +59,12 @@ async function requireWorld(db: Db, worldId: string): Promise<World> {
   return world;
 }
 
+/** Nothing in an archived community can be changed, its worlds included. */
+async function assertCommunityOpen(db: Db, communityId: string): Promise<void> {
+  const [home] = await db.select({ archivedAt: communities.archivedAt }).from(communities).where(eq(communities.id, communityId));
+  if (home?.archivedAt) throw new DomainError('conflict', 'This community is archived, so its worlds cannot be changed.');
+}
+
 /** Loads a world from the actor's own library. Other people's library worlds do not exist to them. */
 export async function getLibraryWorld(db: Db, actor: Actor, worldId: string): Promise<World> {
   const [world] = await db.select().from(worlds).where(eq(worlds.id, worldId));
@@ -74,7 +80,10 @@ export async function updateWorld(db: Db, actor: Actor, worldId: string, input: 
   const values = { ...parseInput(worldInputSchema, rich.input), docs: rich.docs };
   const world = await requireWorld(db, worldId);
   if (world.ownerUserId) authorizeOwner(actor, world.ownerUserId);
-  else await authorize(actor, 'world.manage', { communityId: world.ownerCommunityId!, worldId }, communityGrants(db));
+  else {
+    await authorize(actor, 'world.manage', { communityId: world.ownerCommunityId!, worldId }, communityGrants(db));
+    await assertCommunityOpen(db, world.ownerCommunityId!);
+  }
 
   return db.transaction(async (tx) => {
     const [updated] = await tx.update(worlds).set(values).where(eq(worlds.id, worldId)).returning();
@@ -104,7 +113,10 @@ export async function createLocation(db: Db, actor: Actor, worldId: string, inpu
   const values = parseInput(locationInputSchema, input);
   const world = await requireWorld(db, worldId);
   if (world.ownerUserId) authorizeOwner(actor, world.ownerUserId);
-  else await authorize(actor, 'location.create', { communityId: world.ownerCommunityId!, worldId }, communityGrants(db));
+  else {
+    await authorize(actor, 'location.create', { communityId: world.ownerCommunityId!, worldId }, communityGrants(db));
+    await assertCommunityOpen(db, world.ownerCommunityId!);
+  }
 
   const parentId = input.parentId ?? null;
   if (parentId) {
@@ -127,6 +139,16 @@ export async function createLocation(db: Db, actor: Actor, worldId: string, inpu
     .insert(locations)
     .values({ ...values, worldId, parentId, position })
     .returning();
+  if (world.ownerCommunityId) {
+    await recordAudit(db, {
+      actor,
+      action: 'location.create',
+      targetType: 'location',
+      targetId: location!.id,
+      communityId: world.ownerCommunityId,
+      after: { name: location!.name, world: world.name },
+    });
+  }
   await checkAchievements(db, actor.userId, 'worlds');
   return location!;
 }
@@ -138,6 +160,38 @@ export async function canEditLocations(db: Db, actor: Actor, world: World): Prom
   return can(actor, 'location.manage', { communityId: world.ownerCommunityId!, worldId: world.id }, communityGrants(db));
 }
 
+export interface WorldPowers {
+  /** Change the world's name, summary and description. */
+  editWorld: boolean;
+  addLocations: boolean;
+  editLocations: boolean;
+}
+
+/**
+ * What the actor may change about a world, so a page can show exactly the
+ * controls that will work. A library world is its owner's to change. A
+ * community's copy belongs to the community: whoever holds "Manage worlds",
+ * "Create locations" or "Manage locations" there may do that much, and
+ * nobody may change anything once the community is archived.
+ */
+export async function worldPowers(db: Db, actor: Actor, world: World): Promise<WorldPowers> {
+  if (world.ownerUserId) {
+    const mine = world.ownerUserId === actor.userId || actor.platformRole === 'staff';
+    return { editWorld: mine, addLocations: mine, editLocations: mine };
+  }
+  const communityId = world.ownerCommunityId!;
+  const [home] = await db.select({ archivedAt: communities.archivedAt }).from(communities).where(eq(communities.id, communityId));
+  if (!home || home.archivedAt) return { editWorld: false, addLocations: false, editLocations: false };
+  const scope = { communityId, worldId: world.id };
+  const grants = communityGrants(db);
+  const [editWorld, addLocations, editLocations] = await Promise.all([
+    can(actor, 'world.manage', scope, grants),
+    can(actor, 'location.create', scope, grants),
+    can(actor, 'location.manage', scope, grants),
+  ]);
+  return { editWorld, addLocations, editLocations };
+}
+
 export async function updateLocation(db: Db, actor: Actor, locationId: string, input: LocationInput): Promise<Location> {
   const values = parseInput(locationInputSchema, input);
   const [location] = await db.select().from(locations).where(eq(locations.id, locationId));
@@ -146,8 +200,20 @@ export async function updateLocation(db: Db, actor: Actor, locationId: string, i
   if (world.ownerUserId) authorizeOwner(actor, world.ownerUserId);
   else {
     await authorize(actor, 'location.manage', { communityId: world.ownerCommunityId!, worldId: world.id }, communityGrants(db));
+    await assertCommunityOpen(db, world.ownerCommunityId!);
   }
   const [updated] = await db.update(locations).set(values).where(eq(locations.id, locationId)).returning();
+  if (world.ownerCommunityId) {
+    await recordAudit(db, {
+      actor,
+      action: 'location.update',
+      targetType: 'location',
+      targetId: locationId,
+      communityId: world.ownerCommunityId,
+      before: { name: location.name },
+      after: { name: updated!.name, world: world.name },
+    });
+  }
   return updated!;
 }
 

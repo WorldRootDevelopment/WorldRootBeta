@@ -126,8 +126,8 @@ export default async function ScenePage({ params, searchParams }: Props) {
         </div>
 
         <aside className="flex flex-col gap-5">
-          <section className="rounded-2xl bg-ooc p-5" aria-label="Out of character">
-            <h2 className={panelTitle}>Out of character</h2>
+          <section className="rounded-2xl bg-ooc p-5" aria-label="Out Of Character">
+            <h2 className={panelTitle}>Out Of Character</h2>
             {ooc.posts.length > 0 ? (
               <ul className="flex flex-col gap-4">
                 {ooc.posts.map((post) => (

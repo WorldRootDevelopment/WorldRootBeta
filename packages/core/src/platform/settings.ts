@@ -15,7 +15,7 @@ export async function getSeason(db: Db): Promise<SeasonKey> {
 
 /** Changes the site look for everyone. WorldRoot staff only. */
 export async function setSeason(db: Db, actor: Actor, season: unknown): Promise<SeasonKey> {
-  if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only WorldRoot staff can do that.');
+  if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only Rootwardens, the WorldRoot staff, can do that.');
   if (!isSeason(season)) throw new DomainError('invalid_input', 'That is not a site look.');
   const before = await getSeason(db);
   if (before === season) return season;

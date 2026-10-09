@@ -14,9 +14,38 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-title-case',
+    date: '2026-10-09',
+    title: 'Title Case For Headings And Buttons',
+    items: ['Headings, buttons, tabs, menus, field labels and the names of badges and achievements are now in Title Case. Descriptions and messages are still written as sentences.'],
+  },
+  {
+    id: '2026-10-09-community-world-editing',
+    date: '2026-10-09',
+    title: 'Community Staff Can Edit Their Worlds',
+    items: [
+      'Once a world has been added to a community, the community’s staff can edit it there: its name, summary and description, and its locations.',
+      'Who can do what is set by three permissions on a role: Manage Worlds, Create Locations and Manage Locations. Owners have all three.',
+      'Edits change the community’s own copy only. The original in its author’s library is never touched.',
+      'Every edit is written to the community’s audit log.',
+    ],
+  },
+  {
+    id: '2026-10-09-rootwardens',
+    date: '2026-10-09',
+    title: 'Rootwardens, And Names From The World Tree',
+    items: [
+      'WorldRoot staff are now called Rootwardens, after those who tend the roots of the World Tree. Their badge still tells you plainly that they are WorldRoot staff.',
+      'Badges have new names to match: Seedbearer (founder), Deeproot (early supporter) and Seedling (beta tester).',
+      'Two achievements are renamed: Wordsmith is now Skald, and Regular is now Three Branches.',
+      'The report form opens in the middle of the screen, so it is never cut off.',
+      'Profiles have more room for the name, with the buttons on their own row when space is short.',
+    ],
+  },
+  {
     id: '2026-10-09-badges-tab',
     date: '2026-10-09',
-    title: 'A Badges tab, and a note on achievements that give one',
+    title: 'A Badges Tab, And A Note On Achievements That Give One',
     items: [
       'Settings has a Badges tab showing the badges you have, the ones you do not, and how each is come by.',
       'An achievement that also gives a badge now says so.',
@@ -26,7 +55,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-09-popups-achievements-dice',
     date: '2026-10-09',
-    title: 'Profile pop-ups, more achievements and a better dice throw',
+    title: 'Profile Pop-Ups, More Achievements And A Better Dice Throw',
     items: [
       'Clicking someone’s name opens their profile in a pop-up over the page you are on. Close it and you are back where you were.',
       'Nineteen achievements now, with a new Achievements tab in Settings that shows them all and how far along you are.',
@@ -39,19 +68,19 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-09-customization',
     date: '2026-10-09',
-    title: 'A Customization tab in Settings',
+    title: 'A Customization Tab In Settings',
     items: ['Dice styles moved out of the dice tray to Settings, under a new Customization tab, where you can see the whole set in each style.'],
   },
   {
     id: '2026-10-08-badge-labels',
     date: '2026-10-08',
-    title: 'Badge labels no longer jump',
+    title: 'Badge Labels No Longer Jump',
     items: ['Pointing at a badge now shows what it means in a small label beneath it, without moving the badges beside it.'],
   },
   {
     id: '2026-10-08-dice-tray',
     date: '2026-10-08',
-    title: 'A proper dice tray',
+    title: 'A Proper Dice Tray',
     items: [
       'Dice now have their real shapes: a d4 is a pyramid, a d20 an icosahedron, and a d6 is still a cube.',
       'The dice box is rebuilt as a tray. Pick a die by its shape, set how many and what to add, and roll.',
@@ -61,7 +90,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-quieter-badges',
     date: '2026-10-08',
-    title: 'Quieter badges',
+    title: 'Quieter Badges',
     items: [
       'Badges are now a small icon. Point at one, or tab to it, to see its name.',
       'Founder, Premium, Early supporter and Beta tester badges are shown on profiles only.',
@@ -71,7 +100,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-friends-profiles-sidebar',
     date: '2026-10-08',
-    title: 'Friends, richer profiles, achievements and a new sidebar',
+    title: 'Friends, Richer Profiles, Achievements And A New Sidebar',
     items: [
       'Friends: add someone by @handle or from their profile. Friends can message each other without a request, and see when the other is online.',
       'The Inbox moved to the top right, beside What’s new, and now has Direct messages, Friends and Notifications.',
@@ -86,7 +115,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-new-look',
     date: '2026-10-08',
-    title: 'A new look, and dice that tumble',
+    title: 'A New Look, And Dice That Tumble',
     items: [
       'WorldRoot has a new glossy, glassy look in the cream and caramel of the WorldRoot site, in light and dark.',
       'Buttons are rounded and catch a shine. Cards and menus are glass over a softly lit page.',
@@ -98,7 +127,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-demo-dungeon',
     date: '2026-10-08',
-    title: 'Demo Dungeon: a D&D demo community',
+    title: 'Demo Dungeon: A D&D Demo Community',
     items: [
       'A second demo community, Demo Dungeon, has DnD mode switched on.',
       'It comes with a small adventuring region, a Dungeon Master, a sample fighter, and character fields for class, level and background.',
@@ -108,7 +137,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-dnd-mode',
     date: '2026-10-08',
-    title: 'DnD mode: dice in scenes',
+    title: 'DnD Mode: Dice In Scenes',
     items: [
       'A community’s admins can switch on DnD mode in Settings.',
       'In that community’s scenes, writers can roll dice as themselves or as a character: d20, 2d6, 3d8+2 and so on, with a note saying what the roll is for.',
@@ -118,7 +147,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-pictures',
     date: '2026-10-08',
-    title: 'Profile pictures and character portraits',
+    title: 'Profile Pictures And Character Portraits',
     items: [
       'Upload a profile picture in Settings, and a portrait for each character from its edit page.',
       'PNG, JPEG, GIF and WebP, up to 2 MB.',
@@ -129,7 +158,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-rich-descriptions',
     date: '2026-10-08',
-    title: 'Formatting for characters and worlds',
+    title: 'Formatting For Characters And Worlds',
     items: [
       'A character’s appearance, personality and biography, and a world’s description, now use the same editor as scene posts: bold, italics, headings, quotes and links.',
       'What you had already written is kept exactly as it was, and becomes editable with formatting the next time you open it.',
@@ -138,7 +167,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-discover',
     date: '2026-10-08',
-    title: 'Discover and Looking for RP',
+    title: 'Discover And Looking For RP',
     items: [
       'Discover is open. Browse and search the communities that are open to join, with how many members each has.',
       'Looking for RP is a board where you say what you would like to write: genres, one partner or a group, pace and content rating.',
@@ -174,7 +203,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-accounts-badges-blocks',
     date: '2026-10-08',
-    title: 'Account settings, badges, blocking and message requests',
+    title: 'Account Settings, Badges, Blocking And Message Requests',
     items: [
       'Settings now has an Account tab: change your handle and password, sign out other devices, and manage who you have blocked.',
       'New badges. WorldRoot staff have a filled Staff badge; a community’s own owner, admins and moderators have an outlined one in the community’s color, shown only inside it.',
@@ -198,13 +227,13 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-staff-badge',
     date: '2026-10-08',
-    title: 'Staff badge',
+    title: 'Staff Badge',
     items: ['WorldRoot staff now carry a badge beside their name in chats, messages, scenes and member lists.'],
   },
   {
     id: '2026-10-08-varrowmere-archive',
     date: '2026-10-08',
-    title: 'Varrowmere, and archiving communities',
+    title: 'Varrowmere, And Archiving Communities',
     items: [
       'A new page, Alternatives to boycotted franchises, linked from the landing page and your account menu.',
       'Its first universe is Varrowmere: an original school of magic, free for anyone to use. The Wizarding School template is now built on it.',
@@ -216,7 +245,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-templates',
     date: '2026-10-08',
-    title: 'World templates',
+    title: 'World Templates',
     items: [
       'Start a world from a template instead of a blank page. Find them under Library, then World templates.',
       'Seven to begin with: Basic Town, Dungeons & Dragons, Wizarding School: Varrowmere, Star Wars, Jurassic Park, DC Comics and Marvel Comics.',
@@ -236,7 +265,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-08-world-ids',
     date: '2026-10-08',
-    title: 'Share a world by ID',
+    title: 'Share A World By ID',
     items: [
       'Create a world ID from any world in your library and give it to other writers.',
       'A community admin can add a shared world to their community by entering its ID.',
@@ -247,7 +276,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-lounge-chat',
     date: '2026-10-07',
-    title: 'The Lounge is now a chat room',
+    title: 'The Lounge Is Now A Chat Room',
     items: [
       'Each community lounge is a live chat room that follows the conversation as it moves.',
       'A member list beside the chat shows who is online right now.',
@@ -257,7 +286,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-messaging',
     date: '2026-10-07',
-    title: 'Messages, Announcements and the Lounge',
+    title: 'Messages, Announcements And The Lounge',
     items: [
       'Send a direct message to any writer by their @handle, from the Inbox.',
       'Start a group conversation with up to 12 people.',
@@ -269,7 +298,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-invites-bans',
     date: '2026-10-07',
-    title: 'Invite links and bans',
+    title: 'Invite Links And Bans',
     items: [
       'Create invite links for a community under Settings, with an expiry and a use limit.',
       'An unlisted community can now be joined by anyone holding one of its links.',
@@ -280,7 +309,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-community-admin',
     date: '2026-10-07',
-    title: 'Create and run a community',
+    title: 'Create And Run A Community',
     items: [
       'Create your own community from the Create menu or the Communities page.',
       'A Settings tab for owners and staff: name, about, rules, accent color, and who can find it.',
@@ -292,7 +321,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-live-and-edit',
     date: '2026-10-07',
-    title: 'Live scenes, editing and removing posts',
+    title: 'Live Scenes, Editing And Removing Posts',
     items: [
       'New posts now appear in an open scene as soon as they are sent.',
       'Edit your own posts. An edited post is marked as edited.',
@@ -303,7 +332,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-changelog',
     date: '2026-10-07',
-    title: 'What’s new menu',
+    title: 'What’s New Menu',
     items: ['This menu. A dot appears on it whenever something has changed since you last looked.'],
   },
   {
@@ -321,7 +350,7 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-library',
     date: '2026-10-07',
-    title: 'Characters, worlds and locations',
+    title: 'Characters, Worlds And Locations',
     items: [
       'Create and edit characters in your Library. Only a name is required.',
       'Create worlds and build their locations, nested as deep as five levels.',
@@ -331,13 +360,13 @@ export const CHANGELOG: ChangelogEntry[] = [
   {
     id: '2026-10-07-demo',
     date: '2026-10-07',
-    title: 'Demo community',
+    title: 'Demo Community',
     items: ['A sample community with a world, characters and scenes to explore. Find it under Communities.'],
   },
   {
     id: '2026-10-07-foundations',
     date: '2026-10-07',
-    title: 'Accounts and themes',
+    title: 'Accounts And Themes',
     items: ['Sign up, choose your handle, and switch between light, dark and system themes from the account menu.'],
   },
 ];

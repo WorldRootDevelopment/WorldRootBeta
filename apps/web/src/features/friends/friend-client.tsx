@@ -50,7 +50,7 @@ export function AddFriendForm() {
 
   return (
     <form onSubmit={submit} className="flex max-w-xl flex-wrap items-end gap-3">
-      <TextField label="Add a friend" name="handle" placeholder="@handle" maxLength={40} required autoComplete="off" className="min-w-0 flex-1" />
+      <TextField label="Add A Friend" name="handle" placeholder="@handle" maxLength={40} required autoComplete="off" className="min-w-0 flex-1" />
       <Button type="submit" disabled={pending}>
         {pending ? 'Sending…' : 'Send request'}
       </Button>

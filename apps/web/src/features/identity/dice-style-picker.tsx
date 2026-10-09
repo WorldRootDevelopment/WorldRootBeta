@@ -36,7 +36,7 @@ export function DiceStylePicker({ theme: saved }: { theme: string }) {
         ))}
       </div>
 
-      <div role="radiogroup" aria-label="Dice style" className="grid gap-3 sm:grid-cols-2">
+      <div role="radiogroup" aria-label="Dice Style" className="grid gap-3 sm:grid-cols-2">
         {DICE_THEME_KEYS.map((key) => {
           const { label, note, free } = DICE_THEMES[key];
           const chosen = theme === key;

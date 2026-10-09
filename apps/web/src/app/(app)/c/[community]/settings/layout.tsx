@@ -17,7 +17,7 @@ export default async function SettingsLayout({ params, children }: Props) {
 
   return (
     <div className="grid gap-8 lg:grid-cols-[12rem_minmax(0,1fr)]">
-      <nav aria-label="Community settings">
+      <nav aria-label="Community Settings">
         <ul className="flex gap-1 overflow-x-auto lg:flex-col">
           {sections.map((section) => (
             <li key={section.href} className="shrink-0">

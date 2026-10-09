@@ -14,7 +14,7 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
   if (viewer.profile) redirect(next);
 
   return (
-    <AuthCard title="Choose your name" lead="This is you, the writer. Your characters come next and each has a name of its own.">
+    <AuthCard title="Choose Your Name" lead="This is you, the writer. Your characters come next and each has a name of its own.">
       <OnboardingForm next={next} />
     </AuthCard>
   );

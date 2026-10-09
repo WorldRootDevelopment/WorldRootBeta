@@ -51,7 +51,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
 
   return (
     <form onSubmit={submit} className="flex max-w-2xl flex-col gap-5" noValidate>
-      <TextField label="Display name" name="displayName" defaultValue={displayName} error={fields.displayName} maxLength={50} required />
+      <TextField label="Display Name" name="displayName" defaultValue={displayName} error={fields.displayName} maxLength={50} required />
       <TextField
         label="Status"
         name="status"
@@ -69,7 +69,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
         hint="Optional. Shown on your profile."
       />
       <TextArea
-        label="About you"
+        label="About You"
         name="bio"
         defaultValue={bio ?? ''}
         error={fields.bio}
@@ -79,7 +79,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
       />
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-medium text-ink">Profile color</legend>
+        <legend className="mb-1 text-sm font-medium text-ink">Profile Color</legend>
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
           <input type="checkbox" checked={ownColor} onChange={(event) => setOwnColor(event.target.checked)} className="size-5 shrink-0 accent-accent" />
           Give my profile its own color
@@ -126,7 +126,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
           Saved.
         </p>
       ) : null}
-      <FormFooter error={error} pending={pending} submitLabel="Save profile" cancelHref={`/u/${handle}`} />
+      <FormFooter error={error} pending={pending} submitLabel="Save Profile" cancelHref={`/u/${handle}`} />
     </form>
   );
 }
