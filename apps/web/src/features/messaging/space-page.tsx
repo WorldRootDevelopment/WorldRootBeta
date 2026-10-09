@@ -31,7 +31,7 @@ export async function SpacePage({ slug, spaceKey, before }: SpacePageProps) {
           page={page}
           href={href}
           viewingEarlier={Boolean(before)}
-          placeholder={`Message the ${community.name} lounge`}
+          placeholder={`Message The ${community.name} Lounge`}
           readOnlyNote={loungeNote(isMember)}
           track={isMember}
         />
@@ -49,7 +49,7 @@ export async function SpacePage({ slug, spaceKey, before }: SpacePageProps) {
         href={href}
         viewingEarlier={Boolean(before)}
         emptyText="No announcements yet."
-        placeholder="Write an announcement…"
+        placeholder="Write An Announcement…"
         readOnlyNote="Only community staff post here."
         track={isMember}
       />

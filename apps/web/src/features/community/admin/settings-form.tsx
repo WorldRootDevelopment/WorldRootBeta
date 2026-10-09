@@ -107,7 +107,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
 
       <div className="flex flex-col gap-2">
         <label htmlFor="accentHue" className="text-sm font-medium text-ink">
-          Accent color
+          Accent Color
         </label>
         <div className="wr-accent-scope flex items-center gap-4" style={{ '--wr-accent-hue': hue } as CSSProperties}>
           <input
@@ -131,7 +131,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
         <label className={checkRow}>
           <input type="checkbox" name="listed" defaultChecked={community?.listed ?? false} className="mt-0.5 size-5 shrink-0 accent-accent" />
           <span>
-            List this community
+            List This Community
             <span className="block text-ink-muted">Anyone on WorldRoot can find it, read it and join. Unlisted communities are seen only by members.</span>
           </span>
         </label>
@@ -144,7 +144,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
               className="mt-0.5 size-5 shrink-0 accent-accent"
             />
             <span>
-              Review characters before they can be played
+              Review Characters Before They Can Be Played
               <span className="block text-ink-muted">New characters wait for someone with the “Review characters” permission to approve them.</span>
             </span>
           </label>
@@ -157,7 +157,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
           <label className={checkRow}>
             <input type="checkbox" name="dndMode" defaultChecked={community.dndMode} className="mt-0.5 size-5 shrink-0 accent-accent" />
             <span>
-              DnD mode
+              DnD Mode
               <span className="block text-ink-muted">
                 Writers can roll dice in this community’s scenes. Each roll is made by WorldRoot and recorded in the story, where it cannot be edited.
               </span>
@@ -174,7 +174,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
       <FormFooter
         error={error}
         pending={pending}
-        submitLabel={community ? 'Save changes' : 'Create community'}
+        submitLabel={community ? 'Save Changes' : 'Create Community'}
         cancelHref={community ? `/c/${community.slug}` : '/communities'}
       />
     </form>

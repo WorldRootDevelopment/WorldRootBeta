@@ -12,7 +12,7 @@ export function DiscoverTabs() {
         Communities
       </NavLink>
       <NavLink href="/discover/partners" className={tab} activeClassName="border-accent text-ink">
-        Looking for RP
+        Looking For RP
       </NavLink>
     </nav>
   );

@@ -1,15 +1,19 @@
+import { listOwnedItems } from '@worldroot/core';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { DiceStylePicker } from '@/features/identity/dice-style-picker';
 import { SettingsTabs } from '@/features/identity/settings-tabs';
 import { PageHeader } from '@/features/shell/page-header';
 import { SectionHeading } from '@/features/shell/prose';
+import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
 export const metadata: Metadata = { title: 'Customization' };
 
 export default async function CustomizationPage() {
   const viewer = await requireViewer();
+  const { db } = await database();
+  const owned = await listOwnedItems(db, viewer.actor.userId);
 
   return (
     <>
@@ -22,7 +26,7 @@ export default async function CustomizationPage() {
         Used wherever you roll dice. A style only changes how your dice look to you: WorldRoot makes every roll, and the result in the story is the
         same for everyone.
       </p>
-      <DiceStylePicker theme={viewer.profile.diceTheme} />
+      <DiceStylePicker theme={viewer.profile.diceTheme} owned={owned} />
 
       <SectionHeading>Profile</SectionHeading>
       <p className="max-w-2xl text-sm text-ink-muted">

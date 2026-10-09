@@ -14,6 +14,18 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-scene-images-and-store',
+    date: '2026-10-09',
+    title: 'Pictures In Scenes, And A First Look At The Store',
+    items: [
+      'Add up to four pictures to a story post with Add Image. Animated GIFs work here.',
+      'A Store page shows the dice styles on the way. Nothing is on sale yet.',
+      'A Support WorldRoot page explains how to help keep the site running.',
+      'Animated GIFs are switched off for profile pictures, banners and character portraits for now.',
+      'Buttons, links, labels and headings across the site now use Title Case.',
+    ],
+  },
+  {
     id: '2026-10-09-profile-backgrounds',
     date: '2026-10-09',
     title: 'Profile Backgrounds, Cropping And GIFs',

@@ -17,7 +17,7 @@ export function SignOutButton() {
   };
   return (
     <Button variant="secondary" onClick={signOut} disabled={pending}>
-      {pending ? 'Signing out…' : 'Sign out'}
+      {pending ? 'Signing Out…' : 'Sign Out'}
     </Button>
   );
 }

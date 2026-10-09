@@ -49,7 +49,7 @@ export function ProfilePopup({ handle, children }: { handle: string; children: R
             href={`/u/${handle}`}
             className="inline-flex min-h-9 items-center rounded-full bg-surface-raised/90 px-3 text-xs font-medium text-ink shadow-raised hover:bg-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
           >
-            Open full profile
+            Open Full Profile
           </a>
           <button
             type="button"

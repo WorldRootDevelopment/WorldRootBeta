@@ -51,13 +51,13 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
       <SectionHeading>Accounts</SectionHeading>
       <form className="mb-5 flex max-w-xl gap-2">
         <label htmlFor="staff-search" className="sr-only">
-          Search accounts by handle, name or email
+          Search Accounts By Handle, Name Or Email
         </label>
         <input
           id="staff-search"
           name="q"
           defaultValue={query}
-          placeholder="Handle, name or email"
+          placeholder="Handle, Name Or Email"
           className="min-h-11 w-full rounded-lg border border-line-strong bg-surface-raised px-3 text-base text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
         />
         <Button type="submit" variant="secondary">
@@ -73,13 +73,13 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
           <li key={account.userId} className="wr-glass rounded-2xl p-5">
             <p className="flex flex-wrap items-center gap-2">
               <Link href={`/staff/accounts/${account.userId}`} className={link}>
-                {account.displayName ?? 'Not set up yet'}
+                {account.displayName ?? 'Not Set Up Yet'}
               </Link>
               {account.handle ? <span className="text-sm text-ink-muted">@{account.handle}</span> : null}
               <Badges list={account.badges} all />
             </p>
             <p className="mt-1 text-sm text-ink-muted">
-              {account.email} · joined {account.createdAt.toLocaleDateString('en', { dateStyle: 'medium' })}
+              {account.email} · Joined {account.createdAt.toLocaleDateString('en', { dateStyle: 'medium' })}
             </p>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <AccountControls userId={account.userId} badges={account.badges} />
@@ -100,9 +100,9 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
               {community.name}
             </Link>
             <span className="text-ink-muted">
-              {community.memberCount} {community.memberCount === 1 ? 'member' : 'members'}
-              {community.listed ? '' : ' · unlisted'}
-              {community.archivedAt ? ' · archived' : ''}
+              {community.memberCount} {community.memberCount === 1 ? 'Member' : 'Members'}
+              {community.listed ? '' : ' · Unlisted'}
+              {community.archivedAt ? ' · Archived' : ''}
             </span>
           </li>
         ))}

@@ -26,7 +26,7 @@ export function JoinButton({ communityId }: { communityId: string }) {
   return (
     <div className="flex flex-col items-start gap-2">
       <Button onClick={join} disabled={pending}>
-        {pending ? 'Joining…' : 'Join community'}
+        {pending ? 'Joining…' : 'Join Community'}
       </Button>
       {error ? (
         <p role="alert" className="text-sm text-danger">

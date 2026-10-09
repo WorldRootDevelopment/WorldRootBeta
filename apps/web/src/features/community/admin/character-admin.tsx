@@ -81,7 +81,7 @@ export function FieldsEditor({ communityId, fields }: { communityId: string; fie
         <TextField label="Field Name" name="label" error={errors.label} maxLength={60} placeholder="Rank" />
         <div className="flex flex-col gap-1.5">
           <label htmlFor="field-type" className="text-sm font-medium text-ink">
-            Kind of answer
+            Kind Of Answer
           </label>
           <select id="field-type" value={type} onChange={(event) => setType(event.target.value as FieldType)} className={selectClass}>
             {CHARACTER_FIELD_TYPES.map((option) => (
@@ -94,7 +94,7 @@ export function FieldsEditor({ communityId, fields }: { communityId: string; fie
         {type === 'single_choice' ? <TextArea label="Choices" name="options" error={errors.options} rows={4} hint="One per line." /> : null}
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
           <input type="checkbox" name="required" className="size-5 accent-accent" />
-          Required for every character
+          Required For Every Character
         </label>
         {error ? (
           <p role="alert" className="text-sm text-danger">
@@ -102,7 +102,7 @@ export function FieldsEditor({ communityId, fields }: { communityId: string; fie
           </p>
         ) : null}
         <Button type="submit" disabled={pending} className="self-start">
-          {pending ? 'Adding…' : 'Add field'}
+          {pending ? 'Adding…' : 'Add Field'}
         </Button>
       </form>
     </div>
@@ -143,8 +143,8 @@ export function ReviewQueue({ characters }: { characters: PendingCharacter[] }) 
                 {character.name}
               </Link>
               <p className="text-sm text-ink-muted">
-                {character.playerHandle ? `Played by @${character.playerHandle}` : 'No player'}
-                {character.status === 'returned' ? ' · Returned to its player' : ' · Waiting for review'}
+                {character.playerHandle ? `Played By @${character.playerHandle}` : 'No Player'}
+                {character.status === 'returned' ? ' · Returned To Its Player' : ' · Waiting For Review'}
               </p>
             </div>
             <div className="flex gap-2">

@@ -35,7 +35,7 @@ export default async function InboxPage() {
 
       {onlineFriends.length > 0 ? (
         <section aria-label="Friends Online" className="mb-8">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-muted">Online now — {onlineFriends.length}</h2>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-muted">Online Now — {onlineFriends.length}</h2>
           <ul className="flex flex-wrap gap-3">
             {onlineFriends.map((friend) => (
               <li key={friend.userId}>
@@ -91,7 +91,7 @@ export default async function InboxPage() {
                   <h2 className={`min-w-0 truncate text-ink ${conversation.unread ? 'font-semibold' : 'font-medium'}`}>
                     {conversation.unread ? <span aria-hidden="true" className="mr-2 inline-block size-2 rounded-full bg-accent align-middle" /> : null}
                     {conversation.title}
-                    {conversation.unread ? <span className="sr-only"> (unread)</span> : null}
+                    {conversation.unread ? <span className="sr-only"> (Unread)</span> : null}
                   </h2>
                   {conversation.lastMessage ? (
                     <time dateTime={conversation.lastMessage.createdAt.toISOString()} className="shrink-0 text-xs text-ink-muted">

@@ -110,10 +110,10 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
       </fieldset>
 
       <div className="flex flex-col gap-1.5">
-        <p className="text-sm font-medium text-ink">Opening post</p>
+        <p className="text-sm font-medium text-ink">Opening Post</p>
         <RichTextEditor
           label="Opening Post"
-          placeholder="Set the scene…"
+          placeholder="Set The Scene…"
           minHeight="14rem"
           onChange={(doc) => {
             opening.current = doc;

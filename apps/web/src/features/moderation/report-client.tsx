@@ -91,7 +91,7 @@ export function ReportButton({ targetType, targetId, label = 'Report' }: { targe
                       What is wrong?
                       <select name="category" defaultValue="" required className={`${field} min-h-11 font-normal`}>
                         <option value="" disabled>
-                          Choose a reason
+                          Choose A Reason
                         </option>
                         {REPORT_CATEGORY_KEYS.map((key) => (
                           <option key={key} value={key}>
@@ -111,7 +111,7 @@ export function ReportButton({ targetType, targetId, label = 'Report' }: { targe
                     ) : null}
                     <div className="flex flex-wrap gap-2">
                       <Button type="submit" disabled={pending}>
-                        {pending ? 'Sending…' : 'Send report'}
+                        {pending ? 'Sending…' : 'Send Report'}
                       </Button>
                       <Button variant="ghost" onClick={close}>
                         Cancel
@@ -147,7 +147,7 @@ function ReportCard({ report }: { report: ReportRow }) {
     <li className="wr-glass rounded-2xl p-5">
       <p className="flex flex-wrap items-center gap-2 text-sm">
         <span className="font-medium text-ink">{REPORT_CATEGORIES[report.category]?.label ?? report.category}</span>
-        {report.escalated ? <span className="rounded-full bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger">Sent to the Rootwardens</span> : null}
+        {report.escalated ? <span className="rounded-full bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger">Sent To The Rootwardens</span> : null}
         {report.status !== 'open' ? <span className="rounded-full bg-surface-sunken px-2 py-0.5 text-xs font-medium text-ink-muted">{report.status === 'resolved' ? 'Resolved' : 'Dismissed'}</span> : null}
       </p>
       <p className="mt-1 text-sm text-ink-muted">
@@ -157,7 +157,7 @@ function ReportCard({ report }: { report: ReportRow }) {
         {report.createdAt.toLocaleString('en', { dateStyle: 'medium', timeStyle: 'short' })}
       </p>
       <p className="mt-1 text-sm text-ink-muted">
-        About {report.subjectHandle ? `@${report.subjectHandle}` : 'a former member'} · reported by {report.reporterHandle ? `@${report.reporterHandle}` : 'a former member'}
+        About {report.subjectHandle ? `@${report.subjectHandle}` : 'A Former Member'} · Reported By {report.reporterHandle ? `@${report.reporterHandle}` : 'A Former Member'}
       </p>
 
       <blockquote className="mt-3 max-h-48 overflow-y-auto whitespace-pre-line rounded-lg bg-surface-sunken px-3 py-2 text-sm text-ink">
@@ -166,13 +166,13 @@ function ReportCard({ report }: { report: ReportRow }) {
       <p className="mt-1 text-xs text-ink-muted">As it read when it was reported. It may have been edited or removed since.</p>
       {report.note ? (
         <p className="mt-3 text-sm text-ink">
-          <span className="font-medium">The reporter added:</span> {report.note}
+          <span className="font-medium">The Reporter Added:</span> {report.note}
         </p>
       ) : null}
       {report.snapshot.href ? (
         <p className="mt-3">
           <Link href={report.snapshot.href} className="text-sm font-medium text-accent-text underline underline-offset-2 hover:no-underline">
-            Open it
+            Open It
           </Link>
         </p>
       ) : null}
@@ -180,7 +180,7 @@ function ReportCard({ report }: { report: ReportRow }) {
       {report.status === 'open' ? (
         <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4">
           <label htmlFor={`resolution-${report.id}`} className="text-sm font-medium text-ink">
-            What was done (optional, kept on the record)
+            What Was Done (Optional, Kept On The Record)
           </label>
           <input id={`resolution-${report.id}`} value={resolution} onChange={(event) => setResolution(event.target.value)} maxLength={1000} className={`${field} min-h-11`} />
           {error ? (
@@ -193,7 +193,7 @@ function ReportCard({ report }: { report: ReportRow }) {
               Resolved
             </Button>
             <Button variant="secondary" onClick={() => close('dismissed')} disabled={pending}>
-              Dismiss, nothing to do
+              Dismiss, Nothing To Do
             </Button>
           </div>
         </div>

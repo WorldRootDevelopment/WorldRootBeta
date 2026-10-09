@@ -22,8 +22,6 @@ interface ImageUploadProps {
   shape?: 'round' | 'banner';
 }
 
-/** An animated GIF is sent as it is, so this is the server's limit for one. */
-const MAX_GIF_BYTES = 5 * 1024 * 1024;
 /** A still picture is cut and shrunk here first, so the original may be much larger than what is sent. */
 const MAX_ORIGINAL_BYTES = 25 * 1024 * 1024;
 
@@ -56,13 +54,10 @@ export function ImageUpload({ url, mediaId, name, label, removeOnly = false, sha
     const file = event.target.files?.[0];
     if (!file) return;
     setError(null);
-    // Cutting a GIF here would freeze it on its first frame, so a GIF is sent whole and shown centered.
+    // Animated pictures are switched off here for now. The server refuses them too.
     if (file.type === 'image/gif') {
-      if (file.size > MAX_GIF_BYTES) {
-        event.target.value = '';
-        return setError('Use a GIF under 5 MB.');
-      }
-      return void upload(file);
+      event.target.value = '';
+      return setError('Animated GIFs cannot be used here for now. Use a PNG, JPEG or WebP image.');
     }
     event.target.value = '';
     if (file.size > MAX_ORIGINAL_BYTES) return setError('Use an image under 25 MB.');
@@ -85,7 +80,7 @@ export function ImageUpload({ url, mediaId, name, label, removeOnly = false, sha
             <>
               <label htmlFor={inputId} className={`${buttonClass('secondary')} cursor-pointer has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-focus`}>
                 {pending ? 'Saving…' : mediaId ? 'Change' : 'Upload'}
-                <input ref={input} id={inputId} type="file" accept="image/png,image/jpeg,image/gif,image/webp" className="sr-only" onChange={choose} disabled={pending} />
+                <input ref={input} id={inputId} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={choose} disabled={pending} />
               </label>
             </>
           )}
@@ -101,8 +96,7 @@ export function ImageUpload({ url, mediaId, name, label, removeOnly = false, sha
           </p>
         ) : removeOnly ? null : (
           <p className="text-sm text-ink-muted">
-            PNG, JPEG, WebP or an animated GIF. You can move and zoom a picture before it is saved; a GIF is used whole, up to 5 MB. Location
-            and camera details are removed.
+            PNG, JPEG or WebP. You can move and zoom the picture before it is saved. Location and camera details are removed.
           </p>
         )}
       </div>

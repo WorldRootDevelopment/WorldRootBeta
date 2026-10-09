@@ -40,7 +40,7 @@ export function OocForm({ sceneId }: { sceneId: string }) {
   return (
     <form onSubmit={submit} className="mt-3 flex flex-col gap-2">
       <label className="sr-only" htmlFor={`ooc-${sceneId}`}>
-        Out-of-character message
+        Out-Of-Character Message
       </label>
       <textarea
         id={`ooc-${sceneId}`}
@@ -48,7 +48,7 @@ export function OocForm({ sceneId }: { sceneId: string }) {
         onChange={(event) => setText(event.target.value)}
         rows={2}
         maxLength={2000}
-        placeholder="Say something out of character…"
+        placeholder="Say Something Out Of Character…"
         className={`${inputClass} resize-y py-2`}
       />
       <ErrorLine message={error} />
@@ -80,7 +80,7 @@ export function JoinForm({ sceneId, characters, joined }: { sceneId: string; cha
   return (
     <form onSubmit={submit} className="flex flex-col gap-3">
       <fieldset className="flex flex-col gap-1">
-        <legend className="mb-1 text-sm font-medium text-ink">{joined ? 'Bring another character' : 'Join with a character'}</legend>
+        <legend className="mb-1 text-sm font-medium text-ink">{joined ? 'Bring Another Character' : 'Join With A Character'}</legend>
         {characters.map((character) => (
           <label key={character.id} className="flex min-h-11 items-center gap-3 text-sm text-ink">
             <input
@@ -97,7 +97,7 @@ export function JoinForm({ sceneId, characters, joined }: { sceneId: string; cha
       </fieldset>
       <ErrorLine message={error} />
       <Button type="submit" variant={joined ? 'secondary' : 'primary'} disabled={pending || chosen.length === 0} className="self-start">
-        {pending ? 'Joining…' : joined ? 'Bring into scene' : 'Join scene'}
+        {pending ? 'Joining…' : joined ? 'Bring Into Scene' : 'Join Scene'}
       </Button>
     </form>
   );
@@ -127,7 +127,7 @@ export function InviteForm({ sceneId }: { sceneId: string }) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-2">
       <label htmlFor={`invite-${sceneId}`} className="text-sm font-medium text-ink">
-        Invite a writer
+        Invite A Writer
       </label>
       <div className="flex gap-2">
         <input
@@ -171,7 +171,7 @@ export function StatusControl({ sceneId, status }: { sceneId: string; status: Sc
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={`status-${sceneId}`} className="text-sm font-medium text-ink">
-        Scene status
+        Scene Status
       </label>
       <select
         id={`status-${sceneId}`}

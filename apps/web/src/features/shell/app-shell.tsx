@@ -58,7 +58,7 @@ function InboxLink({ unread }: { unread: number }) {
       activeClassName="bg-accent-soft text-accent-text hover:bg-accent-soft hover:text-accent-text"
     >
       <Inbox className="size-5" aria-hidden="true" />
-      <span className="sr-only">{unread > 0 ? `Inbox, ${unread} new` : 'Inbox'}</span>
+      <span className="sr-only">{unread > 0 ? `Inbox, ${unread} New` : 'Inbox'}</span>
       {unread > 0 ? <span aria-hidden="true" className="absolute right-2 top-2 size-2.5 rounded-full bg-accent ring-2 ring-surface-raised" /> : null}
     </NavLink>
   );
@@ -69,7 +69,7 @@ export function AppShell({ profile, inboxUnread, communities, children }: AppShe
     <div className="min-h-dvh md:flex">
       <PresencePing />
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-30 focus:rounded-lg focus:bg-surface-raised focus:px-4 focus:py-2">
-        Skip to content
+        Skip To Content
       </a>
 
       <aside className="sticky top-0 z-20 hidden h-dvh w-18 shrink-0 flex-col gap-4 border-r wr-chrome p-3 md:flex wide:w-60 wide:p-4">
@@ -111,7 +111,7 @@ export function AppShell({ profile, inboxUnread, communities, children }: AppShe
             <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-dashed border-line-strong">
               <Plus className="size-4" />
             </span>
-            <span className="sr-only wide:not-sr-only">{communities.length === 0 ? 'Find a community' : 'All communities'}</span>
+            <span className="sr-only wide:not-sr-only">{communities.length === 0 ? 'Find A Community' : 'All Communities'}</span>
           </NavLink>
         </nav>
 

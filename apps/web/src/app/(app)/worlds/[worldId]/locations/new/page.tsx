@@ -28,7 +28,7 @@ export default async function NewLocationPage({ params, searchParams }: Props) {
           { label: 'Add Location' },
         ]}
       />
-      <PageHeader title={parent ? `Add a location inside ${parent.name}` : 'Add a location'} lead="Only a name is needed. Describe it now or later." />
+      <PageHeader title={parent ? `Add A Location Inside ${parent.name}` : 'Add A Location'} lead="Only a name is needed. Describe it now or later." />
       <WorldLocationForm worldId={world.id} parentId={parent?.id ?? null} />
     </>
   );

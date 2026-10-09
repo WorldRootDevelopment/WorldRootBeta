@@ -6,6 +6,7 @@ import { Button } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { send } from './api';
+import { ImagePicker } from './post-images';
 
 const NARRATOR = 'narrator';
 const SAVE_DELAY_MS = 1500;
@@ -41,6 +42,8 @@ export function Composer({ sceneId, characters, draft }: ComposerProps) {
   const [saved, setSaved] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** Pictures already uploaded, waiting to go out with this post. They are not part of the saved draft. */
+  const [images, setImages] = useState<string[]>([]);
 
   const whoRef = useRef(who);
   whoRef.current = who;
@@ -101,23 +104,26 @@ export function Composer({ sceneId, characters, draft }: ComposerProps) {
   );
 
   const post = async () => {
-    if (!docRef.current || empty) return;
+    // A post may be pictures alone.
+    if ((!docRef.current || empty) && images.length === 0) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     setPending(true);
     setError(null);
     const result = await send('POST', `/api/v1/scenes/${sceneId}/posts`, {
       kind: 'ic',
       characterId: characterId(who),
-      content: docRef.current,
+      content: docRef.current ?? { type: 'doc', content: [{ type: 'paragraph' }] },
+      imageIds: images,
     });
     setPending(false);
     if (!result.ok) {
-      setError(result.fields.content ?? result.fields.characterId ?? result.message);
+      setError(result.fields.content ?? result.fields.characterId ?? result.fields.images ?? result.message);
       return;
     }
     editorRef.current?.commands.clearContent();
     docRef.current = null;
     setEmpty(true);
+    setImages([]);
     setSaved('idle');
     try {
       localStorage.removeItem(storageKey);
@@ -151,7 +157,9 @@ export function Composer({ sceneId, characters, draft }: ComposerProps) {
         </select>
       </label>
 
-      <RichTextEditor initial={draft?.content} onChange={onChange} onReady={onReady} label="Your Post" placeholder="Continue the story…" />
+      <RichTextEditor initial={draft?.content} onChange={onChange} onReady={onReady} label="Your Post" placeholder="Continue The Story…" />
+
+      <ImagePicker sceneId={sceneId} images={images} onChange={setImages} disabled={pending} />
 
       {error ? (
         <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
@@ -161,9 +169,9 @@ export function Composer({ sceneId, characters, draft }: ComposerProps) {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs text-ink-muted" aria-live="polite">
-          {saved === 'saving' ? 'Saving draft…' : saved === 'saved' ? 'Draft saved' : 'Your draft saves as you write.'}
+          {saved === 'saving' ? 'Saving Draft…' : saved === 'saved' ? 'Draft Saved' : 'Your draft saves as you write.'}
         </p>
-        <Button onClick={post} disabled={pending || empty} size="lg">
+        <Button onClick={post} disabled={pending || (empty && images.length === 0)} size="lg">
           {pending ? 'Posting…' : 'Post'}
         </Button>
       </div>

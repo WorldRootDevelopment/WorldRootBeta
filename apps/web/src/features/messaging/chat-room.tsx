@@ -50,7 +50,7 @@ function ChatMessage({ message, previous, canModerate }: { message: Message; pre
     );
   }
 
-  const name = message.authorName ?? 'Former member';
+  const name = message.authorName ?? 'Former Member';
   const remove = (
     <span className="inline-flex items-center gap-3">
       {message.mine || canModerate ? <RemoveMessageButton messageId={message.id} /> : null}
@@ -119,7 +119,7 @@ export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote
           {hasEarlier && messages[0] ? (
             <p className="mb-3 text-center">
               <Link href={`${href}?before=${messages[0].id}`} className={buttonClass('ghost')}>
-                Earlier messages
+                Earlier Messages
               </Link>
             </p>
           ) : null}
@@ -137,7 +137,7 @@ export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote
         <div className="border-t border-line p-3">
           {viewingEarlier ? (
             <Link href={href} className={buttonClass('secondary')}>
-              Back to the latest messages
+              Back To The Latest Messages
             </Link>
           ) : canPost ? (
             <ChatComposer conversationId={conversation.id} placeholder={placeholder} />

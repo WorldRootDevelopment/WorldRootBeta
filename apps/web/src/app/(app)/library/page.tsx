@@ -27,13 +27,13 @@ export default async function LibraryPage() {
 
       <div className="mb-6 flex flex-wrap gap-3">
         <Link href="/library/characters/new" className={buttonClass('primary')}>
-          New character
+          New Character
         </Link>
         <Link href="/library/worlds/new" className={buttonClass('secondary')}>
-          New world
+          New World
         </Link>
         <Link href="/library/worlds/templates" className={buttonClass('secondary')}>
-          World templates
+          World Templates
         </Link>
       </div>
       <div className="mb-10">
@@ -64,7 +64,7 @@ export default async function LibraryPage() {
             <ul className="grid gap-4 sm:grid-cols-2">
               {worlds.map((world) => (
                 <li key={world.id}>
-                  <WorldCard world={world} href={`/worlds/${world.id}`} note={world.sourceWorldId ? 'Your copy of a shared world' : world.shareCode ? 'Original · shared by ID' : 'Original'} />
+                  <WorldCard world={world} href={`/worlds/${world.id}`} note={world.sourceWorldId ? 'Your Copy Of A Shared World' : world.shareCode ? 'Original · Shared By ID' : 'Original'} />
                 </li>
               ))}
             </ul>

@@ -109,7 +109,7 @@ export function AchievementProgressList({ rows }: { rows: AchievementProgress[] 
             <div className="min-w-0 flex-1">
               <p className="font-display text-sm font-semibold text-ink">
                 {label}
-                {earnedAt ? null : <span className="sr-only"> (not earned yet)</span>}
+                {earnedAt ? null : <span className="sr-only"> (Not Earned Yet)</span>}
                 <AlsoBadge id={key} />
               </p>
               <p className="text-xs leading-snug text-ink-muted">{how}</p>
@@ -117,13 +117,13 @@ export function AchievementProgressList({ rows }: { rows: AchievementProgress[] 
                 <p className="mt-1 text-xs font-medium text-accent-text">Earned {day(earnedAt)}</p>
               ) : target > 1 ? (
                 <div className="mt-2">
-                  <progress value={current} max={target} aria-label={`${label}: ${current} of ${target}`} className="wr-progress block h-1.5 w-full" />
+                  <progress value={current} max={target} aria-label={`${label}: ${current} Of ${target}`} className="wr-progress block h-1.5 w-full" />
                   <p className="mt-1 text-xs tabular-nums text-ink-muted">
-                    {current} of {target}
+                    {current} Of {target}
                   </p>
                 </div>
               ) : (
-                <p className="mt-1 text-xs text-ink-muted">Not yet</p>
+                <p className="mt-1 text-xs text-ink-muted">Not Yet</p>
               )}
             </div>
           </li>

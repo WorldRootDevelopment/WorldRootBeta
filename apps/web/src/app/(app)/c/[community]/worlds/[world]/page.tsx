@@ -39,7 +39,7 @@ export default async function WorldPage(props: Props) {
         {/* Shown to the community staff who hold "Manage worlds". */}
         {powers.editWorld ? (
           <Link href={`${base}/edit`} className={buttonClass('secondary')}>
-            Edit world
+            Edit World
           </Link>
         ) : null}
       </div>
@@ -50,7 +50,7 @@ export default async function WorldPage(props: Props) {
         <h3 className="font-display text-xl font-semibold text-ink">Locations</h3>
         {powers.addLocations ? (
           <Link href={`${base}/locations/new`} className={buttonClass('secondary')}>
-            Add location
+            Add Location
           </Link>
         ) : null}
       </div>

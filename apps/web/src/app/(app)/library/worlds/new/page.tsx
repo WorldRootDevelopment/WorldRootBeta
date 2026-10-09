@@ -14,7 +14,7 @@ export default function NewWorldPage() {
       <p className="mb-8 max-w-2xl text-sm text-ink-muted">
         Would rather not start from a blank page?{' '}
         <Link href="/library/worlds/templates" className="font-medium text-accent-text underline underline-offset-2 hover:no-underline">
-          Browse world templates
+          Browse World Templates
         </Link>
       </p>
       <WorldForm />

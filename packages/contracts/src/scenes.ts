@@ -48,11 +48,16 @@ export const sceneInputSchema = z.object({
 
 export type SceneInput = z.input<typeof sceneInputSchema>;
 
+/** The most pictures one story post can carry. */
+export const MAX_POST_IMAGES = 4;
+
 export const postInputSchema = z.object({
   kind: z.enum(['ic', 'ooc']),
   /** The character speaking. Null on an in-character post means narration. Ignored for out-of-character posts. */
   characterId: z.uuid().nullish(),
   content: z.unknown(),
+  /** Pictures already uploaded to this scene by the writer, to show under an in-character post. */
+  imageIds: z.array(z.uuid()).max(MAX_POST_IMAGES, `Attach at most ${MAX_POST_IMAGES} images.`).optional(),
 });
 
 export type PostInput = z.input<typeof postInputSchema>;

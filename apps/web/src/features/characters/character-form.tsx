@@ -83,7 +83,7 @@ export function CharacterForm({ character }: { character?: Character }) {
       <FormFooter
         error={error}
         pending={pending}
-        submitLabel={character ? 'Save changes' : 'Create character'}
+        submitLabel={character ? 'Save Changes' : 'Create Character'}
         cancelHref={character ? `/characters/${character.id}` : '/library'}
       />
     </form>

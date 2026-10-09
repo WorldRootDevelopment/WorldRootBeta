@@ -3,6 +3,7 @@ import { characters } from './characters';
 import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { communities } from './community';
 import { users } from './identity';
+import { media } from './media';
 import { locations } from './worlds';
 
 export const sceneStatus = pgEnum('scene_status', ['active', 'on_hold', 'completed', 'archived']);
@@ -99,6 +100,25 @@ export const scenePosts = pgTable(
     removedByUserId: uuid('removed_by_user_id').references(() => users.id, { onDelete: 'set null' }),
   },
   (t) => [unique('scene_posts_scene_seq').on(t.sceneId, t.seq), index('scene_posts_kind_idx').on(t.sceneId, t.kind, t.seq)],
+);
+
+/**
+ * Pictures attached to a story post, in the order they are shown. An image belongs to one post
+ * only. The image itself is a row in `media`; removing the post hides its pictures without deleting them.
+ */
+export const scenePostImages = pgTable(
+  'scene_post_images',
+  {
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => scenePosts.id, { onDelete: 'cascade' }),
+    mediaId: uuid('media_id')
+      .notNull()
+      .unique()
+      .references(() => media.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.postId, t.mediaId] })],
 );
 
 /** One unsent post per person per scene, saved as they type. */

@@ -92,7 +92,7 @@ export default async function FriendsPage() {
 
       <SectionHeading>
         Friends — {friends.length}
-        {friends.length > 0 ? <span className="ml-2 text-sm font-normal text-ink-muted">{online} online</span> : null}
+        {friends.length > 0 ? <span className="ml-2 text-sm font-normal text-ink-muted">{online} Online</span> : null}
       </SectionHeading>
       {friends.length === 0 ? (
         <EmptyState icon={<UserPlus className="size-8" aria-hidden="true" />} title="No Friends Yet" className="max-w-3xl">

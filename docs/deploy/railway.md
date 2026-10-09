@@ -51,6 +51,7 @@ WorldRoot service → **Variables**. Add each of these:
 | `WORLDROOT_CLIENT_IP_HEADER` | `x-real-ip` (lets the site tell visitors apart when limiting sign-in attempts) |
 | `WORLDROOT_ADMIN_EMAIL` | the email you will sign in with |
 | `WORLDROOT_ADMIN_PASSWORD` | a **new** password, not one you have typed into a chat |
+| `WORLDROOT_DONATE_URL` | optional: the `https://` address of your page on a donation service. It becomes the Donate button on `/support` |
 | `WORLDROOT_CONTACT_EMAIL` | an address people can write to about their data. It is shown publicly on the privacy policy and the terms |
 
 Leave out `WORLDROOT_ADMIN_PASSWORD_SYNC`. It is for your own computer only and is ignored here.

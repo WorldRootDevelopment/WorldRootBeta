@@ -6,35 +6,35 @@ export const metadata: Metadata = { title: 'Audit Log' };
 
 /** Plain-language names for the action keys written by the services. */
 const ACTIONS: Record<string, string> = {
-  'community.create': 'Created the community',
-  'community.update': 'Changed community settings',
-  'community.archive': 'Archived the community',
-  'community.restore': 'Restored the community',
-  'role.create': 'Created a role',
-  'role.update': 'Changed a role',
-  'role.delete': 'Deleted a role',
-  'role.assign': 'Gave a member a role',
-  'role.unassign': 'Took a role from a member',
-  'member.remove': 'Removed a member',
-  'member.ban': 'Banned a member',
-  'member.unban': 'Lifted a ban',
-  'invite.create': 'Created an invite link',
-  'invite.revoke': 'Revoked an invite link',
-  'characterfield.create': 'Added a character field',
-  'characterfield.remove': 'Removed a character field',
-  'character.add': 'Added a character',
-  'character.update': 'Edited a character',
-  'character.approve': 'Approved a character',
-  'character.return': 'Returned a character',
-  'world.add': 'Added a world',
-  'world.update': 'Edited a world',
-  'location.create': 'Added a location',
-  'location.update': 'Edited a location',
-  'scene.status': 'Changed a scene’s status',
-  'post.remove': 'Removed a post',
-  'message.remove': 'Removed a message',
-  'report.resolve': 'Resolved a report',
-  'report.dismiss': 'Dismissed a report',
+  'community.create': 'Created The Community',
+  'community.update': 'Changed Community Settings',
+  'community.archive': 'Archived The Community',
+  'community.restore': 'Restored The Community',
+  'role.create': 'Created A Role',
+  'role.update': 'Changed A Role',
+  'role.delete': 'Deleted A Role',
+  'role.assign': 'Gave A Member A Role',
+  'role.unassign': 'Took A Role From A Member',
+  'member.remove': 'Removed A Member',
+  'member.ban': 'Banned A Member',
+  'member.unban': 'Lifted A Ban',
+  'invite.create': 'Created An Invite Link',
+  'invite.revoke': 'Revoked An Invite Link',
+  'characterfield.create': 'Added A Character Field',
+  'characterfield.remove': 'Removed A Character Field',
+  'character.add': 'Added A Character',
+  'character.update': 'Edited A Character',
+  'character.approve': 'Approved A Character',
+  'character.return': 'Returned A Character',
+  'world.add': 'Added A World',
+  'world.update': 'Edited A World',
+  'location.create': 'Added A Location',
+  'location.update': 'Edited A Location',
+  'scene.status': 'Changed A Scene’s Status',
+  'post.remove': 'Removed A Post',
+  'message.remove': 'Removed A Message',
+  'report.resolve': 'Resolved A Report',
+  'report.dismiss': 'Dismissed A Report',
 };
 
 /** A short readable summary of what an entry recorded. */
@@ -62,7 +62,7 @@ export default async function AuditLogPage({ params }: { params: Promise<{ commu
           return (
             <li key={entry.id} className="px-5 py-4 text-sm">
               <p className="text-ink">
-                <span className="font-medium">{entry.actorName ?? 'A former member'}</span>
+                <span className="font-medium">{entry.actorName ?? 'A Former Member'}</span>
                 {entry.actorHandle ? <span className="text-ink-muted"> @{entry.actorHandle}</span> : null}
                 <span aria-hidden="true"> · </span>
                 {ACTIONS[entry.action] ?? entry.action}

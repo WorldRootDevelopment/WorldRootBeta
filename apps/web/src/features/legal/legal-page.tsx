@@ -56,7 +56,7 @@ export function LegalPage({ title, lead, children }: { title: string; lead: Reac
 
       <main className="py-10">
         <h1 className="wr-title w-fit pb-1 font-display text-4xl font-bold tracking-tight md:text-5xl">{title}</h1>
-        <p className="mt-2 text-sm text-ink-muted">Last updated {LEGAL_UPDATED}</p>
+        <p className="mt-2 text-sm text-ink-muted">Last Updated {LEGAL_UPDATED}</p>
         <p className="mt-6 text-lg leading-relaxed text-ink-muted">{lead}</p>
         {children}
       </main>
@@ -75,6 +75,9 @@ export function LegalLinks({ className = '' }: { className?: string }) {
       </Link>
       <Link href="/terms" className={textLinkClass}>
         Terms Of Service
+      </Link>
+      <Link href="/support" className={textLinkClass}>
+        Support WorldRoot
       </Link>
     </footer>
   );

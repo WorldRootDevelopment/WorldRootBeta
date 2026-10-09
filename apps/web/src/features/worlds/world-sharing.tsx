@@ -47,7 +47,7 @@ export function WorldSharingPanel({ worldId, shareCode }: { worldId: string; sha
               {copied ? 'Copied' : 'Copy ID'}
             </Button>
             <Button variant="ghost" onClick={() => set(false)} disabled={pending}>
-              Stop sharing
+              Stop Sharing
             </Button>
           </div>
         </>
@@ -58,7 +58,7 @@ export function WorldSharingPanel({ worldId, shareCode }: { worldId: string; sha
             to add it to a community they run.
           </p>
           <Button variant="secondary" onClick={() => set(true)} disabled={pending} className="mt-4">
-            {pending ? 'Creating ID…' : 'Create a world ID'}
+            {pending ? 'Creating ID…' : 'Create A World ID'}
           </Button>
         </>
       )}
@@ -107,7 +107,7 @@ export function ImportWorldForm() {
           className="min-h-11 w-full rounded-lg border border-line-strong bg-surface-raised px-3 font-mono text-base uppercase tracking-widest text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
         />
         <Button type="submit" variant="secondary" disabled={pending || !code.trim()}>
-          {pending ? 'Copying…' : 'Add copy'}
+          {pending ? 'Copying…' : 'Add Copy'}
         </Button>
       </div>
       {error ? (

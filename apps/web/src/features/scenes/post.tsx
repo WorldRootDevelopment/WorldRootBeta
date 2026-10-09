@@ -41,7 +41,7 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
         <div className="min-w-0">
           <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
           <p className="mt-1 text-xs text-ink-muted">
-            {post.authorHandle ? `Rolled by @${post.authorHandle}` : 'Rolled by a former member'} · <time dateTime={post.createdAt.toISOString()}>{when(post.createdAt)}</time>
+            {post.authorHandle ? `Rolled By @${post.authorHandle}` : 'Rolled By A Former Member'} · <time dateTime={post.createdAt.toISOString()}>{when(post.createdAt)}</time>
           </p>
         </div>
       </article>
@@ -60,13 +60,13 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
           <p className="text-xs text-ink-muted">
             {post.authorHandle ? (
               <>
-                Written by{' '}
+                Written By{' '}
                 <Link href={`/u/${post.authorHandle}`} className="rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
                   @{post.authorHandle}
                 </Link>
               </>
             ) : (
-              'Written by a former member'
+              'Written By A Former Member'
             )}
             {post.authorBadges.length > 0 ? (
               <>
@@ -79,7 +79,7 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
             {post.editedAt ? (
               <>
                 <span aria-hidden="true"> · </span>
-                <span title={`Edited ${when(post.editedAt)}`}>edited</span>
+                <span title={`Edited ${when(post.editedAt)}`}>Edited</span>
               </>
             ) : null}
           </p>
@@ -93,6 +93,7 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
         canEdit={post.mine && editable}
         canRemove={post.mine || canModerate}
         canReport={!post.mine}
+        images={post.images}
       />
     </article>
   );
@@ -104,7 +105,7 @@ export function OocMessage({ post, canModerate }: { post: Post; canModerate: boo
   return (
     <li className="text-sm">
       <div className="flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
-        <span className="font-medium text-ink">{post.authorName ?? 'Former member'}</span>
+        <span className="font-medium text-ink">{post.authorName ?? 'Former Member'}</span>
         <Badges list={post.authorBadges} />
         <time dateTime={post.createdAt.toISOString()}>{when(post.createdAt)}</time>
         {post.mine || canModerate ? <RemovePostButton postId={post.id} what="message" /> : null}

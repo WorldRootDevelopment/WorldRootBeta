@@ -25,16 +25,16 @@ export default async function HomePage() {
           Create a character, then start a private scene or find a community to write in.
           <span className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/library/characters/new" className={buttonClass('primary')}>
-              Create a character
+              Create A Character
             </Link>
             <Link href="/communities" className={buttonClass('secondary')}>
-              Browse communities
+              Browse Communities
             </Link>
           </span>
         </EmptyState>
       ) : (
         <>
-          <SectionHeading>{waiting.length > 0 ? 'Waiting on you' : 'Your scenes'}</SectionHeading>
+          <SectionHeading>{waiting.length > 0 ? 'Waiting On You' : 'Your Scenes'}</SectionHeading>
           <ul className="grid gap-4 lg:grid-cols-2">
             {(waiting.length > 0 ? waiting : open).slice(0, 6).map((item) => (
               <li key={item.scene.id}>
@@ -44,7 +44,7 @@ export default async function HomePage() {
           </ul>
           <p className="mt-6">
             <Link href="/scenes" className={buttonClass('secondary')}>
-              All your scenes
+              All Your Scenes
             </Link>
           </p>
         </>

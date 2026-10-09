@@ -56,9 +56,9 @@ export function MemberRail({ members }: { members: PresenceRow[] }) {
       <details className="wr-glass mb-6 rounded-2xl xl:hidden">
         <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-4 text-sm font-medium text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
           <span aria-hidden="true" className="size-2.5 rounded-full bg-online" />
-          {online.length} online
+          {online.length} Online
           <span className="font-normal text-ink-muted">
-            · {members.length} {members.length === 1 ? 'member' : 'members'}
+            · {members.length} {members.length === 1 ? 'Member' : 'Members'}
           </span>
         </summary>
         <div className="max-h-72 overflow-y-auto border-t border-line p-4">{lists}</div>

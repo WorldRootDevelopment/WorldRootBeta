@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { ReportButton } from '@/features/moderation/report-client';
 import { send } from './api';
+import { PostImages } from './post-images';
 
 const linkButton =
   'rounded text-xs font-medium text-ink-muted hover:text-ink hover:underline disabled:opacity-50 ' +
@@ -43,10 +44,12 @@ interface PostBodyProps {
   canRemove: boolean;
   /** Shown on other people’s posts. */
   canReport: boolean;
+  /** The ids of the pictures under the post. They stay as they are when the words are edited. */
+  images: string[];
 }
 
 /** A story post's text, with edit and remove controls for those allowed to use them. */
-export function PostBody({ postId, html, doc, canEdit, canRemove, canReport }: PostBodyProps) {
+export function PostBody({ postId, html, doc, canEdit, canRemove, canReport, images }: PostBodyProps) {
   const router = useRouter();
   const draft = useRef<RichDoc | null>(doc);
   const [editing, setEditing] = useState(false);
@@ -54,7 +57,7 @@ export function PostBody({ postId, html, doc, canEdit, canRemove, canReport }: P
   const [error, setError] = useState<string | null>(null);
 
   const save = async () => {
-    if (!draft.current || isBlank(draft.current)) return setError('A post cannot be empty. Remove it instead.');
+    if ((!draft.current || isBlank(draft.current)) && images.length === 0) return setError('A post cannot be empty. Remove it instead.');
     setPending(true);
     const result = await send('PATCH', `/api/v1/posts/${postId}`, { content: draft.current });
     setPending(false);
@@ -81,7 +84,7 @@ export function PostBody({ postId, html, doc, canEdit, canRemove, canReport }: P
         ) : null}
         <div className="flex gap-3">
           <Button onClick={save} disabled={pending}>
-            {pending ? 'Saving…' : 'Save changes'}
+            {pending ? 'Saving…' : 'Save Changes'}
           </Button>
           <Button
             variant="ghost"
@@ -102,6 +105,7 @@ export function PostBody({ postId, html, doc, canEdit, canRemove, canReport }: P
   return (
     <>
       <div className="wr-prose max-w-[68ch]" dangerouslySetInnerHTML={{ __html: html }} />
+      <PostImages images={images} />
       {canEdit || canRemove || canReport ? (
         <div className="mt-3 flex items-center gap-4">
           {canEdit && doc ? (

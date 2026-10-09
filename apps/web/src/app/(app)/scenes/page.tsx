@@ -36,7 +36,7 @@ export default async function ScenesPage() {
       <PageHeader title="Scenes" lead="Every scene you are writing in, with the ones waiting on you first." />
       <div className="mb-10">
         <Link href="/scenes/new" className={buttonClass('primary')}>
-          New private scene
+          New Private Scene
         </Link>
       </div>
 

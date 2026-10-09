@@ -31,7 +31,7 @@ export default async function LibraryWorldPage({ params }: Props) {
           </p>
         </div>
         <Link href={`${base}/edit`} className={buttonClass('secondary')}>
-          Edit world
+          Edit World
         </Link>
       </div>
 
@@ -40,7 +40,7 @@ export default async function LibraryWorldPage({ params }: Props) {
       <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
         <h2 className="font-display text-xl font-semibold text-ink">Locations</h2>
         <Link href={`${base}/locations/new`} className={buttonClass('secondary')}>
-          Add location
+          Add Location
         </Link>
       </div>
       <div className="mt-4">

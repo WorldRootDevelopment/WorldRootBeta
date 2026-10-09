@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: 'Get The App' };
 const STEPS = [
   {
     device: 'Windows And Mac',
-    browser: 'In Chrome or Edge',
+    browser: 'In Chrome Or Edge',
     steps: ['Open WorldRoot in Chrome or Edge.', 'Press the install icon at the right of the address bar: a small screen with an arrow.', 'Press Install. WorldRoot opens in its own window and is added to your Start menu or Dock.'],
   },
   {

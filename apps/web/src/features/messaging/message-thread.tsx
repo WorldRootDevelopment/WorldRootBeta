@@ -30,7 +30,7 @@ export function MessageThread({ page, href, viewingEarlier, emptyText, placehold
       {hasEarlier && messages[0] ? (
         <p>
           <Link href={`${href}?before=${messages[0].id}`} className={buttonClass('secondary')}>
-            Earlier messages
+            Earlier Messages
           </Link>
         </p>
       ) : null}
@@ -48,7 +48,7 @@ export function MessageThread({ page, href, viewingEarlier, emptyText, placehold
               ) : (
                 <>
                   <div className="flex flex-wrap items-baseline gap-x-2 text-xs text-ink-muted">
-                    <span className="text-sm font-medium text-ink">{message.authorName ?? 'Former member'}</span>
+                    <span className="text-sm font-medium text-ink">{message.authorName ?? 'Former Member'}</span>
                     <Badges list={message.authorBadges} community={message.authorCommunityBadge} />
                     {message.authorHandle ? (
                       <Link href={`/u/${message.authorHandle}`} className="rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
@@ -70,7 +70,7 @@ export function MessageThread({ page, href, viewingEarlier, emptyText, placehold
       {viewingEarlier ? (
         <p>
           <Link href={href} className={buttonClass('secondary')}>
-            Jump to the latest messages
+            Jump To The Latest Messages
           </Link>
         </p>
       ) : (

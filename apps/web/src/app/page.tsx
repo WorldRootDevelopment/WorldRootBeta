@@ -31,7 +31,7 @@ export default async function LandingPage() {
             Get The App
           </Link>
           <Link href={unfinished ? '/welcome' : viewer ? '/home' : '/sign-in'} className={buttonClass('ghost')}>
-            {unfinished ? 'Finish Setting Up' : viewer ? 'Go to Home' : 'Sign in'}
+            {unfinished ? 'Finish Setting Up' : viewer ? 'Go To Home' : 'Sign In'}
           </Link>
         </div>
       </header>
@@ -54,15 +54,15 @@ export default async function LandingPage() {
             </>
           ) : viewer ? (
             <Link href="/home" className={buttonClass('primary', 'lg')}>
-              Go to your Home
+              Go To Your Home
             </Link>
           ) : (
             <>
               <Link href="/sign-up" className={buttonClass('primary', 'lg')}>
-                Create an account
+                Create An Account
               </Link>
               <Link href="/sign-in" className={buttonClass('secondary', 'lg')}>
-                Sign in
+                Sign In
               </Link>
               {demoGuestEnabled() ? (
                 <Link href="/sign-in#demo" className={buttonClass('ghost', 'lg')}>
@@ -98,7 +98,7 @@ export default async function LandingPage() {
             free for anyone to use.
           </p>
           <p className="mt-3 font-medium text-accent-text group-hover:underline">
-            See the alternatives <span aria-hidden="true">→</span>
+            See The Alternatives <span aria-hidden="true">→</span>
           </p>
         </Link>
       </main>

@@ -38,7 +38,7 @@ export function MarkAllReadButton() {
   return (
     <div className="flex items-center gap-3">
       <Button variant="secondary" onClick={markAll} disabled={busy}>
-        Mark all read
+        Mark All Read
       </Button>
       {error ? (
         <p role="alert" className="text-sm text-danger">

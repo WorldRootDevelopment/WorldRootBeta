@@ -27,14 +27,14 @@ interface BadgeDefinition {
 
 /** In display order: the most significant badge comes first. */
 export const BADGES = {
-  staff: { label: 'Rootwarden', title: 'Rootwarden: WorldRoot staff', how: 'Held by the Rootwardens, the staff who look after WorldRoot.', tone: 'staff', grantable: false },
-  founder: { label: 'Seedbearer', title: 'Seedbearer: planted WorldRoot', how: 'For the people who planted WorldRoot.', tone: 'special', grantable: true },
-  premium: { label: 'Premium', title: 'WorldRoot Premium member', how: 'Comes with WorldRoot Premium, which is not on sale yet.', tone: 'premium', grantable: false },
-  early_supporter: { label: 'Deeproot', title: 'Deeproot: supported WorldRoot from the start', how: 'Given by WorldRoot to people who backed it early.', tone: 'special', grantable: true },
-  beta_tester: { label: 'Seedling', title: 'Seedling: helped test WorldRoot before launch', how: 'Given by WorldRoot to people who tested it before launch.', tone: 'special', grantable: true },
+  staff: { label: 'Rootwarden', title: 'Rootwarden: WorldRoot Staff', how: 'Held by the Rootwardens, the staff who look after WorldRoot.', tone: 'staff', grantable: false },
+  founder: { label: 'Seedbearer', title: 'Seedbearer: Planted WorldRoot', how: 'For the people who planted WorldRoot.', tone: 'special', grantable: true },
+  premium: { label: 'Premium', title: 'WorldRoot Premium Member', how: 'Comes with WorldRoot Premium, which is not on sale yet.', tone: 'premium', grantable: false },
+  early_supporter: { label: 'Deeproot', title: 'Deeproot: Supported WorldRoot From The Start', how: 'Given by WorldRoot to people who backed it early.', tone: 'special', grantable: true },
+  beta_tester: { label: 'Seedling', title: 'Seedling: Helped Test WorldRoot Before Launch', how: 'Given by WorldRoot to people who tested it before launch.', tone: 'special', grantable: true },
   // Earned, not granted. These two are achievements that also sit in the badge row; the keys match the achievement registry.
-  worldbuilder: { label: 'Worldbuilder', title: 'Worldbuilder: built a world with 5 locations', how: 'Earned with the Worldbuilder achievement: build a world with 5 locations.', tone: 'special', grantable: false },
-  cartographer: { label: 'Cartographer', title: 'Cartographer: mapped 25 locations across their worlds', how: 'Earned with the Cartographer achievement: map 25 locations across your worlds.', tone: 'special', grantable: false },
+  worldbuilder: { label: 'Worldbuilder', title: 'Worldbuilder: Built A World With 5 Locations', how: 'Earned with the Worldbuilder achievement: build a world with 5 locations.', tone: 'special', grantable: false },
+  cartographer: { label: 'Cartographer', title: 'Cartographer: Mapped 25 Locations Across Their Worlds', how: 'Earned with the Cartographer achievement: map 25 locations across your worlds.', tone: 'special', grantable: false },
 } as const satisfies Record<string, BadgeDefinition>;
 
 export type BadgeKey = keyof typeof BADGES;
@@ -51,9 +51,9 @@ export const toBadges = (values: readonly unknown[] | null | undefined): BadgeKe
 
 /** A person's standing in one community. At most one is shown: the highest they hold. */
 export const COMMUNITY_BADGES = {
-  owner: { label: 'Owner', title: 'Owns this community' },
-  admin: { label: 'Admin', title: 'Runs this community' },
-  moderator: { label: 'Mod', title: 'Moderates this community' },
+  owner: { label: 'Owner', title: 'Owns This Community' },
+  admin: { label: 'Admin', title: 'Runs This Community' },
+  moderator: { label: 'Mod', title: 'Moderates This Community' },
 } as const;
 
 export type CommunityBadgeKey = keyof typeof COMMUNITY_BADGES;

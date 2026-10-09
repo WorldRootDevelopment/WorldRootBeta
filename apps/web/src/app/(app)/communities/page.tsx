@@ -38,7 +38,7 @@ export default async function CommunitiesPage() {
       <PageHeader title="Communities" lead="The communities you belong to." />
       <div className="mb-10">
         <Link href="/communities/new" className={buttonClass('primary')}>
-          New community
+          New Community
         </Link>
       </div>
 
@@ -59,7 +59,7 @@ export default async function CommunitiesPage() {
       <p className="mt-10 text-sm text-ink-muted">
         Looking for somewhere new?{' '}
         <Link href="/discover" className="font-medium text-accent-text underline">
-          Find open communities in Discover
+          Find Open Communities In Discover
         </Link>
         .
       </p>

@@ -88,7 +88,7 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
           </div>
           {isSelf ? (
             <Link href="/settings/profile" className={buttonClass('secondary')}>
-              Edit profile
+              Edit Profile
             </Link>
           ) : (
             <div className={`flex flex-wrap items-center gap-2 ${popup ? 'basis-full' : 'basis-full xl:basis-auto'}`}>
@@ -134,7 +134,7 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
         {isSelf ? (
           <p className="mt-3 text-sm">
             <Link href="/settings/achievements" className="font-medium text-accent-text underline">
-              See all achievements and your progress
+              See All Achievements And Your Progress
             </Link>
           </p>
         ) : null}
@@ -146,7 +146,7 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
               <li key={character.id}>
                 <Link href={`/characters/${character.id}`} className={cardClass}>
                   <h3 className="font-display text-lg font-semibold text-ink">{character.name}</h3>
-                  <p className="text-sm text-ink-muted">in {character.communityName}</p>
+                  <p className="text-sm text-ink-muted">In {character.communityName}</p>
                   {character.tagline ? <p className="mt-3 font-serif italic leading-relaxed text-ink">{character.tagline}</p> : null}
                 </Link>
               </li>
@@ -180,7 +180,7 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
         {viewerIsStaff ? (
           <p className="mt-12 border-t border-line pt-6">
             <Link href={`/staff/accounts/${profile.userId}`} className={buttonClass('secondary')}>
-              Rootwarden: manage this account
+              Rootwarden: Manage This Account
             </Link>
           </p>
         ) : null}

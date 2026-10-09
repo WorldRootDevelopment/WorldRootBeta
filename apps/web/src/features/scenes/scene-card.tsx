@@ -11,27 +11,27 @@ interface SceneCardProps {
 
 export function SceneCard({ summary, unread = 0, waitingOnYou = false }: SceneCardProps) {
   const { scene, communityName, locationName, cast } = summary;
-  const where = scene.communityId ? [communityName, locationName].filter(Boolean).join(' · ') : 'Private scene';
+  const where = scene.communityId ? [communityName, locationName].filter(Boolean).join(' · ') : 'Private Scene';
 
   return (
     <Link href={`/scenes/${scene.id}`} className={cardClass}>
       <div className="flex flex-wrap items-center gap-2">
         {waitingOnYou ? (
           <span className="inline-flex min-h-6 items-center rounded-full bg-accent px-2.5 text-xs font-medium text-accent-contrast">
-            Waiting on you
+            Waiting On You
           </span>
         ) : null}
         <StatusBadge status={scene.status} />
         <RatingBadge rating={scene.rating} />
-        {unread > 0 ? <span className="text-xs font-medium text-accent-text">{unread} new</span> : null}
+        {unread > 0 ? <span className="text-xs font-medium text-accent-text">{unread} New</span> : null}
       </div>
       <h3 className="mt-3 font-display text-xl font-semibold text-ink">{scene.title}</h3>
       <p className="mt-1 text-sm text-ink-muted">{where}</p>
       {scene.description ? <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-ink">{scene.description}</p> : null}
       <p className="mt-4 text-sm text-ink-muted">
-        {cast.length > 0 ? cast.join(', ') : 'No characters yet'}
+        {cast.length > 0 ? cast.join(', ') : 'No Characters Yet'}
         <span aria-hidden="true"> · </span>
-        {scene.icPostCount} {scene.icPostCount === 1 ? 'post' : 'posts'}
+        {scene.icPostCount} {scene.icPostCount === 1 ? 'Post' : 'Posts'}
       </p>
     </Link>
   );

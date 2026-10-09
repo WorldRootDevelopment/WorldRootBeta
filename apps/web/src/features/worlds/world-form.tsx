@@ -45,7 +45,7 @@ export function WorldForm({ world, returnTo }: WorldFormProps) {
       <FormFooter
         error={error}
         pending={pending}
-        submitLabel={world ? 'Save changes' : 'Create world'}
+        submitLabel={world ? 'Save Changes' : 'Create World'}
         cancelHref={returnTo ?? (world ? `/worlds/${world.id}` : '/library')}
       />
     </form>
@@ -86,7 +86,7 @@ export function WorldLocationForm({ worldId, location, parentId = null, base = `
       <FormFooter
         error={error}
         pending={pending}
-        submitLabel={location ? 'Save changes' : 'Add location'}
+        submitLabel={location ? 'Save Changes' : 'Add Location'}
         cancelHref={location ? `${base}/l/${location.id}` : parentId ? `${base}/l/${parentId}` : base}
       />
     </form>

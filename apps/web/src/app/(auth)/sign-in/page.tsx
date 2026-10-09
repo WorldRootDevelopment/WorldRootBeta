@@ -28,7 +28,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
         <>
           New to WorldRoot?{' '}
           <Link href={`/sign-up${query}`} className={textLinkClass}>
-            Create an account
+            Create An Account
           </Link>
         </>
       }

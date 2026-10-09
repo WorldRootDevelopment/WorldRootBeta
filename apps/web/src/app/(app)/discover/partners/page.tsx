@@ -98,7 +98,7 @@ export default async function PartnersPage({ searchParams }: { searchParams: Pro
       <div className="mb-8 flex flex-wrap items-center gap-4">
         {open < MAX_OPEN_LFRP ? (
           <Link href="/discover/partners/new" className={buttonClass('primary')}>
-            Post a listing
+            Post A Listing
           </Link>
         ) : (
           <p className="text-sm text-ink-muted">You have {MAX_OPEN_LFRP} listings open, which is the most allowed. Take one down to post another.</p>
@@ -131,7 +131,7 @@ export default async function PartnersPage({ searchParams }: { searchParams: Pro
       </nav>
 
       {others.length === 0 ? (
-        <EmptyState icon={<PenLine className="size-8" aria-hidden="true" />} title={genre ? `Nobody is looking for ${LFRP_GENRES[genre].toLowerCase()} right now` : 'No listings yet'}>
+        <EmptyState icon={<PenLine className="size-8" aria-hidden="true" />} title={genre ? `Nobody Is Looking For ${LFRP_GENRES[genre].toLowerCase()} Right Now` : 'No Listings Yet'}>
           Say what you would like to write and let a partner find you.
         </EmptyState>
       ) : (

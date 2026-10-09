@@ -1,18 +1,24 @@
 import { checkAchievements } from '../identity/achievements';
-import { characters, media, profiles, type Db } from '@worldroot/db';
+import { characters, media, profiles, scenePostImages, scenePosts, type Db } from '@worldroot/db';
 import { count, eq, or } from 'drizzle-orm';
 import { canEditCharacter } from '../characters/service';
 import { recordAudit } from '../platform/audit';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
+import { getSceneForPosting } from '../scenes/service';
 import { checkImage } from './images';
 import type { MediaStorage } from './storage';
 
 export type Media = typeof media.$inferSelect;
 
 /** Checks an upload, stores its bytes and records it. Nothing refers to it until the caller says so. */
-async function store(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8Array): Promise<Media> {
+async function store(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8Array, options: { gif: boolean }): Promise<Media> {
   const image = checkImage(upload);
+  if (!options.gif && image.contentType === 'image/gif') {
+    // Animated profile pictures are switched off for now. They are still welcome in scenes.
+    const message = 'Animated GIFs cannot be used here for now. Use a PNG, JPEG or WebP image.';
+    throw new DomainError('invalid_input', message, { fields: { image: message } });
+  }
   const [row] = await db.insert(media).values({ uploaderUserId: actor.userId, contentType: image.contentType, byteSize: image.bytes.length }).returning();
   try {
     await storage.put(row!.id, image.bytes);
@@ -23,14 +29,15 @@ async function store(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8A
   return row!;
 }
 
-/** Removes an image once no profile or character points at it. A community's copy of a character shares its original's portrait. */
+/** Removes an image once no profile, character or post points at it. A community's copy of a character shares its original's portrait. */
 async function release(db: Db, storage: MediaStorage, mediaId: string | null): Promise<void> {
   if (!mediaId) return;
-  const [[asAvatar], [asPortrait]] = await Promise.all([
+  const [[asAvatar], [asPortrait], [inPost]] = await Promise.all([
     db.select({ value: count() }).from(profiles).where(or(eq(profiles.avatarMediaId, mediaId), eq(profiles.bannerMediaId, mediaId))),
     db.select({ value: count() }).from(characters).where(eq(characters.portraitMediaId, mediaId)),
+    db.select({ value: count() }).from(scenePostImages).where(eq(scenePostImages.mediaId, mediaId)),
   ]);
-  if ((asAvatar?.value ?? 0) + (asPortrait?.value ?? 0) > 0) return;
+  if ((asAvatar?.value ?? 0) + (asPortrait?.value ?? 0) + (inPost?.value ?? 0) > 0) return;
   await db.delete(media).where(eq(media.id, mediaId));
   await storage.remove(mediaId);
 }
@@ -39,7 +46,7 @@ async function release(db: Db, storage: MediaStorage, mediaId: string | null): P
 export async function setAvatar(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8Array): Promise<Media> {
   const [profile] = await db.select().from(profiles).where(eq(profiles.userId, actor.userId));
   if (!profile) throw new DomainError('not_found', 'Finish setting up your profile first.');
-  const stored = await store(db, storage, actor, upload);
+  const stored = await store(db, storage, actor, upload, { gif: false });
   await db.update(profiles).set({ avatarMediaId: stored.id }).where(eq(profiles.userId, actor.userId));
   await release(db, storage, profile.avatarMediaId);
   await checkAchievements(db, actor.userId, 'profile');
@@ -64,7 +71,7 @@ export async function removeAvatar(db: Db, storage: MediaStorage, actor: Actor, 
 export async function setBanner(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8Array): Promise<Media> {
   const [profile] = await db.select().from(profiles).where(eq(profiles.userId, actor.userId));
   if (!profile) throw new DomainError('not_found', 'Finish setting up your profile first.');
-  const stored = await store(db, storage, actor, upload);
+  const stored = await store(db, storage, actor, upload, { gif: false });
   await db.update(profiles).set({ bannerMediaId: stored.id }).where(eq(profiles.userId, actor.userId));
   await release(db, storage, profile.bannerMediaId);
   return stored;
@@ -94,7 +101,7 @@ async function editableCharacter(db: Db, actor: Actor, characterId: string) {
 /** Sets a character's portrait. Whoever may edit the character may change it. */
 export async function setPortrait(db: Db, storage: MediaStorage, actor: Actor, characterId: string, upload: Uint8Array): Promise<Media> {
   const character = await editableCharacter(db, actor, characterId);
-  const stored = await store(db, storage, actor, upload);
+  const stored = await store(db, storage, actor, upload, { gif: false });
   await db.update(characters).set({ portraitMediaId: stored.id }).where(eq(characters.id, characterId));
   await release(db, storage, character.portraitMediaId);
   return stored;
@@ -113,8 +120,27 @@ export async function removePortrait(db: Db, storage: MediaStorage, actor: Actor
   await release(db, storage, character.portraitMediaId);
 }
 
-/** An image's type and bytes, for serving. */
-export async function readMedia(db: Db, storage: MediaStorage, mediaId: string): Promise<{ contentType: string; bytes: Uint8Array }> {
+/**
+ * Stores a picture for a scene post. The actor must be able to post in the scene. The picture is
+ * not shown anywhere until a post names it; one that never is stays stored and unseen.
+ */
+export async function uploadSceneImage(db: Db, storage: MediaStorage, actor: Actor, sceneId: string, upload: Uint8Array): Promise<Media> {
+  await getSceneForPosting(db, actor, sceneId);
+  return store(db, storage, actor, upload, { gif: true });
+}
+
+/**
+ * An image's type and bytes, for serving. A picture on a post that has been removed is served to
+ * WorldRoot staff only: it is kept so a report about it can still be looked into, but nobody else
+ * can open it, even with its address.
+ */
+export async function readMedia(db: Db, storage: MediaStorage, mediaId: string, actor?: Actor): Promise<{ contentType: string; bytes: Uint8Array }> {
+  const [attached] = await db
+    .select({ removedAt: scenePosts.removedAt })
+    .from(scenePostImages)
+    .innerJoin(scenePosts, eq(scenePosts.id, scenePostImages.postId))
+    .where(eq(scenePostImages.mediaId, mediaId));
+  if (attached?.removedAt && actor?.platformRole !== 'staff') throw new DomainError('not_found', 'That image does not exist.');
   const [row] = await db.select().from(media).where(eq(media.id, mediaId));
   const bytes = row ? await storage.get(row.id) : null;
   if (!row || !bytes) throw new DomainError('not_found', 'That image does not exist.');

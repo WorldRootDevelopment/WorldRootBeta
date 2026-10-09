@@ -155,6 +155,13 @@
       "when": 1791572799098,
       "tag": "0021_black_rhino",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791574549184,
+      "tag": "0022_gifted_avengers",
+      "breakpoints": true
     }
   ]
 }

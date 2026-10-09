@@ -25,7 +25,7 @@ export default async function BadgesPage() {
             {isAchievementKey(key) ? (
               <p className="mt-1 text-xs">
                 <Link href="/settings/achievements" className="font-medium text-accent-text underline">
-                  {held ? 'From an achievement' : 'See your progress'}
+                  {held ? 'From An Achievement' : 'See Your Progress'}
                 </Link>
               </p>
             ) : null}
@@ -42,15 +42,15 @@ export default async function BadgesPage() {
       <p className="mb-2 mt-6 max-w-2xl text-ink-muted">
         Badges sit beside your name on your{' '}
         <Link href={`/u/${viewer.profile.handle}`} className="font-medium text-accent-text underline">
-          profile
+          Profile
         </Link>
         . Only the Rootwarden badge, worn by WorldRoot staff, is shown beside a name everywhere else.
       </p>
 
-      <SectionHeading>Your badges — {mine.length}</SectionHeading>
+      <SectionHeading>Your Badges — {mine.length}</SectionHeading>
       {mine.length === 0 ? <p className="text-ink-muted">You do not have any badges yet.</p> : list(mine, true)}
 
-      <SectionHeading>Other badges — {others.length}</SectionHeading>
+      <SectionHeading>Other Badges — {others.length}</SectionHeading>
       {others.length === 0 ? <p className="text-ink-muted">You have every badge there is.</p> : list(others, false)}
     </>
   );

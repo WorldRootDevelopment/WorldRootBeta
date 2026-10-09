@@ -63,7 +63,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                   </Link>{' '}
                   <span className="text-sm text-ink-muted">@{member.handle}</span>{' '}
                   <Badges list={member.badges} community={member.communityBadge} />
-                  {member.userId === viewerId ? <span className="ml-2 text-xs text-ink-muted">(you)</span> : null}
+                  {member.userId === viewerId ? <span className="ml-2 text-xs text-ink-muted">(You)</span> : null}
                 </p>
                 <div className="flex flex-wrap gap-1">
                 {bannable ? (
@@ -93,7 +93,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                       }
                     }}
                   >
-                    Remove member
+                    Remove Member
                   </Button>
                 ) : null}
                 </div>
@@ -106,7 +106,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                     {canAssign && assignableIds.has(role.id) ? (
                       <button
                         type="button"
-                        aria-label={`Remove the ${role.name} role from ${member.displayName}`}
+                        aria-label={`Remove The ${role.name} Role From ${member.displayName}`}
                         disabled={busy !== null}
                         onClick={() => act(`unassign-${member.userId}-${role.id}`, 'DELETE', `${base}/${member.userId}/roles/${role.id}`)}
                         className="-mr-1.5 flex size-6 items-center justify-center rounded-full text-ink-muted hover:bg-surface-sunken hover:text-ink focus-visible:outline-2 focus-visible:outline-focus"
@@ -119,7 +119,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                 {canAssign && addable.length > 0 ? (
                   <li>
                     <label className="sr-only" htmlFor={`add-role-${member.userId}`}>
-                      Give {member.displayName} a role
+                      Give {member.displayName} A Role
                     </label>
                     <select
                       id={`add-role-${member.userId}`}
@@ -130,7 +130,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                       }}
                       className="min-h-8 rounded-full border border-dashed border-line-strong bg-surface-raised px-3 text-sm text-ink-muted focus-visible:outline-2 focus-visible:outline-focus"
                     >
-                      <option value="">Add role…</option>
+                      <option value="">Add Role…</option>
                       {addable.map((role) => (
                         <option key={role.id} value={role.id}>
                           {role.name}
@@ -152,7 +152,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
             {bans.map((ban) => (
               <li key={ban.userId} className="flex flex-wrap items-center justify-between gap-3 wr-glass rounded-2xl p-5">
                 <p className="min-w-0 text-sm">
-                  <span className="font-medium text-ink">{ban.displayName ?? 'Former user'}</span>
+                  <span className="font-medium text-ink">{ban.displayName ?? 'Former User'}</span>
                   {ban.handle ? <span className="text-ink-muted"> @{ban.handle}</span> : null}
                   <span className="block text-ink-muted">
                     Banned {ban.createdAt.toLocaleDateString('en', { dateStyle: 'medium' })}
@@ -164,7 +164,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
                   disabled={busy !== null}
                   onClick={() => act(`unban-${ban.userId}`, 'DELETE', `/api/v1/communities/${communityId}/bans/${ban.userId}`)}
                 >
-                  Lift ban
+                  Lift Ban
                 </Button>
               </li>
             ))}

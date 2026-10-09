@@ -97,7 +97,7 @@ export function AddToCommunityForm({ communityId, communitySlug, communityName, 
         );
       })}
 
-      <FormFooter error={error} pending={pending} submitLabel={`Add to ${communityName}`} cancelHref={`/c/${communitySlug}/characters`} />
+      <FormFooter error={error} pending={pending} submitLabel={`Add To ${communityName}`} cancelHref={`/c/${communitySlug}/characters`} />
     </form>
   );
 }

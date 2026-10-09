@@ -150,7 +150,7 @@ export function NewConversationForm() {
   return (
     <form onSubmit={submit} className="flex max-w-xl flex-col gap-2">
       <label htmlFor="new-conversation" className="text-sm font-medium text-ink">
-        New message
+        New Message
       </label>
       <div className="flex gap-2">
         <input

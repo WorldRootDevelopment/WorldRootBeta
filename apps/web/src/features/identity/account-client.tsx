@@ -41,7 +41,7 @@ export function HandleForm({ handle, nextChange }: { handle: string; nextChange:
         </p>
       ) : null}
       <Button type="submit" variant="secondary" disabled={pending} className="self-start">
-        {pending ? 'Saving…' : 'Change handle'}
+        {pending ? 'Saving…' : 'Change Handle'}
       </Button>
     </form>
   );
@@ -77,7 +77,7 @@ export function PasswordForm() {
         </p>
       ) : null}
       <Button type="submit" variant="secondary" disabled={pending} className="self-start">
-        {pending ? 'Changing…' : 'Change password'}
+        {pending ? 'Changing…' : 'Change Password'}
       </Button>
     </form>
   );
@@ -104,7 +104,7 @@ export function SessionsPanel() {
         </p>
       ) : null}
       <Button variant="secondary" onClick={signOutOthers} disabled={pending}>
-        {pending ? 'Signing out…' : 'Sign out other devices'}
+        {pending ? 'Signing Out…' : 'Sign Out Other Devices'}
       </Button>
     </div>
   );

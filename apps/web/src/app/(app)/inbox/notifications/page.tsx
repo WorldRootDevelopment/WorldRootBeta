@@ -50,7 +50,7 @@ export default async function NotificationsPage() {
                       <p className={`min-w-0 text-ink ${isUnread ? 'font-semibold' : 'font-medium'}`}>
                         {isUnread ? <span aria-hidden="true" className="mr-2 inline-block size-2 rounded-full bg-accent align-middle" /> : null}
                         {notificationLine(notification.type, notification.actors, notification.count, notification.subject)}
-                        {isUnread ? <span className="sr-only"> (unread)</span> : null}
+                        {isUnread ? <span className="sr-only"> (Unread)</span> : null}
                       </p>
                       <time dateTime={notification.updatedAt.toISOString()} className="shrink-0 text-xs text-ink-muted">
                         {when(notification.updatedAt)}

@@ -21,7 +21,7 @@ export default async function SuspendedPage() {
       <p className="mt-3 text-ink-muted">The Rootwardens, WorldRoot’s staff, have suspended this account, so it cannot be used for now. Your characters, worlds and writing have not been removed.</p>
       {viewer.suspended.reason ? (
         <div className="wr-glass mt-6 rounded-2xl p-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Reason given</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Reason Given</p>
           <p className="mt-1 text-ink">{viewer.suspended.reason}</p>
         </div>
       ) : null}

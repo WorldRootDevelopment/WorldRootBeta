@@ -99,7 +99,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
         <legend className="mb-1 text-sm font-medium text-ink">Profile Color</legend>
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
           <input type="checkbox" checked={ownColor} onChange={(event) => setOwnColor(event.target.checked)} className="size-5 shrink-0 accent-accent" />
-          Give my profile its own color
+          Give My Profile Its Own Color
         </label>
         {ownColor ? (
           <div className="wr-accent-scope flex flex-wrap items-center gap-4" style={{ '--wr-accent-hue': hue } as CSSProperties}>
@@ -116,8 +116,8 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
               className="h-3 w-64 max-w-full cursor-pointer appearance-none rounded-full"
               style={{ background: 'linear-gradient(90deg in oklch longer hue, oklch(0.72 0.1 0), oklch(0.72 0.1 359))' }}
             />
-            <span className="wr-gloss inline-flex min-h-9 items-center rounded-full px-4 text-sm font-medium">Like this</span>
-            <span className="inline-flex min-h-9 items-center rounded-full bg-accent-soft px-4 text-sm font-medium text-accent-text">and this</span>
+            <span className="wr-gloss inline-flex min-h-9 items-center rounded-full px-4 text-sm font-medium">Like This</span>
+            <span className="inline-flex min-h-9 items-center rounded-full bg-accent-soft px-4 text-sm font-medium text-accent-text">And This</span>
           </div>
         ) : null}
         {fields.accentHue ? (
@@ -131,7 +131,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
         <legend className="mb-1 text-sm font-medium text-ink">Profile Background</legend>
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
           <input type="checkbox" checked={ownBackground} onChange={(event) => setOwnBackground(event.target.checked)} className="size-5 shrink-0 accent-accent" />
-          Give my profile a two-color background
+          Give My Profile A Two-Color Background
         </label>
         {ownBackground ? (
           <div className="flex flex-col gap-4">
@@ -176,7 +176,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
               <div className="wr-profile-theme-band h-16" />
               <div className="px-4 pb-4 pt-3">
                 <p className="font-display text-lg font-bold text-ink">{displayName}</p>
-                <p className="text-sm text-ink-muted">@{handle} · how your profile will look</p>
+                <p className="text-sm text-ink-muted">@{handle} · How Your Profile Will Look</p>
               </div>
             </div>
           </div>
@@ -193,7 +193,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
         <label className="flex min-h-11 items-start gap-3 py-2 text-sm text-ink">
           <input type="checkbox" name="hideOnline" defaultChecked={hideOnline} className="mt-0.5 size-5 shrink-0 accent-accent" />
           <span>
-            Appear offline
+            Appear Offline
             <span className="block text-ink-muted">You will never be listed as online in a community’s lounge. You can still read and write as usual.</span>
           </span>
         </label>

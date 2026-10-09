@@ -37,7 +37,7 @@ export default async function NewScenePage({ searchParams }: { searchParams: Pro
         }
       />
       <PageHeader
-        title={place ? `New scene in ${place.locationName}` : 'New private scene'}
+        title={place ? `New Scene In ${place.locationName}` : 'New Private Scene'}
         lead={
           place
             ? `Open to everyone in ${place.communityName} who can see this location.`
@@ -50,7 +50,7 @@ export default async function NewScenePage({ searchParams }: { searchParams: Pro
           Members of {place?.communityName} can start scenes here.
           <span className="mt-6 block">
             <Link href={`/c/${place?.communitySlug}`} className={buttonClass('primary')}>
-              Go to {place?.communityName}
+              Go To {place?.communityName}
             </Link>
           </span>
         </EmptyState>
@@ -61,7 +61,7 @@ export default async function NewScenePage({ searchParams }: { searchParams: Pro
             : 'A scene is written with characters from your library.'}
           <span className="mt-6 block">
             <Link href={place ? `/c/${place.communitySlug}/characters/add` : '/library/characters/new'} className={buttonClass('primary')}>
-              {place ? 'Add a character to this community' : 'Create a character'}
+              {place ? 'Add A Character To This Community' : 'Create A Character'}
             </Link>
           </span>
         </EmptyState>

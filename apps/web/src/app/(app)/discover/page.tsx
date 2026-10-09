@@ -30,23 +30,23 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
 
       <form action="/discover" role="search" className="mb-8 flex max-w-xl gap-2">
         <label htmlFor="discover-q" className="sr-only">
-          Search communities
+          Search Communities
         </label>
-        <input id="discover-q" name="q" type="search" defaultValue={query} maxLength={80} placeholder="Search communities by name" className={field} />
+        <input id="discover-q" name="q" type="search" defaultValue={query} maxLength={80} placeholder="Search Communities By Name" className={field} />
         <button type="submit" className={buttonClass('secondary')}>
           Search
         </button>
       </form>
 
       {found.length === 0 ? (
-        <EmptyState icon={<Compass className="size-8" aria-hidden="true" />} title={query ? 'No communities match' : 'No open communities yet'}>
+        <EmptyState icon={<Compass className="size-8" aria-hidden="true" />} title={query ? 'No Communities Match' : 'No Open Communities Yet'}>
           {query ? (
             <>
-              Nothing matches “{query}”. <Link href="/discover" className="font-medium text-accent-text underline">Show all communities</Link>.
+              Nothing matches “{query}”. <Link href="/discover" className="font-medium text-accent-text underline">Show All Communities</Link>.
             </>
           ) : (
             <>
-              Communities appear here when their owners list them. <Link href="/communities/new" className="font-medium text-accent-text underline">Start one of your own</Link>.
+              Communities appear here when their owners list them. <Link href="/communities/new" className="font-medium text-accent-text underline">Start One Of Your Own</Link>.
             </>
           )}
         </EmptyState>
@@ -61,8 +61,8 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
                 <h2 className="mt-3 font-display text-lg font-semibold text-ink">{community.name}</h2>
                 {community.tagline ? <p className="mt-1 text-sm leading-relaxed text-ink-muted">{community.tagline}</p> : null}
                 <p className="mt-3 text-xs font-medium text-ink-muted">
-                  {memberCount} {memberCount === 1 ? 'member' : 'members'}
-                  {isMember ? ' · You are a member' : ''}
+                  {memberCount} {memberCount === 1 ? 'Member' : 'Members'}
+                  {isMember ? ' · You Are A Member' : ''}
                 </p>
               </Link>
             </li>

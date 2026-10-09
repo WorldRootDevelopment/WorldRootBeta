@@ -1,4 +1,4 @@
-import { getAccountForStaff } from '@worldroot/core';
+import { getAccountForStaff, listOwnedItems } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ import { ImageUpload } from '@/features/media/image-upload';
 import { Picture } from '@/features/shell/picture';
 import { Breadcrumbs, SectionHeading } from '@/features/shell/prose';
 import { SignOutEverywhereButton, SuspensionPanel } from '@/features/staff/account-actions';
-import { AccountControls } from '@/features/staff/account-controls';
+import { AccountControls, ItemControls } from '@/features/staff/account-controls';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
@@ -23,13 +23,15 @@ const link = 'rounded font-medium text-ink hover:underline focus-visible:outline
 const ACTIONS: Record<string, string> = {
   'platform.account.suspend': 'Suspended',
   'platform.account.restore': 'Restored',
-  'platform.account.sign_out': 'Signed out of every device',
-  'platform.badge.grant': 'Given a badge',
-  'platform.badge.revoke': 'Badge taken away',
+  'platform.account.sign_out': 'Signed Out Of Every Device',
+  'platform.badge.grant': 'Given A Badge',
+  'platform.badge.revoke': 'Badge Taken Away',
   'platform.premium.grant': 'Given Premium',
-  'platform.premium.revoke': 'Premium taken away',
-  'platform.avatar.remove': 'Profile picture removed',
-  'platform.banner.remove': 'Banner removed',
+  'platform.premium.revoke': 'Premium Taken Away',
+  'platform.avatar.remove': 'Profile Picture Removed',
+  'platform.banner.remove': 'Banner Removed',
+  'platform.item.grant': 'Given A Store Item',
+  'platform.item.revoke': 'Store Item Taken Back',
 };
 
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
@@ -48,6 +50,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
   const { userId } = await params;
   const { db } = await database();
   const account = await load(() => getAccountForStaff(db, viewer.actor, userId));
+  const ownedItems = await listOwnedItems(db, account.userId);
   const name = account.profile?.displayName ?? account.email;
   const isSelf = account.userId === viewer.actor.userId;
   const cannotSuspend = isSelf ? 'This is your own account. You cannot suspend yourself.' : account.isStaff ? 'This is a Rootwarden. Rootwardens are set in the server’s settings and cannot be suspended from here.' : null;
@@ -64,7 +67,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
             <Badges list={account.badges} all />
           </h1>
           <p className="mt-1 text-ink-muted">
-            {account.profile ? `@${account.profile.handle} · ` : 'Has not finished setting up · '}
+            {account.profile ? `@${account.profile.handle} · ` : 'Has Not Finished Setting Up · '}
             {account.email}
           </p>
           {account.suspendedAt ? (
@@ -75,7 +78,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
         </div>
         {account.profile ? (
           <Link href={`/u/${account.profile.handle}`} className={buttonClass('secondary')}>
-            View profile
+            View Profile
           </Link>
         ) : null}
       </header>
@@ -84,7 +87,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
         <Fact label="Joined">{day(account.createdAt)}</Fact>
         <Fact label="Last Seen">{account.profile?.lastSeenAt ? moment(account.profile.lastSeenAt) : 'Never'}</Fact>
         <Fact label="Signed In On">
-          {account.sessions} {account.sessions === 1 ? 'device' : 'devices'}
+          {account.sessions} {account.sessions === 1 ? 'Device' : 'Devices'}
         </Fact>
         <Fact label="Open Reports About Them">{account.openReports}</Fact>
         <Fact label="Characters">{account.characters}</Fact>
@@ -106,6 +109,10 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
       <SectionHeading>Badges And Premium</SectionHeading>
       <p className="mb-4 text-sm text-ink-muted">Press a label to give or take away that badge.</p>
       <AccountControls userId={account.userId} badges={account.badges} />
+
+      <SectionHeading>Store Items</SectionHeading>
+      <p className="mb-4 text-sm text-ink-muted">Press a label to give or take back that item. Nothing in the store is on sale yet, so this is the only way to own one.</p>
+      <ItemControls userId={account.userId} owned={ownedItems} />
 
       {account.profile && !isSelf && (account.profile.avatarId || account.profile.bannerId) ? (
         <>
@@ -130,7 +137,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
             <li key={community.slug}>
               <Link href={`/c/${community.slug}`} className="inline-flex min-h-9 items-center rounded-full border border-line-strong px-3 text-sm font-medium text-ink hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
                 {community.name}
-                {community.owner ? <span className="ml-1.5 text-ink-muted">· owner</span> : null}
+                {community.owner ? <span className="ml-1.5 text-ink-muted">· Owner</span> : null}
               </Link>
             </li>
           ))}
@@ -149,7 +156,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
                 {entry.by ? (
                   <>
                     {' '}
-                    by{' '}
+                    By{' '}
                     <Link href={`/u/${entry.by}`} className={link}>
                       @{entry.by}
                     </Link>

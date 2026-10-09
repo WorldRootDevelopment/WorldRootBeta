@@ -1,9 +1,10 @@
-import { DICE_THEMES, isDiceTheme, updateProfileSchema, type DiceThemeKey, type Profile, type UpdateProfileInput } from '@worldroot/contracts';
+import { DICE_THEMES, diceItemKey, isDiceTheme, updateProfileSchema, type DiceThemeKey, type Profile, type UpdateProfileInput } from '@worldroot/contracts';
 import { characters, communities, communityMembers, profiles, type Db } from '@worldroot/db';
 import { and, asc, eq, inArray, isNull, or } from 'drizzle-orm';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { parseInput } from '../platform/validate';
+import { ownsItem } from '../store/service';
 import { getProfile, getProfileByHandle } from './profile';
 
 /** The actor's own profile settings, including what other people do not see. */
@@ -31,12 +32,14 @@ export async function updateProfile(db: Db, actor: Actor, input: UpdateProfileIn
 }
 
 /**
- * Chooses how the actor's dice look. Only a free theme can be chosen: the
- * others wait for a way to earn or buy them, and until then nobody owns one.
+ * Chooses how the actor's dice look: any free theme, or one they own from
+ * the store.
  */
 export async function setDiceTheme(db: Db, actor: Actor, theme: unknown): Promise<DiceThemeKey> {
   if (!isDiceTheme(theme)) throw new DomainError('invalid_input', 'That is not a dice theme.');
-  if (!DICE_THEMES[theme].free) throw new DomainError('forbidden', 'That dice theme is not available yet.');
+  if (!DICE_THEMES[theme].free && !(await ownsItem(db, actor.userId, diceItemKey(theme)))) {
+    throw new DomainError('forbidden', 'You do not own that dice theme.');
+  }
   const [row] = await db.update(profiles).set({ diceTheme: theme }).where(eq(profiles.userId, actor.userId)).returning({ userId: profiles.userId });
   if (!row) throw new DomainError('not_found', 'Finish setting up your account first.');
   return theme;

@@ -40,7 +40,7 @@ export default async function ConversationPage({ params, searchParams }: Props) 
           <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">{summary.title}</h1>
           <p className="mt-1 text-sm text-ink-muted">
             {summary.people.length === 0
-              ? 'Only you'
+              ? 'Only You'
               : summary.people.map((person, index) => (
                   <span key={person.userId}>
                     {index > 0 ? ', ' : null}
@@ -53,7 +53,7 @@ export default async function ConversationPage({ params, searchParams }: Props) 
         </div>
         {/* The designed way out of roleplaying in messages: take it to a scene. */}
         <Link href="/scenes/new" className={buttonClass('secondary')}>
-          Start a scene
+          Start A Scene
         </Link>
       </header>
       {summary.request === 'incoming' ? <RequestBar conversationId={conversationId} name={summary.title} /> : null}
@@ -68,7 +68,7 @@ export default async function ConversationPage({ params, searchParams }: Props) 
         href={`/inbox/${conversationId}`}
         viewingEarlier={Boolean(before)}
         emptyText="No messages yet. Say hello."
-        placeholder="Write a message…"
+        placeholder="Write A Message…"
         readOnlyNote="You cannot write in this conversation."
         track
       />

@@ -37,13 +37,13 @@ export default async function CommunityLayout({ params, children }: Props) {
         <div className="mt-5 flex flex-wrap items-center gap-4">
           {isMember ? (
             <span className="inline-flex min-h-8 items-center rounded-full bg-surface-raised px-3 text-sm font-medium text-accent-text">
-              You are a member
+              You Are A Member
             </span>
           ) : archived ? null : (
             <JoinButton communityId={community.id} />
           )}
           <span className="text-sm text-ink-muted">
-            {memberCount} {memberCount === 1 ? 'member' : 'members'}
+            {memberCount} {memberCount === 1 ? 'Member' : 'Members'}
           </span>
         </div>
       </header>

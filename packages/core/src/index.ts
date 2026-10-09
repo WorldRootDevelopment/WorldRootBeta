@@ -33,6 +33,7 @@ export * from './moderation/reports';
 export * from './notifications/service';
 export * from './discover/service';
 export * from './platform/rich-fields';
+export * from './store/service';
 export * from './media/images';
 export * from './media/service';
 export * from './media/storage';

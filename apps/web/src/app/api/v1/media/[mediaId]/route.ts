@@ -4,9 +4,9 @@ import { mediaStorage } from '@/lib/media';
 import { database } from '@/lib/server';
 
 /** Serve an uploaded image to a signed-in person. */
-export const GET = route<{ mediaId: string }>(async ({ params }) => {
+export const GET = route<{ mediaId: string }>(async ({ params, actor }) => {
   const { db } = await database();
-  const { contentType, bytes } = await readMedia(db, mediaStorage(), params.mediaId);
+  const { contentType, bytes } = await readMedia(db, mediaStorage(), params.mediaId, actor);
   return new Response(Buffer.from(bytes), {
     headers: {
       'content-type': contentType,

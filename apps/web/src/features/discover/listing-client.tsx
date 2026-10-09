@@ -182,7 +182,7 @@ export function RemoveListingButton({ listingId }: { listingId: string }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Button variant="ghost" onClick={remove} disabled={pending}>
-        {pending ? 'Removing…' : 'Take down'}
+        {pending ? 'Removing…' : 'Take Down'}
       </Button>
       {error ? (
         <p role="alert" className="text-sm text-danger">

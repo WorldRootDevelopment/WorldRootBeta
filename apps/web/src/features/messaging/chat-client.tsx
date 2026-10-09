@@ -83,7 +83,7 @@ export function ChatLog({ conversationId, latestId, track, children }: ChatLogPr
           onClick={toBottom}
           className="absolute bottom-3 left-1/2 -translate-x-1/2 wr-gloss rounded-full px-4 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
-          New messages ↓
+          New Messages ↓
         </button>
       ) : null}
     </div>

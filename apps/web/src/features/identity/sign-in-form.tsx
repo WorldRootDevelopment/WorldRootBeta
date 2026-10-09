@@ -38,7 +38,7 @@ export function SignInForm({ next }: { next: string }) {
         </p>
       ) : null}
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? 'Signing in…' : 'Sign in'}
+        {pending ? 'Signing In…' : 'Sign In'}
       </Button>
     </form>
   );

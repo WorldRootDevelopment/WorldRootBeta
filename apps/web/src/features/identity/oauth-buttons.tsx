@@ -38,7 +38,7 @@ export function OAuthButtons({ providers, next }: { providers: OAuthProvider[]; 
           {error}
         </p>
       ) : null}
-      <p className="flex items-center gap-3 text-xs text-ink-muted before:h-px before:flex-1 before:bg-line after:h-px after:flex-1 after:bg-line">or</p>
+      <p className="flex items-center gap-3 text-xs text-ink-muted before:h-px before:flex-1 before:bg-line after:h-px after:flex-1 after:bg-line">Or</p>
     </div>
   );
 }

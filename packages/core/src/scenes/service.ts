@@ -13,10 +13,12 @@ import {
   characters,
   communities,
   locations,
+  media,
   profiles,
   sceneCharacters,
   sceneDrafts,
   sceneParticipants,
+  scenePostImages,
   scenePostRevisions,
   scenePosts,
   scenes,
@@ -113,7 +115,7 @@ async function requireEligible(db: Db, actor: Actor, communityId: string | null,
   return unique.map((id) => eligible.get(id)!);
 }
 
-function parseContent(input: unknown, maxCharacters: number): RichDoc {
+function parseContent(input: unknown, maxCharacters: number, mayBeBlank = false): RichDoc {
   let doc: RichDoc;
   try {
     doc = parseDoc(input);
@@ -121,7 +123,7 @@ function parseContent(input: unknown, maxCharacters: number): RichDoc {
     if (!(error instanceof InvalidDocumentError)) throw error;
     throw new DomainError('invalid_input', 'That post could not be read.', { fields: { content: error.message } });
   }
-  if (isBlank(doc)) throw new DomainError('invalid_input', 'Write something first.', { fields: { content: 'Write something first.' } });
+  if (!mayBeBlank && isBlank(doc)) throw new DomainError('invalid_input', 'Write something first.', { fields: { content: 'Write something first.' } });
   if (toPlainText(doc).length > maxCharacters) {
     const message = `Keep it under ${maxCharacters.toLocaleString('en')} characters.`;
     throw new DomainError('invalid_input', message, { fields: { content: message } });
@@ -337,7 +339,21 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
   }
 
   if (!OPEN.includes(scene.status)) throw new DomainError('conflict', 'This scene is closed to new posts.');
-  const doc = parseContent(values.content, MAX_POST_CHARACTERS);
+  const imageIds = [...new Set(values.imageIds ?? [])];
+  // A post may be pictures alone.
+  const doc = parseContent(values.content, MAX_POST_CHARACTERS, imageIds.length > 0);
+  if (imageIds.length > 0) {
+    // Only pictures this person uploaded, and only ones no post already shows.
+    const found = await db
+      .select({ id: media.id, uploader: media.uploaderUserId, postId: scenePostImages.postId })
+      .from(media)
+      .leftJoin(scenePostImages, eq(scenePostImages.mediaId, media.id))
+      .where(inArray(media.id, imageIds));
+    if (found.length !== imageIds.length || found.some((image) => image.uploader !== actor.userId || image.postId)) {
+      const message = 'One of those images could not be attached. Add it again.';
+      throw new DomainError('invalid_input', message, { fields: { images: message } });
+    }
+  }
 
   let character: { id: string; name: string } | null = null;
   if (values.characterId) {
@@ -367,6 +383,9 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
       characterName: character?.name ?? null,
       doc,
     });
+    if (imageIds.length > 0) {
+      await tx.insert(scenePostImages).values(imageIds.map((mediaId, position) => ({ postId: post.id, mediaId, position })));
+    }
     await tx.delete(sceneDrafts).where(and(eq(sceneDrafts.sceneId, sceneId), eq(sceneDrafts.userId, actor.userId)));
     const others = await tx.select({ userId: sceneParticipants.userId }).from(sceneParticipants).where(eq(sceneParticipants.sceneId, sceneId));
     await notifyMany(
@@ -378,7 +397,7 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
         subject: scene.title,
         href: `/scenes/${sceneId}#post-${post.seq}`,
         actorUserId: actor.userId,
-        preview: post.contentText,
+        preview: post.contentText || 'Posted a picture.',
       },
     );
     return post;
@@ -475,6 +494,8 @@ export interface PostPage {
       authorName: string | null;
       authorHandle: string | null;
       authorBadges: BadgeKey[];
+      /** The ids of the pictures under the post, in order, served from /api/v1/media. */
+      images: string[];
       /** Written by the viewer. */
       mine: boolean;
       /** Who removed it, when it has been removed. Its content is then withheld. */
@@ -513,9 +534,23 @@ export async function listPosts(
     .orderBy(desc(scenePosts.seq))
     .limit(limit + 1);
 
+  const page = rows.slice(0, limit);
+  const attached =
+    page.length === 0
+      ? []
+      : await db
+          .select()
+          .from(scenePostImages)
+          .where(
+            inArray(
+              scenePostImages.postId,
+              page.map((row) => row.post.id),
+            ),
+          )
+          .orderBy(asc(scenePostImages.position));
+
   return {
-    posts: rows
-      .slice(0, limit)
+    posts: page
       .reverse()
       .map(({ post, authorName, authorHandle, authorBadges }) => ({
         ...post,
@@ -524,6 +559,8 @@ export async function listPosts(
         authorName,
         authorHandle,
         authorBadges: toBadges(authorBadges),
+        // A removed post's pictures are withheld along with its words.
+        images: post.removedAt ? [] : attached.filter((image) => image.postId === post.id).map((image) => image.mediaId),
         mine: post.authorUserId === actor.userId,
         removedBy: post.removedAt ? (post.removedByUserId === post.authorUserId ? ('author' as const) : ('moderator' as const)) : null,
       })),

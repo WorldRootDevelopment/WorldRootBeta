@@ -55,11 +55,11 @@ export function AddWorldForm({ communityId, communityName, worlds }: AddWorldFor
         <legend className="sr-only">Where The World Comes From</legend>
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
           <input type="radio" name="source" checked={source === 'library'} onChange={() => setSource('library')} className="size-5 accent-accent" />
-          From my library
+          From My Library
         </label>
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
           <input type="radio" name="source" checked={source === 'id'} onChange={() => setSource('id')} className="size-5 accent-accent" />
-          From a world ID someone shared with me
+          From A World ID Someone Shared With Me
         </label>
       </fieldset>
 
@@ -68,7 +68,7 @@ export function AddWorldForm({ communityId, communityName, worlds }: AddWorldFor
           <p className="text-sm text-ink-muted">
             Your library has no worlds yet.{' '}
             <Link href="/library/worlds/new" className="font-medium text-accent-text underline underline-offset-2 hover:no-underline">
-              Create a world
+              Create A World
             </Link>
           </p>
         ) : (
@@ -117,7 +117,7 @@ export function AddWorldForm({ communityId, communityName, worlds }: AddWorldFor
         </p>
       ) : null}
       <Button type="submit" disabled={pending || (source === 'library' && worlds.length === 0)} className="self-start">
-        {pending ? 'Adding…' : `Add to ${communityName}`}
+        {pending ? 'Adding…' : `Add To ${communityName}`}
       </Button>
     </form>
   );

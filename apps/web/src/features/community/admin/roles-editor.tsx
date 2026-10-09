@@ -107,7 +107,7 @@ function RoleCard({ role, grantable }: { role: EditableRole; grantable: Permissi
       <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
         <span className="font-display text-lg font-semibold text-ink">{role.name}</span>
         <span className="text-sm text-ink-muted">
-          {role.isOwner ? 'All permissions' : `${role.permissions.length} ${role.permissions.length === 1 ? 'permission' : 'permissions'}`}
+          {role.isOwner ? 'All Permissions' : `${role.permissions.length} ${role.permissions.length === 1 ? 'permission' : 'permissions'}`}
           <span aria-hidden="true" className="ml-3 inline-block transition-transform group-open:rotate-90">
             ›
           </span>
@@ -120,7 +120,7 @@ function RoleCard({ role, grantable }: { role: EditableRole; grantable: Permissi
           <>
             <div className="flex flex-col gap-1.5">
               <label htmlFor={`name-${role.id}`} className="text-sm font-medium text-ink">
-                Role name
+                Role Name
               </label>
               <input
                 id={`name-${role.id}`}
@@ -140,11 +140,11 @@ function RoleCard({ role, grantable }: { role: EditableRole; grantable: Permissi
             {role.editable ? (
               <div className="flex flex-wrap gap-3">
                 <Button onClick={save} disabled={pending || !dirty}>
-                  {pending ? 'Saving…' : 'Save role'}
+                  {pending ? 'Saving…' : 'Save Role'}
                 </Button>
                 {role.isDefault ? null : (
                   <Button variant="ghost" onClick={remove} disabled={pending}>
-                    Delete role
+                    Delete Role
                   </Button>
                 )}
               </div>
@@ -179,7 +179,7 @@ function NewRole({ communityId, grantable }: { communityId: string; grantable: P
       <h3 className="font-display text-lg font-semibold text-ink">New Role</h3>
       <div className="flex flex-col gap-1.5">
         <label htmlFor="new-role-name" className="text-sm font-medium text-ink">
-          Role name
+          Role Name
         </label>
         <input id="new-role-name" value={name} maxLength={40} onChange={(event) => setName(event.target.value)} className={inputClass} placeholder="World Manager" />
       </div>
@@ -190,7 +190,7 @@ function NewRole({ communityId, grantable }: { communityId: string; grantable: P
         </p>
       ) : null}
       <Button onClick={create} disabled={pending || !name.trim()} className="self-start">
-        {pending ? 'Creating…' : 'Create role'}
+        {pending ? 'Creating…' : 'Create Role'}
       </Button>
     </section>
   );

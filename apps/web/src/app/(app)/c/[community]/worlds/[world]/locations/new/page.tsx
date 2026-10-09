@@ -30,7 +30,7 @@ export default async function NewCommunityLocationPage({ params, searchParams }:
           { label: 'Add Location' },
         ]}
       />
-      <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{parent ? `Add a location inside ${parent.name}` : 'Add a location'}</h2>
+      <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{parent ? `Add A Location Inside ${parent.name}` : 'Add A Location'}</h2>
       <p className="mb-8 mt-2 max-w-2xl text-ink-muted">Only a name is needed. Describe it now or later. Members can set scenes here as soon as it is added.</p>
       <WorldLocationForm worldId={world.id} parentId={parent?.id ?? null} base={base} />
     </>

@@ -17,7 +17,7 @@ export default async function CommunityCharactersPage({ params }: { params: Prom
   const add = permissions.includes('character.submit') ? (
     <div className="mb-8">
       <Link href={`/c/${community.slug}/characters/add`} className={buttonClass('primary')}>
-        Add a character
+        Add A Character
       </Link>
     </div>
   ) : null;

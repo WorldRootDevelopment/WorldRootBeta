@@ -14,7 +14,7 @@ const STATE_LABELS: Record<InviteRow['state'], string> = {
   active: 'Active',
   revoked: 'Revoked',
   expired: 'Expired',
-  used_up: 'Used up',
+  used_up: 'Used Up',
 };
 
 const day = (date: Date) => date.toLocaleDateString('en', { dateStyle: 'medium' });
@@ -40,7 +40,7 @@ function InviteLink({ code }: { code: string }) {
         {url}
       </code>
       <Button variant="secondary" onClick={copy}>
-        {copied ? 'Copied' : 'Copy link'}
+        {copied ? 'Copied' : 'Copy Link'}
       </Button>
     </div>
   );
@@ -83,22 +83,22 @@ export function InvitesPanel({ communityId, invites }: { communityId: string; in
               Expires
             </label>
             <select id="expiresInDays" name="expiresInDays" defaultValue="7" className={selectClass}>
-              <option value="1">After 1 day</option>
-              <option value="7">After 7 days</option>
-              <option value="30">After 30 days</option>
+              <option value="1">After 1 Day</option>
+              <option value="7">After 7 Days</option>
+              <option value="30">After 30 Days</option>
               <option value="">Never</option>
             </select>
           </div>
           <div className="flex flex-col gap-1.5">
             <label htmlFor="maxUses" className="text-sm font-medium text-ink">
-              Can be used
+              Can Be Used
             </label>
             <select id="maxUses" name="maxUses" defaultValue="" className={selectClass}>
-              <option value="">Any number of times</option>
+              <option value="">Any Number Of Times</option>
               <option value="1">Once</option>
-              <option value="5">5 times</option>
-              <option value="25">25 times</option>
-              <option value="100">100 times</option>
+              <option value="5">5 Times</option>
+              <option value="25">25 Times</option>
+              <option value="100">100 Times</option>
             </select>
           </div>
         </div>
@@ -108,7 +108,7 @@ export function InvitesPanel({ communityId, invites }: { communityId: string; in
           </p>
         ) : null}
         <Button type="submit" disabled={pending} className="self-start">
-          {pending ? 'Creating…' : 'Create link'}
+          {pending ? 'Creating…' : 'Create Link'}
         </Button>
       </form>
 
@@ -126,10 +126,10 @@ export function InvitesPanel({ communityId, invites }: { communityId: string; in
                   </span>
                   {' · '}
                   Used {invite.uses}
-                  {invite.maxUses ? ` of ${invite.maxUses}` : ''} {invite.uses === 1 && !invite.maxUses ? 'time' : 'times'}
+                  {invite.maxUses ? ` Of ${invite.maxUses}` : ''} {invite.uses === 1 && !invite.maxUses ? 'Time' : 'Times'}
                   {' · '}
-                  {invite.expiresAt ? `Expires ${day(invite.expiresAt)}` : 'Does not expire'}
-                  {invite.createdByHandle ? ` · Made by @${invite.createdByHandle}` : ''}
+                  {invite.expiresAt ? `Expires ${day(invite.expiresAt)}` : 'Does Not Expire'}
+                  {invite.createdByHandle ? ` · Made By @${invite.createdByHandle}` : ''}
                 </p>
                 {invite.state === 'active' ? (
                   <Button variant="ghost" onClick={() => revoke(invite)}>

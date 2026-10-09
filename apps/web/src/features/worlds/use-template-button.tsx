@@ -25,8 +25,8 @@ export function UseTemplateButton({ templateId, name }: { templateId: string; na
 
   return (
     <div className="flex flex-col items-start gap-2">
-      <Button onClick={use} disabled={pending} aria-label={`Use the ${name} template`}>
-        {pending ? 'Creating…' : 'Use this template'}
+      <Button onClick={use} disabled={pending} aria-label={`Use The ${name} Template`}>
+        {pending ? 'Creating…' : 'Use This Template'}
       </Button>
       {error ? (
         <p role="alert" className="text-sm text-danger">

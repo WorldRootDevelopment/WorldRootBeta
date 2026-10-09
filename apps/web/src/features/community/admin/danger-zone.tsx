@@ -49,26 +49,26 @@ export function DangerZone({ communityId, communityName, archived }: DangerZoneP
       </h3>
 
       <div className="mt-5">
-        <h4 className="font-medium text-ink">{archived ? 'Restore this community' : 'Archive this community'}</h4>
+        <h4 className="font-medium text-ink">{archived ? 'Restore This Community' : 'Archive This Community'}</h4>
         <p className="mt-1 text-sm text-ink-muted">
           {archived
             ? 'Restoring reopens it exactly as it was. Members can post, join scenes and add characters again.'
             : 'Archiving freezes the community. Its members can still read everything, but nobody can post, join, start scenes or change anything, and people outside it can no longer find it. Nothing is deleted, and you can restore it at any time.'}
         </p>
         <Button variant="secondary" onClick={() => setArchived(!archived)} disabled={pending !== null} className="mt-3">
-          {pending === 'archive' ? 'Working…' : archived ? 'Restore community' : 'Archive community'}
+          {pending === 'archive' ? 'Working…' : archived ? 'Restore Community' : 'Archive Community'}
         </Button>
       </div>
 
       <form onSubmit={remove} className="mt-8 border-t border-line pt-6">
-        <h4 className="font-medium text-ink">Delete this community</h4>
+        <h4 className="font-medium text-ink">Delete This Community</h4>
         <p className="mt-1 text-sm text-ink-muted">
           Deleting is permanent. It removes the community’s worlds, locations, characters, scenes and every post in them, along with its
           lounge, announcements, roles and invites. Characters and worlds in people’s own libraries are not affected. If you might want
           any of this back, archive instead.
         </p>
         <label htmlFor="confirm-name" className="mt-4 block text-sm font-medium text-ink">
-          Type <span className="font-semibold">{communityName}</span> to confirm
+          Type <span className="font-semibold">{communityName}</span> To Confirm
         </label>
         <input
           id="confirm-name"
@@ -83,7 +83,7 @@ export function DangerZone({ communityId, communityName, archived }: DangerZoneP
             disabled={!matches || pending !== null}
             className="inline-flex min-h-11 items-center rounded-lg bg-danger px-4 text-sm font-medium text-surface-raised disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
           >
-            {pending === 'delete' ? 'Deleting…' : 'Delete community for good'}
+            {pending === 'delete' ? 'Deleting…' : 'Delete Community For Good'}
           </button>
         </div>
       </form>

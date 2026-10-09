@@ -42,7 +42,7 @@ export default async function AlternativesPage() {
           <Wordmark />
         </Link>
         <Link href={viewer ? '/home' : '/sign-in'} className={buttonClass('ghost')}>
-          {viewer ? 'Go to Home' : 'Sign in'}
+          {viewer ? 'Go To Home' : 'Sign In'}
         </Link>
       </header>
 
@@ -60,7 +60,7 @@ export default async function AlternativesPage() {
 
         {/* Each universe takes its own accent, the way a community does. */}
         <article className="wr-accent-scope wr-glass rounded-3xl p-6 md:p-10" style={{ '--wr-accent-hue': 285 } as CSSProperties}>
-          <p className="text-sm font-medium text-accent-text">A school of magic, for everyone</p>
+          <p className="text-sm font-medium text-accent-text">A School Of Magic, For Everyone</p>
           <h2 className="mt-1 font-display text-4xl font-semibold tracking-tight text-ink">Varrowmere</h2>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink">
             For writers who love stories about schools of magic but have chosen not to support the Harry Potter franchise or its author, J.K.
@@ -69,7 +69,7 @@ export default async function AlternativesPage() {
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href={start} className={buttonClass('primary', 'lg')}>
-              {viewer ? 'Use the Varrowmere template' : 'Create an account to use it'}
+              {viewer ? 'Use The Varrowmere Template' : 'Create An Account To Use It'}
             </Link>
           </div>
 
@@ -178,7 +178,7 @@ export default async function AlternativesPage() {
             </p>
             <div className="mt-6">
               <Link href={start} className={buttonClass('primary', 'lg')}>
-                {viewer ? 'Use the Varrowmere template' : 'Create an account to use it'}
+                {viewer ? 'Use The Varrowmere Template' : 'Create An Account To Use It'}
               </Link>
             </div>
           </section>

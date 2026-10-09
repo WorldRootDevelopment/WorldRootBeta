@@ -51,7 +51,7 @@ export function SignUpForm({ next }: { next: string }) {
         </p>
       ) : null}
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? 'Creating account…' : 'Create account'}
+        {pending ? 'Creating Account…' : 'Create Account'}
       </Button>
     </form>
   );

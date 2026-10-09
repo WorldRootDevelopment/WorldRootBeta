@@ -22,7 +22,7 @@ export default async function AchievementsPage() {
       <p className="mb-6 mt-6 max-w-2xl text-ink-muted">
         You have earned {earned} of {rows.length}. Your{' '}
         <Link href={`/u/${viewer.profile.handle}`} className="font-medium text-accent-text underline">
-          profile
+          Profile
         </Link>{' '}
         shows the ones you have earned. Only you see the rest and how far along you are.
       </p>

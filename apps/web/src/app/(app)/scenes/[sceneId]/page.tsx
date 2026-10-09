@@ -70,7 +70,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
         <div className="flex flex-wrap items-center gap-2">
           <StatusBadge status={scene.status} />
           <RatingBadge rating={scene.rating} />
-          {place ? null : <span className="text-xs font-medium text-ink-muted">Private scene</span>}
+          {place ? null : <span className="text-xs font-medium text-ink-muted">Private Scene</span>}
         </div>
         <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">{scene.title}</h1>
         {scene.description ? <p className="mt-3 max-w-[68ch] text-ink-muted">{scene.description}</p> : null}
@@ -81,7 +81,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
           {story.hasEarlier && story.posts[0] ? (
             <p className="mb-10">
               <Link href={`/scenes/${scene.id}?before=${story.posts[0].seq}`} className={buttonClass('secondary')}>
-                Read earlier posts
+                Read Earlier Posts
               </Link>
             </p>
           ) : null}
@@ -95,7 +95,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
           {before ? (
             <p className="mt-12">
               <Link href={`/scenes/${scene.id}`} className={buttonClass('secondary')}>
-                Jump to the latest posts
+                Jump To The Latest Posts
               </Link>
             </p>
           ) : (
@@ -115,7 +115,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
                 <div>
                   <p className="text-ink-muted">To write here, add one of your characters to {place!.community.name} first.</p>
                   <Link href={`/c/${place!.community.slug}/characters/add`} className={`${buttonClass('primary')} mt-4`}>
-                    Add a character
+                    Add A Character
                   </Link>
                 </div>
               ) : (

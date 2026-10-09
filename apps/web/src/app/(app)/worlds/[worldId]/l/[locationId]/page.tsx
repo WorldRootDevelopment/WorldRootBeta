@@ -45,7 +45,7 @@ export default async function LibraryLocationPage(props: Props) {
           {location.summary ? <p className="mt-2 max-w-2xl text-lg text-ink-muted">{location.summary}</p> : null}
         </div>
         <Link href={`${hrefFor(location)}/edit`} className={buttonClass('secondary')}>
-          Edit location
+          Edit Location
         </Link>
       </div>
 
@@ -54,7 +54,7 @@ export default async function LibraryLocationPage(props: Props) {
       <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
         <h2 className="font-display text-xl font-semibold text-ink">Inside {location.name}</h2>
         <Link href={`${base}/locations/new?parent=${location.id}`} className={buttonClass('secondary')}>
-          Add location here
+          Add Location Here
         </Link>
       </div>
       <div className="mt-4">

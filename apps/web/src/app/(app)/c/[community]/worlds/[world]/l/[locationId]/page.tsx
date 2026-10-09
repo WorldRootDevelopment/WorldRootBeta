@@ -52,12 +52,12 @@ export default async function LocationPage(props: Props) {
           <div className="flex flex-wrap gap-2">
             {powers.addLocations ? (
               <Link href={`${worldHref}/locations/new?parent=${location.id}`} className={buttonClass('secondary')}>
-                Add location here
+                Add Location Here
               </Link>
             ) : null}
             {powers.editLocations ? (
               <Link href={`${hrefFor(location)}/edit`} className={buttonClass('secondary')}>
-                Edit location
+                Edit Location
               </Link>
             ) : null}
           </div>
@@ -78,7 +78,7 @@ export default async function LocationPage(props: Props) {
         <h2 className="font-display text-xl font-semibold text-ink">Scenes</h2>
         {canStart ? (
           <Link href={`/scenes/new?location=${location.id}`} className={buttonClass('primary')}>
-            Start a scene here
+            Start A Scene Here
           </Link>
         ) : null}
       </div>

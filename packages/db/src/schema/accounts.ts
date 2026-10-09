@@ -7,6 +7,25 @@ import { users } from './identity';
  * "Beta tester". The Staff and Premium badges are not stored here: they are
  * derived from the account itself, so they can never be out of step with it.
  */
+/**
+ * What a person owns from the store, such as a dice theme. `itemKey` is a key from the store
+ * registry in @worldroot/contracts. `source` says how they came by it: given by staff today,
+ * bought or earned once the store can take payment or points.
+ */
+export const userItems = pgTable(
+  'user_items',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    itemKey: text('item_key').notNull(),
+    source: text('source').notNull().default('grant'),
+    grantedByUserId: uuid('granted_by_user_id').references(() => users.id, { onDelete: 'set null' }),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.itemKey] })],
+);
+
 export const userBadges = pgTable(
   'user_badges',
   {

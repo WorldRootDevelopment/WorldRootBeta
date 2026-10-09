@@ -79,7 +79,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
         <ul className="border-t border-line py-1.5">
           <li>
             <Link href={`/u/${profile.handle}`} className={itemClass}>
-              Your profile
+              Your Profile
             </Link>
           </li>
           <li>
@@ -90,7 +90,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
           {profile.isStaff ? (
             <li>
               <Link href="/staff" className={itemClass}>
-                Rootwarden portal
+                Rootwarden Portal
               </Link>
             </li>
           ) : null}
@@ -100,6 +100,11 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
           <li>
             <Link href="/install" className={itemClass}>
               Get The App
+            </Link>
+          </li>
+          <li>
+            <Link href="/support" className={itemClass}>
+              Support WorldRoot
             </Link>
           </li>
           <li>
@@ -119,7 +124,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
           </li>
           <li>
             <Link href="/alternatives" className={itemClass}>
-              Alternative universes
+              Alternative Universes
             </Link>
           </li>
         </ul>
@@ -131,7 +136,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
         <div className="border-t border-line pt-1.5">
           <button type="button" onClick={signOut} className={itemClass}>
             <LogOut className="size-4" aria-hidden="true" />
-            Sign out
+            Sign Out
           </button>
         </div>
       </div>

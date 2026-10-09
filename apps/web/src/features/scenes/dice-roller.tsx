@@ -234,7 +234,7 @@ export function DiceRoller({ sceneId, characters, theme: savedTheme }: DiceRolle
       <p className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-line px-5 py-3 text-xs text-ink-muted">
         <span>WorldRoot makes every roll and adds it to the story.</span>
         <Link href="/settings/customization" className={`rounded font-medium text-accent-text underline ${focusRing}`}>
-          Change dice style
+          Change Dice Style
         </Link>
       </p>
     </form>

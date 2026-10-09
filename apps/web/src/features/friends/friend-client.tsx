@@ -52,7 +52,7 @@ export function AddFriendForm() {
     <form onSubmit={submit} className="flex max-w-xl flex-wrap items-end gap-3">
       <TextField label="Add A Friend" name="handle" placeholder="@handle" maxLength={40} required autoComplete="off" className="min-w-0 flex-1" />
       <Button type="submit" disabled={pending}>
-        {pending ? 'Sending…' : 'Send request'}
+        {pending ? 'Sending…' : 'Send Request'}
       </Button>
       {note ? (
         <p role={note.ok ? 'status' : 'alert'} className={`basis-full text-sm ${note.ok ? 'text-accent-text' : 'text-danger'}`}>
@@ -72,13 +72,13 @@ export function FriendButton({ userId, handle, state }: { userId: string; handle
       <div className="flex flex-wrap gap-2">
         {state === 'none' ? (
           <Button variant="secondary" disabled={busy} onClick={() => run('POST', '/api/v1/friends', { handle })}>
-            Add friend
+            Add Friend
           </Button>
         ) : null}
         {state === 'incoming' ? (
           <>
             <Button disabled={busy} onClick={() => run('POST', url)}>
-              Accept friend request
+              Accept Friend Request
             </Button>
             <Button variant="ghost" disabled={busy} onClick={() => run('DELETE', url)}>
               Decline
@@ -87,7 +87,7 @@ export function FriendButton({ userId, handle, state }: { userId: string; handle
         ) : null}
         {state === 'outgoing' ? (
           <Button variant="ghost" disabled={busy} onClick={() => run('DELETE', url)}>
-            Cancel friend request
+            Cancel Friend Request
           </Button>
         ) : null}
         {state === 'friends' ? (

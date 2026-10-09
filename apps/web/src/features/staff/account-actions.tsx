@@ -49,7 +49,7 @@ export function SuspensionPanel({ userId, name, suspended, blocked }: Suspension
     return (
       <div className="flex flex-col items-start gap-3">
         <Button onClick={restore} disabled={pending}>
-          {pending ? 'Restoring…' : 'Restore this account'}
+          {pending ? 'Restoring…' : 'Restore This Account'}
         </Button>
         {error ? (
           <p role="alert" className={note(false)}>
@@ -65,7 +65,7 @@ export function SuspensionPanel({ userId, name, suspended, blocked }: Suspension
       <TextArea label="Reason" name="reason" rows={3} maxLength={500} required error={error ?? undefined} hint="Kept in the record, and shown to the person when they try to sign in." />
       <div>
         <Button type="submit" disabled={pending}>
-          {pending ? 'Suspending…' : 'Suspend this account'}
+          {pending ? 'Suspending…' : 'Suspend This Account'}
         </Button>
       </div>
     </form>
@@ -89,7 +89,7 @@ export function SignOutEverywhereButton({ userId, sessions }: { userId: string; 
   return (
     <div className="flex flex-col items-start gap-3">
       <Button variant="secondary" onClick={signOut} disabled={pending || sessions === 0}>
-        {pending ? 'Signing out…' : 'Sign out of every device'}
+        {pending ? 'Signing Out…' : 'Sign Out Of Every Device'}
       </Button>
       {message ? (
         <p role={message.ok ? 'status' : 'alert'} className={note(message.ok)}>

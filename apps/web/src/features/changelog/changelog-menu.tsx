@@ -58,7 +58,7 @@ export function ChangelogMenu() {
     <details ref={ref} className="relative" onToggle={(event) => markSeen(event.currentTarget.open)}>
       <summary
         className="relative flex size-11 cursor-pointer list-none items-center justify-center rounded-lg text-ink-muted hover:bg-surface-sunken hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden"
-        aria-label={unread ? `What’s new, ${newCount} unread` : 'What’s new'}
+        aria-label={unread ? `What’s New, ${newCount} Unread` : 'What’s New'}
         title="What’s New"
       >
         <Sparkles className="size-5" aria-hidden="true" />

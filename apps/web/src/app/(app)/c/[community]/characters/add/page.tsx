@@ -25,7 +25,7 @@ export default async function AddCharacterPage({ params }: { params: Promise<{ c
           Create a character in your library, then bring them here.
           <span className="mt-6 block">
             <Link href="/library/characters/new" className={buttonClass('primary')}>
-              Create a character
+              Create A Character
             </Link>
           </span>
         </EmptyState>

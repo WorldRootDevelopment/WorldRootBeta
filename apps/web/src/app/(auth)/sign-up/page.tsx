@@ -27,7 +27,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
         <>
           Already have an account?{' '}
           <Link href={`/sign-in${query}`} className={textLinkClass}>
-            Sign in
+            Sign In
           </Link>
         </>
       }

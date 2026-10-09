@@ -1,7 +1,8 @@
 'use client';
 
-import { DICE_THEME_KEYS, DICE_THEMES, toDiceTheme, type DiceThemeKey } from '@worldroot/contracts';
+import { DICE_THEME_KEYS, DICE_THEMES, diceItemKey, toDiceTheme, type DiceThemeKey } from '@worldroot/contracts';
 import { Lock } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { send } from '@/features/scenes/api';
@@ -10,7 +11,7 @@ import { Die } from '@/features/scenes/die';
 const SAMPLE = [4, 6, 8, 10, 12, 20];
 
 /** Choose how your dice look. The choice is saved at once and used wherever you roll. */
-export function DiceStylePicker({ theme: saved }: { theme: string }) {
+export function DiceStylePicker({ theme: saved, owned }: { theme: string; /** Keys of the store items this person has. */ owned: string[] }) {
   const router = useRouter();
   const [theme, setTheme] = useState<DiceThemeKey>(toDiceTheme(saved));
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +39,9 @@ export function DiceStylePicker({ theme: saved }: { theme: string }) {
 
       <div role="radiogroup" aria-label="Dice Style" className="grid gap-3 sm:grid-cols-2">
         {DICE_THEME_KEYS.map((key) => {
-          const { label, note, free } = DICE_THEMES[key];
+          const { label, note } = DICE_THEMES[key];
+          // Free to everyone, or theirs from the store.
+          const free = DICE_THEMES[key].free || owned.includes(diceItemKey(key));
           const chosen = theme === key;
           return (
             <button
@@ -54,14 +57,14 @@ export function DiceStylePicker({ theme: saved }: { theme: string }) {
               <span className="min-w-0 flex-1">
                 <span className="block font-display text-sm font-semibold text-ink">
                   {label}
-                  {chosen ? <span className="ml-2 text-xs font-medium text-accent-text">In use</span> : null}
+                  {chosen ? <span className="ml-2 text-xs font-medium text-accent-text">In Use</span> : null}
                 </span>
                 <span className="block text-xs text-ink-muted">{note}</span>
               </span>
               {free ? null : (
                 <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-surface-sunken px-2 py-1 text-xs font-medium text-ink-muted">
                   <Lock className="size-3" aria-hidden="true" />
-                  Coming later
+                  In The Store
                 </span>
               )}
             </button>
@@ -73,6 +76,13 @@ export function DiceStylePicker({ theme: saved }: { theme: string }) {
           {error}
         </p>
       ) : null}
+      <p className="text-sm text-ink-muted">
+        Locked styles are in the{' '}
+        <Link href="/store" className="font-medium text-accent-text underline">
+          Store
+        </Link>
+        . They are not on sale yet.
+      </p>
     </div>
   );
 }

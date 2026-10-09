@@ -14,17 +14,17 @@ function TemplateCard({ template }: { template: WorldTemplate }) {
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="font-display text-xl font-semibold text-ink">{template.name}</h3>
         {template.popCulture ? (
-          <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent-text">Pop culture</span>
+          <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent-text">Pop Culture</span>
         ) : null}
       </div>
       <p className="mt-2 text-sm leading-relaxed text-ink">{template.summary}</p>
 
       <details className="mt-4 text-sm">
         <summary className="cursor-pointer rounded font-medium text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
-          {places} places · {template.suggestedFields.length} suggested character {template.suggestedFields.length === 1 ? 'field' : 'fields'}
+          {places} Places · {template.suggestedFields.length} Suggested Character {template.suggestedFields.length === 1 ? 'Field' : 'Fields'}
         </summary>
         <p className="mt-3 leading-relaxed text-ink-muted">{template.description}</p>
-        <h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-muted">Starts with</h4>
+        <h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-muted">Starts With</h4>
         <ul className="mt-1.5 list-disc space-y-1 pl-5 text-ink">
           {template.locations.map((location) => (
             <li key={location.name}>
@@ -33,7 +33,7 @@ function TemplateCard({ template }: { template: WorldTemplate }) {
             </li>
           ))}
         </ul>
-        <h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-muted">Character fields to consider</h4>
+        <h4 className="mt-4 text-xs font-medium uppercase tracking-wide text-ink-muted">Character Fields To Consider</h4>
         <p className="mt-1.5 text-ink">{template.suggestedFields.map((field) => field.label).join(', ')}</p>
         <p className="mt-1 text-ink-muted">A community running this world can add these under Settings, then Characters.</p>
       </details>
