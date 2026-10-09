@@ -22,7 +22,10 @@ export default async function EditProfilePage() {
       <div className="mb-8 max-w-2xl">
         <ImageUpload url="/api/v1/profile/avatar" mediaId={profile.avatarId} name={profile.displayName} label="Profile picture" />
       </div>
-      <ProfileForm handle={profile.handle} displayName={profile.displayName} pronouns={profile.pronouns} bio={profile.bio} hideOnline={hideOnline} />
+      <div className="mb-8 max-w-2xl">
+        <ImageUpload url="/api/v1/profile/banner" mediaId={profile.bannerId} name={profile.displayName} label="Banner" shape="banner" />
+      </div>
+      <ProfileForm handle={profile.handle} displayName={profile.displayName} pronouns={profile.pronouns} bio={profile.bio} hideOnline={hideOnline} status={profile.status} accentHue={profile.accentHue} />
     </>
   );
 }

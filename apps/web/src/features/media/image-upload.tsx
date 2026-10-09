@@ -17,12 +17,14 @@ interface ImageUploadProps {
   label: string;
   /** Shows "Remove" without an upload control, for staff acting on someone else's picture. */
   removeOnly?: boolean;
+  /** A round picture, or a wide banner. */
+  shape?: 'round' | 'banner';
 }
 
 const MAX_BYTES = 2 * 1024 * 1024;
 
 /** Shows a picture with controls to upload a new one or remove it. The change is saved at once. */
-export function ImageUpload({ url, mediaId, name, label, removeOnly = false }: ImageUploadProps) {
+export function ImageUpload({ url, mediaId, name, label, removeOnly = false, shape = 'round' }: ImageUploadProps) {
   const router = useRouter();
   const inputId = useId();
   const input = useRef<HTMLInputElement>(null);
@@ -54,7 +56,13 @@ export function ImageUpload({ url, mediaId, name, label, removeOnly = false }: I
 
   return (
     <div className="flex flex-wrap items-center gap-5">
-      <Picture mediaId={mediaId} name={name} className="size-20 text-3xl" />
+      {shape === 'round' ? (
+        <Picture mediaId={mediaId} name={name} className="size-20 text-3xl" />
+      ) : mediaId ? (
+        <img src={`/api/v1/media/${mediaId}`} alt="" className="h-20 w-56 rounded-xl bg-surface-sunken object-cover" />
+      ) : (
+        <span aria-hidden="true" className="h-20 w-56 rounded-xl bg-linear-to-br from-accent-soft to-accent" />
+      )}
       <div className="flex min-w-0 flex-col gap-2">
         <p className="text-sm font-medium text-ink">{label}</p>
         <div className="flex flex-wrap items-center gap-2">

@@ -3,6 +3,7 @@ import type { RichDoc } from '@worldroot/editor';
 import { and, eq } from 'drizzle-orm';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
+import { checkAchievements, grantAchievement } from '../identity/achievements';
 import { diceWorking, rollDice, type DiceResult } from './dice';
 import { getSceneForPosting, insertSystemPost, type ScenePost } from './service';
 
@@ -68,5 +69,11 @@ export async function rollInScene(
     ],
   };
   const post = await db.transaction((tx) => insertSystemPost(tx, sceneId, { authorUserId: actor.userId, characterId: character?.id ?? null, characterName: character?.name ?? null, doc }));
+  await checkAchievements(db, actor.userId, 'rolls');
+  // The natural result of a single d20, before anything is added.
+  if (result.sides === 20 && result.count === 1) {
+    if (result.rolls[0] === 20) await grantAchievement(db, actor.userId, 'natural_20');
+    if (result.rolls[0] === 1) await grantAchievement(db, actor.userId, 'critical_fumble');
+  }
   return { post, result };
 }

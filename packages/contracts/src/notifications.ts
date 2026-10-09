@@ -18,6 +18,8 @@ export const NOTIFICATION_TYPES = {
   announcement: { line: (who, count, subject) => `${who} posted ${times(count, 'an announcement', '{n} announcements')} in ${subject}` },
   'role.assigned': { line: (_who, _count, subject) => `You were given a new role in ${subject}` },
   'report.new': { line: (_who, count, subject) => `${times(count, 'A new report is', '{n} new reports are')} waiting in ${subject}` },
+  'friend.request': { line: (who) => `${who} sent you a friend request` },
+  'friend.accepted': { line: (who) => `${who} accepted your friend request` },
   'badge.granted': { line: (_who, _count, subject) => `You have a new badge: ${subject}` },
 } as const satisfies Record<string, NotificationDefinition>;
 

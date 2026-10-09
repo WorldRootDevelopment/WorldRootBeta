@@ -1,5 +1,5 @@
 import 'server-only';
-import { getSpace, listMemberPresence, listMessages, SPACES, type SpaceKey } from '@worldroot/core';
+import { getSpace, listMessages, SPACES, type SpaceKey } from '@worldroot/core';
 import { loadCommunity } from '@/features/community/community-view';
 import { load } from '@/lib/load';
 import { ChatRoom } from './chat-room';
@@ -15,7 +15,7 @@ interface SpacePageProps {
 
 /**
  * One of a community's two built-in spaces. Announcements is a quiet notice
- * board. The Lounge is a live chat room with the member list beside it.
+ * board. The Lounge is a live chat room.
  */
 export async function SpacePage({ slug, spaceKey, before }: SpacePageProps) {
   const { community, isMember, viewer, db } = await loadCommunity(slug);
@@ -23,16 +23,12 @@ export async function SpacePage({ slug, spaceKey, before }: SpacePageProps) {
   const href = `/c/${community.slug}/${spaceKey}`;
 
   if (spaceKey === 'lounge') {
-    const [page, members] = await Promise.all([
-      load(() => listMessages(db, viewer.actor, conversation.id, { beforeId: before, limit: 100 })),
-      listMemberPresence(db, community.id),
-    ]);
+    const page = await load(() => listMessages(db, viewer.actor, conversation.id, { beforeId: before, limit: 100 }));
     return (
       <>
         <h2 className="sr-only">{SPACES.lounge.label}</h2>
         <ChatRoom
           page={page}
-          members={members}
           href={href}
           viewingEarlier={Boolean(before)}
           placeholder={`Message the ${community.name} lounge`}

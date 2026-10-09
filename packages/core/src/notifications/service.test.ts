@@ -1,7 +1,8 @@
 import { notificationLine } from '@worldroot/contracts';
-import { users, type DbConnection } from '@worldroot/db';
+import { notifications, users, type DbConnection } from '@worldroot/db';
 import { createTestDb } from '@worldroot/db/testing';
 import { docFromText } from '@worldroot/editor';
+import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { addCharacterToCommunity, createCharacter } from '../characters/service';
 import { assignRole, createManagedRole, reviewCharacter, updateCommunity } from '../community/admin';
@@ -30,6 +31,9 @@ const addUser = async (handle: string, displayName = handle, isStaff = false): P
 const say = (text: string) => docFromText(text);
 const lines = async (actor: Actor) =>
   (await listNotifications(connection.db, actor)).map((n) => notificationLine(n.type, n.actors, n.count, n.subject));
+
+/** Clears the notices about achievements earned along the way, which these tests are not about. */
+const quiet = () => connection.db.delete(notifications).where(eq(notifications.type, 'badge.granted'));
 
 beforeAll(async () => {
   connection = await createTestDb();
@@ -70,6 +74,7 @@ describe('scene notifications', () => {
     // Out-of-character chatter does not notify.
     await createPost(db, marcus, scene.id, { kind: 'ooc', content: say('brb') });
 
+    await quiet();
     const forThea = await listNotifications(db, thea);
     expect(forThea).toHaveLength(1);
     expect(forThea[0]).toMatchObject({ count: 3, actors: ['Marcus', 'Sarah'], preview: 'He waved.', href: `/scenes/${scene.id}#post-4` });
@@ -111,11 +116,13 @@ describe('community notifications', () => {
     await joinCommunity(db, player, community.id);
     const role = await createManagedRole(db, owner, community.id, { name: 'Reviewer', permissions: ['character.approve', 'report.review'] });
     await assignRole(db, owner, role.id, reviewer.userId);
+    await quiet();
     expect(await lines(reviewer)).toEqual(['You were given a new role in Valley']);
 
     await updateCommunity(db, owner, community.id, { name: 'Valley', accentHue: 155, listed: true, requireCharacterApproval: true });
     const original = await createCharacter(db, player, { name: 'Sarah Finch' });
     const copy = await addCharacterToCommunity(db, player, original.id, community.id);
+    await quiet();
     // Everyone who can approve is told, including the owner. The player is not told about their own submission.
     expect((await lines(reviewer))[0]).toBe('A character is waiting for review in Valley');
     expect(await lines(owner)).toEqual(['A character is waiting for review in Valley']);
@@ -142,6 +149,7 @@ describe('community notifications', () => {
     expect(forOwner).toMatchObject({ actors: [], preview: null, href: '/c/valley/settings/reports' });
     expect(await lines(staff)).toEqual(['A new report is waiting in the staff queue']);
 
+    await quiet();
     await setBadge(db, staff, player.userId, 'beta_tester', true);
     expect((await lines(player))[0]).toBe('You have a new badge: Beta tester');
   });

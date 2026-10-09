@@ -1,3 +1,4 @@
+import { checkAchievements } from '../identity/achievements';
 import { characterInputSchema, type CharacterInput } from '@worldroot/contracts';
 import { characters, characterWorldLinks, communities, worlds, type CharacterCustomValues, type Db } from '@worldroot/db';
 import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
@@ -20,6 +21,7 @@ export async function createCharacter(db: Db, actor: Actor, input: CharacterInpu
     .insert(characters)
     .values({ ...values, docs: rich.docs, playerUserId: actor.userId })
     .returning();
+  await checkAchievements(db, actor.userId, 'characters');
   return character!;
 }
 

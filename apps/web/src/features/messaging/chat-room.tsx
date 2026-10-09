@@ -1,4 +1,4 @@
-import type { MessagePage, PresenceRow } from '@worldroot/core';
+import type { MessagePage } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import Link from 'next/link';
 import { Badges } from '@/features/identity/badges';
@@ -98,43 +98,8 @@ function ChatMessage({ message, previous, canModerate }: { message: Message; pre
   );
 }
 
-function MemberList({ title, members }: { title: string; members: PresenceRow[] }) {
-  if (members.length === 0) return null;
-  return (
-    <section>
-      <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-muted">
-        {title} — {members.length}
-      </h3>
-      <ul className="flex flex-col gap-1">
-        {members.map((member) => (
-          <li key={member.userId} className={`flex items-center gap-2.5 rounded-lg px-1.5 py-1 ${member.online ? '' : 'opacity-60'}`}>
-            <span className="relative">
-              <Avatar name={member.displayName} />
-              {/* The dot repeats what the section heading already says, so status never rests on colour alone. */}
-              <span
-                aria-hidden="true"
-                className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full ring-2 ring-surface-raised ${member.online ? 'bg-online' : 'bg-line-strong'}`}
-              />
-            </span>
-            <span className="min-w-0">
-              <span className="flex items-center gap-1.5 text-sm font-medium text-ink">
-                <Link href={`/u/${member.handle}`} className="truncate rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
-                  {member.displayName}
-                </Link>
-                <Badges list={member.badges} community={member.communityBadge} compact />
-              </span>
-              {member.role ? <span className="block truncate text-xs text-ink-muted">{member.role}</span> : null}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 interface ChatRoomProps {
   page: MessagePage;
-  members: PresenceRow[];
   /** This page's own address, for the "earlier messages" link. */
   href: string;
   viewingEarlier: boolean;
@@ -144,32 +109,11 @@ interface ChatRoomProps {
   track: boolean;
 }
 
-/** A community's Lounge: a live chat room with the member list beside it, showing who is online. */
-export function ChatRoom({ page, members, href, viewingEarlier, placeholder, readOnlyNote, track }: ChatRoomProps) {
+/** A community's Lounge: a live chat room. The member list stands beside every page of the community. */
+export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote, track }: ChatRoomProps) {
   const { conversation, messages, hasEarlier, canPost, canModerate } = page;
-  const online = members.filter((member) => member.online);
-  const offline = members.filter((member) => !member.online);
-  const lists = (
-    <div className="flex flex-col gap-5">
-      <MemberList title="Online" members={online} />
-      <MemberList title="Offline" members={offline} />
-    </div>
-  );
-
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_15rem]">
-      {/* Below the wide layout the member list folds away above the room. */}
-      <details className="wr-glass rounded-2xl lg:hidden">
-        <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-4 text-sm font-medium text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
-          <span aria-hidden="true" className="size-2.5 rounded-full bg-online" />
-          {online.length} online
-          <span className="font-normal text-ink-muted">
-            · {members.length} {members.length === 1 ? 'member' : 'members'}
-          </span>
-        </summary>
-        <div className="max-h-72 overflow-y-auto border-t border-line p-4">{lists}</div>
-      </details>
-
+    <div>
       <section aria-label="Lounge chat" className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden wr-glass rounded-2xl">
         <ChatLog conversationId={conversation.id} latestId={viewingEarlier ? null : (messages.at(-1)?.id ?? null)} track={track && !viewingEarlier}>
           {hasEarlier && messages[0] ? (
@@ -203,9 +147,6 @@ export function ChatRoom({ page, members, href, viewingEarlier, placeholder, rea
         </div>
       </section>
 
-      <aside aria-label="Members" className="hidden h-[calc(100dvh-25rem)] min-h-[26rem] overflow-y-auto wr-glass rounded-2xl p-4 lg:block">
-        {lists}
-      </aside>
     </div>
   );
 }

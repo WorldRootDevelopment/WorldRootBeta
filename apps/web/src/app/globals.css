@@ -181,73 +181,147 @@
   }
 }
 
-/* A die face: a glossy tile that tumbles while a roll is in the air, then settles. */
-@utility wr-die {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 3rem;
-  height: 3rem;
-  padding-inline: 0.5rem;
-  border-radius: 0.875rem;
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--wr-accent-contrast);
-  background-color: var(--wr-accent);
-  background-image:
-    radial-gradient(120% 80% at 30% 0%, var(--wr-shine), transparent 60%),
-    linear-gradient(160deg, var(--wr-accent-light), var(--wr-accent));
-  border: 1px solid color-mix(in oklch, var(--wr-accent) 72%, black);
-  box-shadow:
-    inset 0 1px 0 var(--wr-glass-edge),
-    inset 0 -3px 6px color-mix(in oklch, var(--wr-accent) 60%, black 20%),
-    0 6px 14px -6px color-mix(in oklch, var(--wr-accent) 80%, black);
+/*
+ * A die: a real cube, six glossy faces in 3D. It spins on all three axes while
+ * a roll is in the air, then turns to rest with the result facing you, tilted
+ * a little so its top and side still show.
+ */
+@layer components {
+  .wr-die-stage {
+    --die: 3.25rem;
+    position: relative;
+    width: var(--die);
+    height: var(--die);
+    margin: 0.75rem 0.85rem 1rem;
+    perspective: 28rem;
+  }
+  /* The shadow the die throws on the table. */
+  .wr-die-stage::after {
+    content: '';
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    bottom: -0.9rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, oklch(0.25 0.04 62 / 0.35), transparent);
+  }
+  .wr-die-hop {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+  .wr-die-cube {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(-18deg) rotateY(24deg);
+  }
+  .wr-die-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.7rem;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--wr-accent-contrast);
+    background-color: var(--wr-accent);
+    background-image:
+      radial-gradient(120% 80% at 28% 0%, var(--wr-shine), transparent 62%),
+      linear-gradient(160deg, var(--wr-accent-light), var(--wr-accent));
+    border: 1px solid color-mix(in oklch, var(--wr-accent) 68%, black);
+    box-shadow:
+      inset 0 1px 0 var(--wr-glass-edge),
+      inset 0 -4px 8px color-mix(in oklch, var(--wr-accent) 62%, black 22%);
+    backface-visibility: hidden;
+  }
+  .wr-die-face:nth-child(1) {
+    transform: translateZ(calc(var(--die) / 2));
+  }
+  .wr-die-face:nth-child(2) {
+    transform: rotateY(180deg) translateZ(calc(var(--die) / 2));
+  }
+  .wr-die-face:nth-child(3) {
+    transform: rotateY(90deg) translateZ(calc(var(--die) / 2));
+    filter: brightness(0.9);
+  }
+  .wr-die-face:nth-child(4) {
+    transform: rotateY(-90deg) translateZ(calc(var(--die) / 2));
+    filter: brightness(0.9);
+  }
+  .wr-die-face:nth-child(5) {
+    transform: rotateX(90deg) translateZ(calc(var(--die) / 2));
+    filter: brightness(1.08);
+  }
+  .wr-die-face:nth-child(6) {
+    transform: rotateX(-90deg) translateZ(calc(var(--die) / 2));
+    filter: brightness(0.78);
+  }
+
+  .wr-die-tumbling .wr-die-cube {
+    animation: wr-die-spin 0.7s linear infinite;
+  }
+  .wr-die-tumbling .wr-die-hop {
+    animation: wr-die-hop 0.45s ease-in-out infinite alternate;
+  }
+  .wr-die-landed .wr-die-cube {
+    animation: wr-die-settle 0.55s cubic-bezier(0.2, 0.85, 0.3, 1.15) both;
+  }
+  .wr-die-landed .wr-die-hop {
+    animation: wr-die-drop 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  }
 }
 
-@keyframes wr-die-tumble {
+@keyframes wr-die-spin {
+  from {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  to {
+    transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg);
+  }
+}
+
+@keyframes wr-die-hop {
+  from {
+    transform: translateY(0.2rem);
+  }
+  to {
+    transform: translateY(-1.1rem);
+  }
+}
+
+@keyframes wr-die-settle {
+  from {
+    transform: rotateX(-290deg) rotateY(250deg) rotateZ(40deg);
+  }
+  to {
+    transform: rotateX(-18deg) rotateY(24deg) rotateZ(0deg);
+  }
+}
+
+@keyframes wr-die-drop {
   0% {
-    transform: translateY(0) rotate(0deg) scale(1);
+    transform: translateY(-1.2rem);
   }
-  25% {
-    transform: translateY(-0.9rem) rotate(110deg) scale(1.06);
-  }
-  50% {
-    transform: translateY(0) rotate(200deg) scale(0.96);
-  }
-  75% {
-    transform: translateY(-0.5rem) rotate(290deg) scale(1.04);
+  60% {
+    transform: translateY(0.18rem);
   }
   100% {
-    transform: translateY(0) rotate(360deg) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes wr-die-land {
-  0% {
-    transform: translateY(-0.6rem) scale(1.25) rotate(-8deg);
-  }
-  55% {
-    transform: translateY(0.15rem) scale(0.94) rotate(3deg);
-  }
-  100% {
-    transform: translateY(0) scale(1) rotate(0deg);
-  }
-}
-
-@utility wr-die-tumbling {
-  animation: wr-die-tumble 0.5s linear infinite;
-}
-
-@utility wr-die-landed {
-  animation: wr-die-land 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-}
-
-/* People who ask for less motion get the result with no tumbling. */
+/* People who ask for less motion get the die at rest, showing the result. */
 @media (prefers-reduced-motion: reduce) {
-  .wr-die-tumbling,
-  .wr-die-landed {
+  .wr-die-tumbling .wr-die-cube,
+  .wr-die-tumbling .wr-die-hop,
+  .wr-die-landed .wr-die-cube,
+  .wr-die-landed .wr-die-hop {
     animation: none;
   }
 }

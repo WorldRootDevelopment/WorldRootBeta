@@ -1,19 +1,22 @@
-import { BookOpen, Compass, Home, Inbox, Library, Users, type LucideIcon } from 'lucide-react';
+import { BookOpen, Compass, Home, Library, Users, type LucideIcon } from 'lucide-react';
 
 export interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
-  /** Shown in the mobile bottom bar. The rest live in the account menu on small screens. */
-  mobile: boolean;
 }
 
-/** The six destinations. Create sits beside them as an action, not a destination. */
-export const NAV_ITEMS: NavItem[] = [
-  { href: '/home', label: 'Home', icon: Home, mobile: true },
-  { href: '/discover', label: 'Discover', icon: Compass, mobile: true },
-  { href: '/scenes', label: 'Scenes', icon: BookOpen, mobile: true },
-  { href: '/communities', label: 'Communities', icon: Users, mobile: false },
-  { href: '/library', label: 'Library', icon: Library, mobile: false },
-  { href: '/inbox', label: 'Inbox', icon: Inbox, mobile: true },
-];
+export const HOME_ITEM: NavItem = { href: '/home', label: 'Home', icon: Home };
+const DISCOVER: NavItem = { href: '/discover', label: 'Discover', icon: Compass };
+const SCENES: NavItem = { href: '/scenes', label: 'Scenes', icon: BookOpen };
+const LIBRARY: NavItem = { href: '/library', label: 'Library', icon: Library };
+const COMMUNITIES: NavItem = { href: '/communities', label: 'Communities', icon: Users };
+
+/** The side rail's Resources section: the places that are yours wherever you are. */
+export const RESOURCE_ITEMS: NavItem[] = [DISCOVER, SCENES, LIBRARY];
+
+/** The phone's bottom bar. Create sits in the middle of these four. */
+export const MOBILE_ITEMS: NavItem[] = [HOME_ITEM, DISCOVER, SCENES, COMMUNITIES];
+
+/** Reached from the account menu on a phone, where the bottom bar has no room for them. */
+export const MENU_ITEMS: NavItem[] = [LIBRARY];

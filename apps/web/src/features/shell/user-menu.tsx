@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Badges } from '@/features/identity/badges';
 import { authClient } from '@/lib/auth-client';
-import { NAV_ITEMS } from './nav-items';
+import { MENU_ITEMS } from './nav-items';
 import { ThemeToggle } from './theme-toggle';
 import { useCloseOnNavigate } from './use-close-on-navigate';
 import { Picture } from './picture';
@@ -65,7 +65,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
 
         {/* On small screens the bottom bar holds five items; the rest are reached from here. */}
         <ul className="border-t border-line py-1.5 md:hidden">
-          {NAV_ITEMS.filter((item) => !item.mobile).map(({ href, label, icon: Icon }) => (
+          {MENU_ITEMS.map(({ href, label, icon: Icon }) => (
             <li key={href}>
               <Link href={href} className={itemClass}>
                 <Icon className="size-4" aria-hidden="true" />

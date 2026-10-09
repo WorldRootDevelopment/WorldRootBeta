@@ -1,3 +1,4 @@
+import { checkAchievements } from '../identity/achievements';
 import {
   MAX_OOC_CHARACTERS,
   MAX_POST_CHARACTERS,
@@ -201,7 +202,7 @@ export async function createScene(db: Db, actor: Actor, input: SceneInput): Prom
   const cast = await requireEligible(db, actor, communityId, values.characterIds);
   const doc = parseContent(values.openingPost, MAX_POST_CHARACTERS);
 
-  return db.transaction(async (tx) => {
+  const started = await db.transaction(async (tx) => {
     const [scene] = await tx
       .insert(scenes)
       .values({
@@ -230,6 +231,8 @@ export async function createScene(db: Db, actor: Actor, input: SceneInput): Prom
     const [fresh] = await tx.select().from(scenes).where(eq(scenes.id, scene!.id));
     return fresh!;
   });
+  await checkAchievements(db, actor.userId, 'posts');
+  return started;
 }
 
 const OPEN: SceneStatus[] = ['active', 'on_hold'];
@@ -355,7 +358,7 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
     character = row;
   }
 
-  return db.transaction(async (tx) => {
+  const posted = await db.transaction(async (tx) => {
     const post = await insertPost(tx, sceneId, {
       kind: 'ic',
       authorUserId: actor.userId,
@@ -379,6 +382,8 @@ export async function createPost(db: Db, actor: Actor, sceneId: string, input: P
     );
     return post;
   });
+  await checkAchievements(db, actor.userId, 'posts');
+  return posted;
 }
 
 /** Whether the actor may remove posts they did not write: community moderators and platform staff. */

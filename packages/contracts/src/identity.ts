@@ -28,6 +28,12 @@ export const profileSchema = z.object({
   bio: z.string().nullable(),
   /** The id of their profile picture, served from /api/v1/media. */
   avatarId: z.string().nullable(),
+  /** The id of the wide picture across the top of their profile. */
+  bannerId: z.string().nullable(),
+  /** The colour of their profile, as a hue from 0 to 359. Null takes WorldRoot's own. */
+  accentHue: z.number().nullable(),
+  /** A short line shown under their name. */
+  status: z.string().nullable(),
   /** WorldRoot staff. Kept beside `badges` because code asks this question directly. */
   isStaff: z.boolean(),
   /** Platform badges shown beside their name everywhere, most significant first. */
@@ -50,6 +56,9 @@ export const updateProfileSchema = z.object({
   pronouns: optionalLine(40),
   bio: optionalLine(2_000),
   hideOnline: z.boolean(),
+  // Left out, these two stay as they are.
+  status: optionalLine(80).optional(),
+  accentHue: z.coerce.number().int().min(0).max(359).nullable().optional(),
 });
 
 export type UpdateProfileInput = z.input<typeof updateProfileSchema>;

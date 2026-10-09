@@ -27,6 +27,7 @@ export interface PresenceRow {
   userId: string;
   displayName: string;
   handle: string;
+  avatarId: string | null;
   badges: BadgeKey[];
   communityBadge: CommunityBadgeKey | null;
   online: boolean;
@@ -38,7 +39,7 @@ export interface PresenceRow {
 export async function listMemberPresence(db: Db, communityId: string): Promise<PresenceRow[]> {
   const members = await listMembers(db, communityId);
   const seen = await db
-    .select({ userId: profiles.userId, lastSeenAt: profiles.lastSeenAt, hideOnline: profiles.hideOnline })
+    .select({ userId: profiles.userId, lastSeenAt: profiles.lastSeenAt, hideOnline: profiles.hideOnline, avatarId: profiles.avatarMediaId })
     .from(communityMembers)
     .innerJoin(profiles, eq(profiles.userId, communityMembers.userId))
     .where(eq(communityMembers.communityId, communityId));
@@ -48,11 +49,14 @@ export async function listMemberPresence(db: Db, communityId: string): Promise<P
     seen.filter((row) => !row.hideOnline && row.lastSeenAt && row.lastSeenAt.getTime() >= cutoff).map((row) => row.userId),
   );
 
+  const avatars = new Map(seen.map((row) => [row.userId, row.avatarId]));
+
   return members
     .map((member, rank) => ({
       userId: member.userId,
       displayName: member.displayName,
       handle: member.handle,
+      avatarId: avatars.get(member.userId) ?? null,
       badges: member.badges,
       communityBadge: member.communityBadge,
       online: online.has(member.userId),

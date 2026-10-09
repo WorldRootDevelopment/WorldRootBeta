@@ -1,3 +1,4 @@
+import { checkAchievements } from '../identity/achievements';
 import { DEFAULT_MEMBER_PERMISSIONS, isPermissionKey, type PermissionKey } from '@worldroot/contracts';
 import {
   characterFieldDefinitions,
@@ -60,7 +61,7 @@ export async function createCommunity(db: Db, actor: Actor, input: CreateCommuni
     throw new DomainError('invalid_input', 'The accent hue is a whole number from 0 to 359.');
   }
 
-  return db.transaction(async (tx) => {
+  const created = await db.transaction(async (tx) => {
     const [taken] = await tx.select({ id: communities.id }).from(communities).where(eq(communities.slug, input.slug));
     if (taken) throw new DomainError('conflict', 'That address is taken.', { fields: { slug: 'That address is taken.' } });
 
@@ -95,6 +96,8 @@ export async function createCommunity(db: Db, actor: Actor, input: CreateCommuni
 
     return community!;
   });
+  await checkAchievements(db, actor.userId, 'communities');
+  return created;
 }
 
 export interface CreateRoleInput {

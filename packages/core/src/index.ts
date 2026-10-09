@@ -37,3 +37,5 @@ export * from './media/service';
 export * from './media/storage';
 export * from './scenes/dice';
 export * from './scenes/rolls';
+export * from './identity/achievements';
+export * from './identity/friends';

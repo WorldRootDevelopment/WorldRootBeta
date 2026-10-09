@@ -1,8 +1,9 @@
-import { ADMIN_PERMISSIONS } from '@worldroot/core';
+import { ADMIN_PERMISSIONS, listMemberPresence } from '@worldroot/core';
 import type { Metadata } from 'next';
 import type { CSSProperties, ReactNode } from 'react';
 import { loadCommunity } from '@/features/community/community-view';
 import { JoinButton } from '@/features/community/join-button';
+import { MemberRail } from '@/features/community/member-rail';
 import { NavLink } from '@/features/shell/nav-link';
 
 interface Props {
@@ -20,7 +21,8 @@ const tabClass =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 
 export default async function CommunityLayout({ params, children }: Props) {
-  const { community, isMember, isOwner, memberCount, permissions } = await loadCommunity((await params).community);
+  const { community, isMember, isOwner, memberCount, permissions, db } = await loadCommunity((await params).community);
+  const members = await listMemberPresence(db, community.id);
   const canAdminister = isOwner || ADMIN_PERMISSIONS.some((key) => permissions.includes(key));
   const archived = Boolean(community.archivedAt);
   const base = `/c/${community.slug}`;
@@ -76,7 +78,11 @@ export default async function CommunityLayout({ params, children }: Props) {
         ) : null}
       </nav>
 
-      {children}
+      {/* On a narrow screen the member list folds away above the page; on a wide one it stands beside it. */}
+      <div className="xl:flex xl:items-start xl:gap-6">
+        <MemberRail members={members} />
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
     </div>
   );
 }

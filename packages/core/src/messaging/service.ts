@@ -3,7 +3,8 @@ import { communities, conversationMembers, conversations, messages, profiles, ty
 import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
 import { listMembers } from '../community/admin';
-import { isBlockedBetween, shareCommunity } from '../identity/account';
+import { isBlockedBetween } from '../identity/account';
+import { knowEachOther } from '../identity/friends';
 import { platformBadgesSql, toBadges } from '../identity/badges';
 import { communityMemberIds, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
@@ -116,7 +117,7 @@ export async function startConversation(db: Db, actor: Actor, input: { handles: 
       if (existing) return existing;
       if (await isBlockedBetween(tx, actor.userId, others[0]!)) throw noContact();
       // People who share a community, and staff, can simply talk. Anyone else starts with a request.
-      const known = actor.platformRole === 'staff' || (await shareCommunity(tx, actor.userId, others[0]!));
+      const known = actor.platformRole === 'staff' || (await knowEachOther(tx, actor.userId, others[0]!));
       const [direct] = await tx
         .insert(conversations)
         .values({
@@ -134,7 +135,7 @@ export async function startConversation(db: Db, actor: Actor, input: { handles: 
     for (const other of others) {
       if (await isBlockedBetween(tx, actor.userId, other)) throw noContact();
       // A group has no request step, so it is only for people who already share a community with you.
-      if (actor.platformRole !== 'staff' && !(await shareCommunity(tx, actor.userId, other))) {
+      if (actor.platformRole !== 'staff' && !(await knowEachOther(tx, actor.userId, other))) {
         const message = 'You can start a group only with people you share a community with. Message the others one to one first.';
         throw new DomainError('forbidden', message, { fields: { handles: message } });
       }

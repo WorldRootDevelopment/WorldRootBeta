@@ -14,6 +14,21 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-friends-profiles-sidebar',
+    date: '2026-10-08',
+    title: 'Friends, richer profiles, achievements and a new sidebar',
+    items: [
+      'Friends: add someone by @handle or from their profile. Friends can message each other without a request, and see when the other is online.',
+      'The Inbox moved to the top right, beside What’s new, and now has Direct messages, Friends and Notifications.',
+      'The sidebar has a Resources section (Discover, Scenes, Library) and lists every community you belong to.',
+      'A community’s members are shown beside every page of the community, with who is online.',
+      'Profiles can have a banner, a colour of their own and a status line.',
+      'Achievements: ten badges to earn, such as Ensemble cast for ten characters and Worldbuilder for a world with five locations. They sit on your profile.',
+      'Dice are now real 3D cubes that spin and settle.',
+      'WorldRoot has its book-and-roots logo.',
+    ],
+  },
+  {
     id: '2026-10-08-new-look',
     date: '2026-10-08',
     title: 'A new look, and dice that tumble',

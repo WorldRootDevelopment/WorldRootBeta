@@ -1,5 +1,5 @@
 import { notificationLine } from '@worldroot/contracts';
-import { countUnreadConversations, listNotifications } from '@worldroot/core';
+import { countIncomingFriendRequests, countUnreadConversations, listNotifications } from '@worldroot/core';
 import { EmptyState } from '@worldroot/ui';
 import { Bell } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -17,13 +17,17 @@ const when = (date: Date) => date.toLocaleString('en', { dateStyle: 'medium', ti
 export default async function NotificationsPage() {
   const viewer = await requireViewer();
   const { db } = await database();
-  const [notifications, unreadMessages] = await Promise.all([listNotifications(db, viewer.actor), countUnreadConversations(db, viewer.actor.userId)]);
+  const [notifications, unreadMessages, friendRequests] = await Promise.all([
+    listNotifications(db, viewer.actor),
+    countUnreadConversations(db, viewer.actor.userId),
+    countIncomingFriendRequests(db, viewer.actor.userId),
+  ]);
   const unread = notifications.filter((notification) => !notification.readAt).length;
 
   return (
     <>
       <PageHeader title="Inbox" lead="What has happened in your scenes and communities since you last looked." />
-      <InboxTabs messages={unreadMessages} notifications={unread} />
+      <InboxTabs messages={unreadMessages} friends={friendRequests} notifications={unread} />
 
       {notifications.length === 0 ? (
         <EmptyState icon={<Bell className="size-8" aria-hidden="true" />} title="Nothing yet">

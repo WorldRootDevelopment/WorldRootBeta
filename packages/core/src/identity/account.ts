@@ -1,5 +1,5 @@
 import { handleSchema, type Profile } from '@worldroot/contracts';
-import { communityMembers, handleHistory, profiles, userBlocks, users, type Db } from '@worldroot/db';
+import { communityMembers, handleHistory, profiles, friendships, userBlocks, users, type Db } from '@worldroot/db';
 import { and, eq, inArray, or } from 'drizzle-orm';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -88,6 +88,15 @@ export async function blockUser(db: Db, actor: Actor, userId: string): Promise<v
   const [target] = await db.select({ id: users.id }).from(users).where(eq(users.id, userId));
   if (!target) throw new DomainError('not_found', 'That account does not exist.');
   await db.insert(userBlocks).values({ blockerUserId: actor.userId, blockedUserId: userId }).onConflictDoNothing();
+  // Blocking a friend ends the friendship, and drops any request waiting between the two.
+  await db
+    .delete(friendships)
+    .where(
+      or(
+        and(eq(friendships.requesterUserId, actor.userId), eq(friendships.addresseeUserId, userId)),
+        and(eq(friendships.requesterUserId, userId), eq(friendships.addresseeUserId, actor.userId)),
+      ),
+    );
 }
 
 export async function unblockUser(db: Db, actor: Actor, userId: string): Promise<void> {

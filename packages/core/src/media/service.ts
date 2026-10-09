@@ -1,5 +1,5 @@
 import { characters, media, profiles, type Db } from '@worldroot/db';
-import { count, eq } from 'drizzle-orm';
+import { count, eq, or } from 'drizzle-orm';
 import { canEditCharacter } from '../characters/service';
 import { recordAudit } from '../platform/audit';
 import type { Actor } from '../platform/authorize';
@@ -26,7 +26,7 @@ async function store(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8A
 async function release(db: Db, storage: MediaStorage, mediaId: string | null): Promise<void> {
   if (!mediaId) return;
   const [[asAvatar], [asPortrait]] = await Promise.all([
-    db.select({ value: count() }).from(profiles).where(eq(profiles.avatarMediaId, mediaId)),
+    db.select({ value: count() }).from(profiles).where(or(eq(profiles.avatarMediaId, mediaId), eq(profiles.bannerMediaId, mediaId))),
     db.select({ value: count() }).from(characters).where(eq(characters.portraitMediaId, mediaId)),
   ]);
   if ((asAvatar?.value ?? 0) + (asPortrait?.value ?? 0) > 0) return;
@@ -56,6 +56,30 @@ export async function removeAvatar(db: Db, storage: MediaStorage, actor: Actor, 
     if (!self) await recordAudit(tx, { actor, action: 'platform.avatar.remove', targetType: 'user', targetId: userId });
   });
   await release(db, storage, profile.avatarMediaId);
+}
+
+/** Sets the wide picture across the top of the actor's own profile. */
+export async function setBanner(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8Array): Promise<Media> {
+  const [profile] = await db.select().from(profiles).where(eq(profiles.userId, actor.userId));
+  if (!profile) throw new DomainError('not_found', 'Finish setting up your profile first.');
+  const stored = await store(db, storage, actor, upload);
+  await db.update(profiles).set({ bannerMediaId: stored.id }).where(eq(profiles.userId, actor.userId));
+  await release(db, storage, profile.bannerMediaId);
+  return stored;
+}
+
+/** Removes a profile banner: your own, or anyone's if you are WorldRoot staff, which is recorded. */
+export async function removeBanner(db: Db, storage: MediaStorage, actor: Actor, userId: string = actor.userId): Promise<void> {
+  const self = userId === actor.userId;
+  if (!self && actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only WorldRoot staff can do that.');
+  const [profile] = await db.select().from(profiles).where(eq(profiles.userId, userId));
+  if (!profile) throw new DomainError('not_found', 'That account does not exist.');
+  if (!profile.bannerMediaId) return;
+  await db.transaction(async (tx) => {
+    await tx.update(profiles).set({ bannerMediaId: null }).where(eq(profiles.userId, userId));
+    if (!self) await recordAudit(tx, { actor, action: 'platform.banner.remove', targetType: 'user', targetId: userId });
+  });
+  await release(db, storage, profile.bannerMediaId);
 }
 
 async function editableCharacter(db: Db, actor: Actor, characterId: string) {

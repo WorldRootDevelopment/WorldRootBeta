@@ -14,6 +14,9 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   pronouns: row.pronouns,
   bio: row.bio,
   avatarId: row.avatarMediaId,
+  bannerId: row.bannerMediaId,
+  accentHue: row.accentHue,
+  status: row.status,
   isStaff: toBadges(held).includes('staff'),
   badges: toBadges(held),
 });

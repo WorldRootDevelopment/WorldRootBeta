@@ -1,3 +1,4 @@
+import { checkAchievements } from '../identity/achievements';
 import { locationInputSchema, worldInputSchema, type LocationInput, type WorldInput } from '@worldroot/contracts';
 import { locations, worlds, type Db } from '@worldroot/db';
 import { randomBytes } from 'node:crypto';
@@ -125,6 +126,7 @@ export async function createLocation(db: Db, actor: Actor, worldId: string, inpu
     .insert(locations)
     .values({ ...values, worldId, parentId, position })
     .returning();
+  await checkAchievements(db, actor.userId, 'worlds');
   return location!;
 }
 

@@ -1,4 +1,4 @@
-import { boolean, index, pgEnum, pgTable, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, pgEnum, pgTable, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { media } from './media';
 
@@ -92,6 +92,12 @@ export const profiles = pgTable('profiles', {
   // When the handle was last changed, for the cooldown between changes.
   // The profile picture, if one has been uploaded.
   avatarMediaId: uuid('avatar_media_id').references((): AnyPgColumn => media.id, { onDelete: 'set null' }),
+  // The wide picture across the top of the profile, if one has been uploaded.
+  bannerMediaId: uuid('banner_media_id').references((): AnyPgColumn => media.id, { onDelete: 'set null' }),
+  // The colour of this person's profile, as a hue. Null takes WorldRoot's own.
+  accentHue: integer('accent_hue'),
+  // A short line shown under the name: what they are up to, or a favourite quote.
+  status: text('status'),
   handleChangedAt: timestamptz('handle_changed_at'),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
