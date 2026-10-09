@@ -1,6 +1,6 @@
 import 'server-only';
 import type { Profile } from '@worldroot/contracts';
-import { getProfile, getSuspension, type Actor } from '@worldroot/core';
+import { getProfile, getSuspension, isDemoGuest, type Actor } from '@worldroot/core';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
@@ -11,6 +11,8 @@ export interface Viewer {
   email: string;
   /** Null until onboarding is complete. */
   profile: Profile | null;
+  /** The shared guest account, which anyone can sign in to. It may write in the demo and little else. */
+  demoGuest: boolean;
   /** Set while WorldRoot staff have suspended this account. */
   suspended: { since: Date; reason: string | null } | null;
 }
@@ -25,6 +27,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   return {
     actor: { userId: session.user.id, platformRole: session.user.platformRole === 'staff' ? 'staff' : 'user' },
     email: session.user.email,
+    demoGuest: isDemoGuest(session.user.email),
     profile: await getProfile(db, session.user.id),
     suspended: await getSuspension(db, session.user.id),
   };

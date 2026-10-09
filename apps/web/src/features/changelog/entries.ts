@@ -14,6 +14,12 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-try-the-demo',
+    date: '2026-10-09',
+    title: 'Try The Demo',
+    items: ['During alpha you can look around without signing up: Try The Demo on the sign-in page opens a shared guest account that can write and roll dice in Demo Town and Demo Dungeon.'],
+  },
+  {
     id: '2026-10-09-privacy-and-terms',
     date: '2026-10-09',
     title: 'Privacy Policy And Terms Of Service',

@@ -96,34 +96,45 @@ export interface DemoOptions {
   password?: string;
 }
 
-export async function ensureDemoActor(db: Db, options: DemoOptions = {}): Promise<Actor> {
+interface DemoIdentity {
+  email: string;
+  handle: string;
+  displayName: string;
+}
+
+/**
+ * Makes sure a demo account exists with a profile, and returns it as an actor. `password` is used
+ * when the account is created; with `replace` it is also applied to an account that already exists.
+ */
+export async function ensureDemoAccount(db: Db, identity: DemoIdentity, password: string, replace: boolean): Promise<Actor> {
   const auth = createAuth({
     db,
     secret: process.env.BETTER_AUTH_SECRET ?? 'dev-only-secret-change-me',
     baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
   });
-  let [user] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
+  let [user] = await db.select().from(users).where(eq(users.email, identity.email));
   if (!user) {
-    await auth.api.signUpEmail({
-      body: { email: DEMO_ACCOUNT.email, password: options.password ?? DEMO_ACCOUNT.password, name: DEMO_ACCOUNT.displayName },
-    });
-    [user] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
-  } else if (options.password) {
+    await auth.api.signUpEmail({ body: { email: identity.email, password, name: identity.displayName } });
+    [user] = await db.select().from(users).where(eq(users.email, identity.email));
+  } else if (replace) {
     const { password: hasher } = await auth.$context;
     const credential = and(eq(accounts.userId, user.id), eq(accounts.providerId, 'credential'));
     const [existing] = await db.select().from(accounts).where(credential);
-    if (!existing?.password || !(await hasher.verify({ hash: existing.password, password: options.password }))) {
-      const hash = await hasher.hash(options.password);
+    if (!existing?.password || !(await hasher.verify({ hash: existing.password, password }))) {
+      const hash = await hasher.hash(password);
       if (existing) await db.update(accounts).set({ password: hash }).where(credential);
       else await db.insert(accounts).values({ userId: user.id, accountId: user.id, providerId: 'credential', password: hash });
     }
   }
   const actor: Actor = { userId: user!.id, platformRole: 'user' };
   if (!(await getProfile(db, actor.userId))) {
-    await createProfile(db, actor, { handle: DEMO_ACCOUNT.handle, displayName: DEMO_ACCOUNT.displayName, adultConfirmed: true });
+    await createProfile(db, actor, { handle: identity.handle, displayName: identity.displayName, adultConfirmed: true });
   }
   return actor;
 }
+
+export const ensureDemoActor = (db: Db, options: DemoOptions = {}): Promise<Actor> =>
+  ensureDemoAccount(db, DEMO_ACCOUNT, options.password ?? DEMO_ACCOUNT.password, Boolean(options.password));
 
 /**
  * Removes the characters earlier demos created: everything a demo account

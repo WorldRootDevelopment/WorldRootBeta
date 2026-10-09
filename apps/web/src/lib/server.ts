@@ -4,8 +4,10 @@ import {
   connect,
   createAuth,
   DND_DEMO_COMMUNITY_SLUG,
+  ensureDemoGuest,
   ensurePlatformAdmin,
   grantDemoAccess,
+  lockDemoGuest,
   seedDemo,
   seedDndDemo,
   type Auth,
@@ -22,6 +24,17 @@ export const oauthProviders = {
   discord: oauth(process.env.DISCORD_CLIENT_ID, process.env.DISCORD_CLIENT_SECRET),
   google: oauth(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET),
 };
+
+const realServer = () => /^postgres(ql)?:\/\//.test(process.env.DATABASE_URL ?? '');
+
+/** Whether the demo communities are loaded here. On a real server they are asked for with WORLDROOT_DEMO=on. */
+export const demoEnabled = () => (realServer() ? process.env.WORLDROOT_DEMO === 'on' : process.env.WORLDROOT_DEMO !== 'off');
+
+/**
+ * Whether anyone may sign in to the shared guest account. It needs the demo, and on a real server it
+ * is asked for separately with WORLDROOT_DEMO_GUEST=on, so that switching it off is one setting.
+ */
+export const demoGuestEnabled = () => demoEnabled() && (realServer() ? process.env.WORLDROOT_DEMO_GUEST === 'on' : process.env.WORLDROOT_DEMO_GUEST !== 'off');
 
 export function database(): Promise<DbConnection> {
   globals.__worldrootDb ??= (async () => {
@@ -47,11 +60,24 @@ export function database(): Promise<DbConnection> {
       try {
         await seedDemo(connection.db, demoOptions);
         await seedDndDemo(connection.db, demoOptions);
+        if (demoGuestEnabled()) {
+          await ensureDemoGuest(connection.db);
+          if (!embedded) console.log('[worldroot] The shared guest account is open to anyone.');
+        }
         if (!embedded) console.log(`[worldroot] Demo communities are loaded. The demo account ${ownDemoPassword && ownDemoPassword.length >= 10 ? 'uses WORLDROOT_DEMO_PASSWORD' : 'cannot be signed in to'}.`);
       } catch (error) {
         // On a real server a problem with sample content must not take the site down.
         if (embedded) throw error;
         console.error('[worldroot] Could not load the demo communities.', error);
+      }
+    }
+
+    // Switched off, the guest account must stop working even though it still exists.
+    if (!demoGuestEnabled()) {
+      try {
+        await lockDemoGuest(connection.db);
+      } catch (error) {
+        console.error('[worldroot] Could not lock the shared guest account.', error);
       }
     }
 

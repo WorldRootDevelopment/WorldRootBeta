@@ -20,6 +20,7 @@ export * from './worlds/service';
 
 export { DEMO_ACCOUNT, DEMO_COMMUNITY_SLUG, grantDemoAccess, seedDemo } from './demo/demo-town';
 export { DND_DEMO_COMMUNITY_SLUG, seedDndDemo } from './demo/dnd-demo';
+export { DEMO_GUEST, ensureDemoGuest, isDemoGuest, lockDemoGuest } from './demo/demo-guest';
 export * from './scenes/service';
 export * from './community/admin';
 export * from './community/access';

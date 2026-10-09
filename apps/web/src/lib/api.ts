@@ -51,6 +51,32 @@ function ownHosts(request: Request): Set<string | null> {
 }
 
 /**
+ * What the shared guest account may change. Anyone at all can be signed in to it, so it gets only
+ * what trying WorldRoot needs: characters, worlds, and writing and rolling in scenes. Everything not
+ * listed is refused, which covers its own profile and pictures, uploads, direct messages, friends,
+ * blocks, partner listings, and creating, joining or running communities. A route added later is
+ * refused too until it is listed here.
+ */
+const GUEST_MAY = [
+  /^\/api\/v1\/characters(\/[^/]+)?$/,
+  /^\/api\/v1\/communities\/[^/]+\/characters$/,
+  /^\/api\/v1\/worlds(\/from-template|\/[^/]+|\/[^/]+\/locations)?$/,
+  /^\/api\/v1\/locations\/[^/]+$/,
+  /^\/api\/v1\/scenes(\/[^/]+\/(posts|draft|read|rolls|characters|status))?$/,
+  /^\/api\/v1\/posts\/[^/]+$/,
+  /^\/api\/v1\/conversations\/[^/]+\/(messages|read)$/,
+  /^\/api\/v1\/messages\/[^/]+$/,
+  /^\/api\/v1\/notifications\/read$/,
+  /^\/api\/v1\/presence$/,
+  /^\/api\/v1\/reports$/,
+];
+
+function guestMay(request: Request): boolean {
+  const { pathname } = new URL(request.url);
+  return GUEST_MAY.some((pattern) => pattern.test(pathname));
+}
+
+/**
  * Guards a state-changing request: it must come from this site and from a signed-in user.
  * Session cookies are SameSite=Lax; the origin check closes the remaining cross-site cases.
  */
@@ -62,6 +88,9 @@ export async function requireActor(request: Request): Promise<Actor> {
   const viewer = await getViewer();
   if (!viewer) throw new DomainError('unauthenticated', 'Sign in to continue.');
   if (viewer.suspended) throw new DomainError('forbidden', 'This account is suspended.');
+  if (viewer.demoGuest && !guestMay(request)) {
+    throw new DomainError('forbidden', 'The shared demo account cannot do that. Create your own free account to use all of WorldRoot.');
+  }
   return viewer.actor;
 }
 

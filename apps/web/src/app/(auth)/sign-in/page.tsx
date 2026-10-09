@@ -6,7 +6,9 @@ import { OAuthButtons, type OAuthProvider } from '@/features/identity/oauth-butt
 import { oauthError } from '@/features/identity/oauth-errors';
 import { SignInForm } from '@/features/identity/sign-in-form';
 import { safeNext } from '@/lib/next-path';
-import { oauthProviders } from '@/lib/server';
+import { DEMO_GUEST } from '@worldroot/core';
+import { DemoSignIn } from '@/features/identity/demo-sign-in';
+import { demoGuestEnabled, oauthProviders } from '@/lib/server';
 import { getViewer } from '@/lib/session';
 
 export const metadata: Metadata = { title: 'Sign In' };
@@ -38,6 +40,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
       ) : null}
       <OAuthButtons providers={providers} next={next} />
       <SignInForm next={next} />
+      {demoGuestEnabled() ? <DemoSignIn email={DEMO_GUEST.email} password={DEMO_GUEST.password} /> : null}
       <p className="mt-6 text-sm text-ink-muted">
         <Link href="/terms" className={textLinkClass}>
           Terms Of Service

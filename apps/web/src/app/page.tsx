@@ -1,6 +1,7 @@
 import { buttonClass, Wordmark } from '@worldroot/ui';
 import Link from 'next/link';
 import { LegalLinks } from '@/features/legal/legal-page';
+import { demoGuestEnabled } from '@/lib/server';
 import { getViewer } from '@/lib/session';
 
 const PILLARS = [
@@ -53,6 +54,11 @@ export default async function LandingPage() {
               <Link href="/sign-in" className={buttonClass('secondary', 'lg')}>
                 Sign in
               </Link>
+              {demoGuestEnabled() ? (
+                <Link href="/sign-in#demo" className={buttonClass('ghost', 'lg')}>
+                  Try The Demo
+                </Link>
+              ) : null}
             </>
           )}
         </div>

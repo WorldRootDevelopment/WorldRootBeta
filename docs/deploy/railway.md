@@ -57,6 +57,8 @@ Leave out `WORLDROOT_ADMIN_PASSWORD_SYNC`. It is for your own computer only and 
 
 The demo communities, Demo Town and Demo Dungeon, appear only if you add `WORLDROOT_DEMO` with the value `on`. Your administrator account is made an owner of both. The demo account itself (`host@worldroot.test`) cannot be signed in to unless you also add `WORLDROOT_DEMO_PASSWORD`, at least 10 characters. Anyone who knows that password can act as the owner of the demo communities, so keep it to yourself.
 
+To let anyone try WorldRoot without signing up, also add `WORLDROOT_DEMO_GUEST` with the value `on`. A **Try The Demo** button then appears on the sign-in page and signs people in to one shared guest account, which can write in the two demo communities and make characters and worlds, and nothing else. Remove the setting to close it. If it is being misused, you can also suspend the account `demo_guest` from the Rootwarden portal, which stops it at once.
+
 Railway redeploys when you save. Watch **Deployments**. A green tick means the site is up. Open your address.
 
 The site creates its own database tables each time it starts, so there is nothing to run by hand. In **Deploy Logs** you should see `Database is up to date.` followed by a line about the administrator.
