@@ -41,3 +41,14 @@ export const auditLog = pgTable(
     index('audit_log_target_idx').on(t.targetType, t.targetId),
   ],
 );
+
+/**
+ * Settings for the whole of WorldRoot, one row each, changed by staff. Kept
+ * as key and value so a new setting needs no migration.
+ */
+export const platformSettings = pgTable('platform_settings', {
+  key: text('key').primaryKey(),
+  value: jsonb('value').notNull(),
+  updatedByUserId: uuid('updated_by_user_id').references(() => users.id, { onDelete: 'set null' }),
+  updatedAt: timestamptz('updated_at').notNull().defaultNow(),
+});

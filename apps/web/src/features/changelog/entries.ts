@@ -14,6 +14,16 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-badges-tab',
+    date: '2026-10-09',
+    title: 'A Badges tab, and a note on achievements that give one',
+    items: [
+      'Settings has a Badges tab showing the badges you have, the ones you do not, and how each is come by.',
+      'An achievement that also gives a badge now says so.',
+      'WorldRoot may dress up for an occasion from time to time: look for the logo and the stripe along the top.',
+    ],
+  },
+  {
     id: '2026-10-09-popups-achievements-dice',
     date: '2026-10-09',
     title: 'Profile pop-ups, more achievements and a better dice throw',

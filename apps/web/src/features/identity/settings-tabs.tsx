@@ -17,6 +17,9 @@ export function SettingsTabs() {
       <NavLink href="/settings/achievements" className={tab} activeClassName="border-accent text-ink">
         Achievements
       </NavLink>
+      <NavLink href="/settings/badges" className={tab} activeClassName="border-accent text-ink">
+        Badges
+      </NavLink>
       <NavLink href="/settings/account" className={tab} activeClassName="border-accent text-ink">
         Account
       </NavLink>

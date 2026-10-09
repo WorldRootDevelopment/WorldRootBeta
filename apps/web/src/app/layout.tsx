@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import { Heebo, Pacifico, Source_Serif_4 } from 'next/font/google';
 import { cookies } from 'next/headers';
 import type { ReactNode } from 'react';
+import { getSeason } from '@worldroot/core';
 import { THEME_COOKIE } from '@/features/shell/theme';
+import { database } from '@/lib/server';
 import './globals.css';
 
 // Heebo and Pacifico are the two faces of the WorldRoot site. Pacifico is for the name only.
@@ -33,10 +35,18 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // An explicit choice is rendered on the server so the page never flashes the wrong theme.
   const stored = (await cookies()).get(THEME_COOKIE)?.value;
   const theme = stored === 'light' || stored === 'dark' ? stored : undefined;
+  // The look staff have switched on for the whole site. A problem reading it must never stop a page from showing.
+  const season = await database()
+    .then(({ db }) => getSeason(db))
+    .catch(() => 'none' as const);
 
   return (
-    <html lang="en" data-theme={theme} className={`${interfaceFont.variable} ${storyFont.variable} ${wordmarkFont.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+    <html lang="en" data-theme={theme} data-season={season === 'none' ? undefined : season} className={`${interfaceFont.variable} ${storyFont.variable} ${wordmarkFont.variable}`}>
+      <body className="min-h-dvh">
+        {/* A stripe in the colors of the site look. Hidden unless a look is on. */}
+        <div aria-hidden="true" className="wr-season-bar" />
+        {children}
+      </body>
     </html>
   );
 }

@@ -94,14 +94,6 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
       </header>
 
       <div className={popup ? 'px-5 pb-6' : undefined}>
-        {viewerIsStaff ? (
-          <p className="mt-6">
-            <Link href={`/staff/accounts/${profile.userId}`} className={buttonClass('secondary')}>
-              Staff: manage this account
-            </Link>
-          </p>
-        ) : null}
-
         {/* Removing someone's pictures is done from the full page or the staff portal, not the pop-up. */}
         {!popup && viewerIsStaff && !isSelf && profile.bannerId ? (
           <div className="mt-6 rounded-lg border border-line px-4 py-3">
@@ -173,6 +165,15 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
         ) : (
           <p className="text-ink-muted">{isSelf ? 'You have not joined a community yet.' : 'No communities you can see.'}</p>
         )}
+
+        {/* For staff, at the foot of the profile, out of the way of what everyone else sees. */}
+        {viewerIsStaff ? (
+          <p className="mt-12 border-t border-line pt-6">
+            <Link href={`/staff/accounts/${profile.userId}`} className={buttonClass('secondary')}>
+              Staff: manage this account
+            </Link>
+          </p>
+        ) : null}
       </div>
     </div>
   );

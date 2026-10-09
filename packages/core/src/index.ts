@@ -40,3 +40,4 @@ export * from './scenes/rolls';
 export * from './identity/achievements';
 export * from './identity/friends';
 export * from './identity/staff-accounts';
+export * from './platform/settings';

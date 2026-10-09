@@ -1,4 +1,4 @@
-import { listAllCommunities, listReports, searchAccounts } from '@worldroot/core';
+import { getSeason, listAllCommunities, listReports, searchAccounts } from '@worldroot/core';
 import { Button, buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -8,6 +8,7 @@ import { ReportQueue } from '@/features/moderation/report-client';
 import { PageHeader } from '@/features/shell/page-header';
 import { SectionHeading } from '@/features/shell/prose';
 import { AccountControls } from '@/features/staff/account-controls';
+import { SeasonPicker } from '@/features/staff/season-picker';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
@@ -21,10 +22,11 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
   if (viewer.actor.platformRole !== 'staff') notFound();
   const query = ((await searchParams).q ?? '').slice(0, 100);
   const { db } = await database();
-  const [accounts, communities, reports] = await Promise.all([
+  const [accounts, communities, reports, season] = await Promise.all([
     searchAccounts(db, viewer.actor, query),
     listAllCommunities(db, viewer.actor),
     listReports(db, viewer.actor, 'platform'),
+    getSeason(db),
   ]);
 
   return (
@@ -37,6 +39,13 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
         community. Reports a community can handle itself go to that community’s own reviewers.
       </p>
       <ReportQueue reports={reports} emptyText="Nothing is waiting for review." />
+
+      <SectionHeading>Site look</SectionHeading>
+      <p className="mb-4 max-w-2xl text-sm text-ink-muted">
+        Dress the whole site for an occasion. It changes the logo, the WorldRoot name and adds a stripe across the top of every page, for
+        everyone, at once. Nothing else changes.
+      </p>
+      <SeasonPicker season={season} />
 
       <SectionHeading>Accounts</SectionHeading>
       <form className="mb-5 flex max-w-xl gap-2">

@@ -628,3 +628,120 @@
     background-image: linear-gradient(90deg, var(--wr-accent-light), var(--wr-accent));
   }
 }
+
+/*
+ * Site looks. Staff can dress the whole site for an occasion. A look is six
+ * band colors, used in three places: the pages of the logo, a stripe across
+ * the top of every page, and the WorldRoot name. Nothing else changes, so
+ * text and controls keep their contrast whatever look is on.
+ */
+:root[data-season='pride'] {
+  --season-1: #e40303;
+  --season-2: #ff8c00;
+  --season-3: #ffed00;
+  --season-4: #008026;
+  --season-5: #24408e;
+  --season-6: #732982;
+}
+:root[data-season='trans'] {
+  --season-1: #5bcefa;
+  --season-2: #f5a9b8;
+  --season-3: #ffffff;
+  --season-4: #ffffff;
+  --season-5: #f5a9b8;
+  --season-6: #5bcefa;
+}
+:root[data-season='halloween'] {
+  --season-1: #ff7a00;
+  --season-2: #ff7a00;
+  --season-3: #5b2a86;
+  --season-4: #5b2a86;
+  --season-5: #1b1b1b;
+  --season-6: #6bbf2a;
+}
+:root[data-season='easter'] {
+  --season-1: #f9c6d8;
+  --season-2: #fde7a7;
+  --season-3: #bfe8c7;
+  --season-4: #bde0f5;
+  --season-5: #d9c7f0;
+  --season-6: #f9c6d8;
+}
+:root[data-season='holidays'] {
+  --season-1: #c1121f;
+  --season-2: #c1121f;
+  --season-3: #ffffff;
+  --season-4: #0b6e3a;
+  --season-5: #0b6e3a;
+  --season-6: #d4af37;
+}
+
+/* The logo draws its pages plainly unless a look is on. */
+.wr-logo-season {
+  display: none;
+}
+:root[data-season] .wr-logo-plain {
+  display: none;
+}
+:root[data-season] .wr-logo-season {
+  display: inline;
+}
+
+/* The stripe across the top of every page. */
+.wr-season-bar {
+  display: none;
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 0.3rem;
+  pointer-events: none;
+  background-image: linear-gradient(
+    90deg,
+    var(--season-1) 0 16.67%,
+    var(--season-2) 16.67% 33.33%,
+    var(--season-3) 33.33% 50%,
+    var(--season-4) 50% 66.67%,
+    var(--season-5) 66.67% 83.33%,
+    var(--season-6) 83.33% 100%
+  );
+}
+:root[data-season] .wr-season-bar {
+  display: block;
+}
+
+/*
+ * The WorldRoot name, washed in the look's colors. Each color is pulled
+ * toward the text color, dark in the light theme and light in the dark one,
+ * so a pale band such as white or yellow is still readable as lettering.
+ */
+:root[data-season] .wr-wordmark-name {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in oklch, var(--season-1) 62%, var(--wr-text)),
+    color-mix(in oklch, var(--season-2) 62%, var(--wr-text)),
+    color-mix(in oklch, var(--season-3) 62%, var(--wr-text)),
+    color-mix(in oklch, var(--season-4) 62%, var(--wr-text)),
+    color-mix(in oklch, var(--season-5) 62%, var(--wr-text)),
+    color-mix(in oklch, var(--season-6) 62%, var(--wr-text))
+  );
+}
+
+/* The swatches in the staff portal, each showing its own look whatever is switched on. */
+.wr-season-swatch {
+  background-image: linear-gradient(180deg, #d77b57 0 50%, #e9a37e 50% 100%);
+}
+.wr-season-swatch[data-season='pride'] {
+  background-image: linear-gradient(180deg, #e40303 0 16.67%, #ff8c00 16.67% 33.33%, #ffed00 33.33% 50%, #008026 50% 66.67%, #24408e 66.67% 83.33%, #732982 83.33% 100%);
+}
+.wr-season-swatch[data-season='trans'] {
+  background-image: linear-gradient(180deg, #5bcefa 0 20%, #f5a9b8 20% 40%, #ffffff 40% 60%, #f5a9b8 60% 80%, #5bcefa 80% 100%);
+}
+.wr-season-swatch[data-season='halloween'] {
+  background-image: linear-gradient(180deg, #ff7a00 0 33.33%, #5b2a86 33.33% 66.67%, #1b1b1b 66.67% 83.33%, #6bbf2a 83.33% 100%);
+}
+.wr-season-swatch[data-season='easter'] {
+  background-image: linear-gradient(180deg, #f9c6d8 0 20%, #fde7a7 20% 40%, #bfe8c7 40% 60%, #bde0f5 60% 80%, #d9c7f0 80% 100%);
+}
+.wr-season-swatch[data-season='holidays'] {
+  background-image: linear-gradient(180deg, #c1121f 0 33.33%, #ffffff 33.33% 50%, #0b6e3a 50% 83.33%, #d4af37 83.33% 100%);
+}

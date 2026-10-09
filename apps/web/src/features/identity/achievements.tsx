@@ -1,6 +1,7 @@
-import { ACHIEVEMENTS, type AchievementKey } from '@worldroot/contracts';
+import { ACHIEVEMENTS, isBadgeKey, type AchievementKey } from '@worldroot/contracts';
 import type { AchievementProgress, EarnedAchievement } from '@worldroot/core';
 import {
+  Award,
   BookOpen,
   Camera,
   Clapperboard,
@@ -48,6 +49,17 @@ const LOOK: Record<AchievementKey, { icon: LucideIcon; hue: number }> = {
   critical_fumble: { icon: Skull, hue: 300 },
 };
 
+/** A note on the achievements that also put a badge on your profile. */
+function AlsoBadge({ id }: { id: AchievementKey }) {
+  if (!isBadgeKey(id)) return null;
+  return (
+    <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 align-middle text-[0.6875rem] font-semibold text-accent-text">
+      <Award className="size-3" aria-hidden="true" />
+      Gives a badge
+    </span>
+  );
+}
+
 const day = (date: Date) => date.toLocaleDateString('en', { dateStyle: 'medium' });
 
 function Medallion({ id, earned }: { id: AchievementKey; earned: boolean }) {
@@ -72,7 +84,10 @@ export function Achievements({ earned, compact = false }: { earned: EarnedAchiev
         <li key={key} className="wr-glass flex items-center gap-3 rounded-2xl p-3">
           <Medallion id={key} earned />
           <span className="min-w-0">
-            <span className="block font-display text-sm font-semibold text-ink">{ACHIEVEMENTS[key].label}</span>
+            <span className="block font-display text-sm font-semibold text-ink">
+              {ACHIEVEMENTS[key].label}
+              <AlsoBadge id={key} />
+            </span>
             <span className="block text-xs leading-snug text-ink-muted">{ACHIEVEMENTS[key].how}</span>
             <span className="mt-0.5 block text-xs text-ink-muted">Earned {day(earnedAt)}</span>
           </span>
@@ -95,6 +110,7 @@ export function AchievementProgressList({ rows }: { rows: AchievementProgress[] 
               <p className="font-display text-sm font-semibold text-ink">
                 {label}
                 {earnedAt ? null : <span className="sr-only"> (not earned yet)</span>}
+                <AlsoBadge id={key} />
               </p>
               <p className="text-xs leading-snug text-ink-muted">{how}</p>
               {earnedAt ? (

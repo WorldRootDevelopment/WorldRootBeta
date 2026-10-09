@@ -22,6 +22,19 @@ const platformTones: Record<(typeof BADGES)[BadgeKey]['tone'], string> = {
 
 const communityIcons: Record<CommunityBadgeKey, LucideIcon> = { owner: Crown, admin: Wrench, moderator: ShieldCheck };
 
+/** One platform badge as a larger medallion, for the list of all badges. Dimmed when the viewer does not hold it. */
+export function BadgeIcon({ badge, dimmed = false }: { badge: BadgeKey; dimmed?: boolean }) {
+  const Icon = platformIcons[badge];
+  return (
+    <span
+      aria-hidden="true"
+      className={`flex size-11 shrink-0 items-center justify-center rounded-full ${dimmed ? 'border border-dashed border-line-strong text-ink-muted' : platformTones[BADGES[badge].tone]}`}
+    >
+      <Icon className="size-5" />
+    </span>
+  );
+}
+
 interface BadgesProps {
   /** Platform badges this person holds. */
   list?: readonly BadgeKey[];
