@@ -49,6 +49,7 @@ WorldRoot service → **Variables**. Add each of these:
 | `WORLDROOT_MEDIA_DIR` | `/data/media` |
 | `WORLDROOT_ADMIN_EMAIL` | the email you will sign in with |
 | `WORLDROOT_ADMIN_PASSWORD` | a **new** password, not one you have typed into a chat |
+| `WORLDROOT_CONTACT_EMAIL` | an address people can write to about their data. It is shown publicly on the privacy policy and the terms |
 
 Leave out `WORLDROOT_ADMIN_PASSWORD_SYNC`. It is for your own computer only and is ignored here.
 
@@ -69,6 +70,7 @@ Railway redeploys when you save. Watch **Deployments**. A green tick means the s
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/) and create a project called WorldRoot.
 2. **APIs & Services → OAuth consent screen**. Choose **External**, fill in the app name and your email, and save. Add your own email as a test user. While the app is in "Testing", only test users can sign in; press **Publish App** when you want everyone to.
+   Where it asks for links, the privacy policy is `YOUR-ADDRESS/privacy`, the terms of service are `YOUR-ADDRESS/terms`, and the home page is `YOUR-ADDRESS`. Discord asks for the same two links under **General Information**.
 3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**. Type: **Web application**.
 4. Under **Authorized redirect URIs**, add: `YOUR-ADDRESS/api/auth/callback/google`
 5. Copy the **Client ID** and **Client Secret**.

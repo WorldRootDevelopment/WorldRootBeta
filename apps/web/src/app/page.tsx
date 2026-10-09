@@ -1,5 +1,6 @@
 import { buttonClass, Wordmark } from '@worldroot/ui';
 import Link from 'next/link';
+import { LegalLinks } from '@/features/legal/legal-page';
 import { getViewer } from '@/lib/session';
 
 const PILLARS = [
@@ -79,6 +80,8 @@ export default async function LandingPage() {
           </p>
         </Link>
       </main>
+
+      <LegalLinks className="pb-8" />
     </div>
   );
 }

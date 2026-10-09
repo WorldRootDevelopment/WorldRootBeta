@@ -107,6 +107,16 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
             </Link>
           </li>
           <li>
+            <Link href="/privacy" className={itemClass}>
+              Privacy Policy
+            </Link>
+          </li>
+          <li>
+            <Link href="/terms" className={itemClass}>
+              Terms Of Service
+            </Link>
+          </li>
+          <li>
             <Link href="/alternatives" className={itemClass}>
               Alternative universes
             </Link>

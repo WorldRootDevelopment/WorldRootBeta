@@ -39,6 +39,17 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
       ) : null}
       <OAuthButtons providers={providers} next={next} />
       <SignUpForm next={next} />
+      <p className="mt-6 text-sm text-ink-muted">
+        WorldRoot is for people aged 18 and over. By creating an account you agree to the{' '}
+        <Link href="/terms" className={textLinkClass}>
+          Terms Of Service
+        </Link>{' '}
+        and the{' '}
+        <Link href="/privacy" className={textLinkClass}>
+          Privacy Policy
+        </Link>
+        .
+      </p>
     </AuthCard>
   );
 }

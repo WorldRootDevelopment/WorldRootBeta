@@ -1,6 +1,7 @@
 import { buttonClass, Wordmark } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { LegalLinks } from '@/features/legal/legal-page';
 import { InstallAppButton } from '@/features/shell/install-app';
 
 export const metadata: Metadata = { title: 'Get The App' };
@@ -69,6 +70,8 @@ export default function InstallPage() {
           install web apps on a computer; use Chrome or Edge for that.
         </p>
       </main>
+
+      <LegalLinks className="pb-8" />
     </div>
   );
 }

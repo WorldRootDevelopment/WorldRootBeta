@@ -38,6 +38,15 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
       ) : null}
       <OAuthButtons providers={providers} next={next} />
       <SignInForm next={next} />
+      <p className="mt-6 text-sm text-ink-muted">
+        <Link href="/terms" className={textLinkClass}>
+          Terms Of Service
+        </Link>
+        {' · '}
+        <Link href="/privacy" className={textLinkClass}>
+          Privacy Policy
+        </Link>
+      </p>
     </AuthCard>
   );
 }

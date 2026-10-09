@@ -14,6 +14,12 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-privacy-and-terms',
+    date: '2026-10-09',
+    title: 'Privacy Policy And Terms Of Service',
+    items: ['WorldRoot now has a Privacy Policy and Terms Of Service, written in plain language. Find them at the bottom of the front page, on the sign-in pages, and in your account menu.'],
+  },
+  {
     id: '2026-10-09-get-the-app',
     date: '2026-10-09',
     title: 'Get The App',
