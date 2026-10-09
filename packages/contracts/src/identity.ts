@@ -64,6 +64,8 @@ export const profileSchema = z.object({
   website: z.string().nullable(),
   /** A short line shown under their name. */
   status: z.string().nullable(),
+  /** How the site looks for them. A key from the site theme registry; the default unless the account has Heartwood. */
+  siteTheme: z.string(),
   /** How their dice look when they roll. A key from the dice theme registry. */
   diceTheme: z.string(),
   /** WorldRoot staff. Kept beside `badges` because code asks this question directly. */

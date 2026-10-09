@@ -2,7 +2,10 @@
 # Railway today, another host or your own server later. Nothing in it is
 # specific to one provider.
 
-FROM node:22-slim
+# The official Node image, taken from Amazon's public mirror of it. Docker Hub limits how often shared
+# build servers may download from it and refuses with "429 Too Many Requests" once they have; the
+# mirror holds the same image and has no such limit.
+FROM public.ecr.aws/docker/library/node:22-slim
 
 # pnpm, at the version the repository names in package.json.
 RUN npm install --global pnpm@12.9.1

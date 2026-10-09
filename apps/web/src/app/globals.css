@@ -961,3 +961,265 @@
 .wr-profile-theme-band {
   background-image: var(--wr-pt);
 }
+
+/*
+ * Site themes. A Heartwood member chooses one under Settings and it is set as
+ * data-skin on the page. Each theme is mostly a new set of the same tokens
+ * everything else is built from, so it reaches every page without any page
+ * knowing about it; a few also restyle the shared surfaces further down.
+ *
+ * Colors are written as light-dark(light, dark), so one block serves both. The
+ * doubled :root is there to outrank the dark tokens, which are written with a
+ * :not() and would otherwise win.
+ */
+
+/* Book And Quill: parchment, ink and serif lettering. Nothing shines and nothing is see-through. */
+:root:root[data-skin='book'] {
+  --wr-neutral-hue: 80;
+  --wr-accent-hue: 45;
+  --font-interface: var(--font-story), Georgia, 'Times New Roman', serif;
+  --wr-surface: light-dark(oklch(0.925 0.04 85), oklch(0.2 0.02 60));
+  --wr-surface-raised: light-dark(oklch(0.962 0.032 88), oklch(0.255 0.025 60));
+  --wr-surface-sunken: light-dark(oklch(0.885 0.045 82), oklch(0.165 0.02 60));
+  --wr-ooc-surface: light-dark(oklch(0.895 0.05 80), oklch(0.28 0.03 60));
+  --wr-text: light-dark(oklch(0.25 0.035 50), oklch(0.9 0.04 85));
+  --wr-text-muted: light-dark(oklch(0.42 0.04 55), oklch(0.74 0.04 80));
+  --wr-border: light-dark(oklch(0.79 0.055 75), oklch(0.36 0.03 60));
+  --wr-border-strong: light-dark(oklch(0.6 0.065 65), oklch(0.52 0.045 65));
+  --wr-accent: light-dark(oklch(0.46 0.1 var(--wr-accent-hue)), oklch(0.76 0.09 var(--wr-accent-hue)));
+  --wr-accent-light: light-dark(oklch(0.54 0.1 var(--wr-accent-hue)), oklch(0.83 0.07 var(--wr-accent-hue)));
+  --wr-accent-hover: light-dark(oklch(0.4 0.1 var(--wr-accent-hue)), oklch(0.81 0.09 var(--wr-accent-hue)));
+  --wr-accent-contrast: light-dark(oklch(0.97 0.025 88), oklch(0.2 0.03 60));
+  --wr-accent-soft: light-dark(oklch(0.86 0.06 var(--wr-accent-hue)), oklch(0.32 0.045 var(--wr-accent-hue)));
+  --wr-accent-text: light-dark(oklch(0.38 0.1 var(--wr-accent-hue)), oklch(0.85 0.08 var(--wr-accent-hue)));
+  --wr-focus: light-dark(oklch(0.38 0.12 var(--wr-accent-hue)), oklch(0.85 0.1 var(--wr-accent-hue)));
+  --wr-glass: var(--wr-surface-raised);
+  --wr-glass-strong: var(--wr-surface-raised);
+  --wr-glass-edge: light-dark(oklch(0.62 0.06 65 / 0.55), oklch(1 0 0 / 0.12));
+  --wr-shine: transparent;
+  --wr-page-glow: transparent;
+  --wr-aurora-strength: 0;
+  /* Paper has no lit edge to speak of: just enough to lift a page off the one beneath it. */
+  --wr-rim: light-dark(oklch(1 0 0 / 0.4), oklch(1 0 0 / 0.07));
+  --wr-rim-shade: light-dark(oklch(0.5 0.06 60 / 0.14), oklch(0 0 0 / 0.3));
+  --wr-shadow-raised: 0 1px 0 light-dark(oklch(0.5 0.05 60 / 0.2), oklch(0 0 0 / 0.5)), 0 8px 16px -10px light-dark(oklch(0.35 0.06 60 / 0.45), oklch(0 0 0 / 0.7));
+  --wr-grain: 0.3;
+  --wr-vignette: light-dark(oklch(0.5 0.09 60 / 0.3), oklch(0 0 0 / 0.55));
+  --wr-bloom: 0;
+  --radius-md: 0.2rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.3rem;
+  --radius-2xl: 0.35rem;
+  --radius-3xl: 0.45rem;
+}
+:root[data-skin='book'] .wr-gloss,
+:root[data-skin='book'] .wr-gloss-light {
+  border-radius: 0.3rem;
+  background-image: none;
+  text-shadow: none;
+  box-shadow: 0 1px 0 light-dark(oklch(0.3 0.05 60 / 0.4), oklch(0 0 0 / 0.6));
+}
+:root[data-skin='book'] .wr-gloss-light {
+  background-color: var(--wr-surface-raised);
+  border: 1px solid var(--wr-border-strong);
+}
+:root[data-skin='book'] .wr-title {
+  background-image: none;
+  -webkit-text-fill-color: currentcolor;
+  color: var(--wr-text);
+  font-style: italic;
+}
+:root[data-skin='book'] .wr-popover,
+:root[data-skin='book'] .wr-chrome {
+  backdrop-filter: none;
+  background-image: none;
+}
+
+/* Frutiger Aero: sky and grass, gloss on everything, bubbles in the air. */
+:root:root[data-skin='aero'] {
+  --wr-neutral-hue: 230;
+  --wr-accent-hue: 235;
+  --wr-surface: light-dark(oklch(0.955 0.035 225), oklch(0.2 0.05 250));
+  --wr-surface-raised: light-dark(oklch(1 0 0), oklch(0.28 0.06 250));
+  --wr-surface-sunken: light-dark(oklch(0.915 0.045 225), oklch(0.16 0.045 250));
+  --wr-ooc-surface: light-dark(oklch(0.92 0.05 215), oklch(0.3 0.07 245));
+  --wr-text: light-dark(oklch(0.27 0.06 250), oklch(0.95 0.02 220));
+  --wr-text-muted: light-dark(oklch(0.43 0.06 245), oklch(0.79 0.04 225));
+  --wr-border: light-dark(oklch(0.85 0.06 225), oklch(0.37 0.07 245));
+  --wr-border-strong: light-dark(oklch(0.7 0.09 230), oklch(0.52 0.09 240));
+  --wr-accent: light-dark(oklch(0.68 0.14 var(--wr-accent-hue)), oklch(0.76 0.13 var(--wr-accent-hue)));
+  --wr-accent-light: light-dark(oklch(0.82 0.1 var(--wr-accent-hue)), oklch(0.86 0.09 var(--wr-accent-hue)));
+  --wr-accent-hover: light-dark(oklch(0.73 0.14 var(--wr-accent-hue)), oklch(0.81 0.13 var(--wr-accent-hue)));
+  --wr-accent-contrast: oklch(0.2 0.07 var(--wr-accent-hue));
+  --wr-accent-soft: light-dark(oklch(0.92 0.06 var(--wr-accent-hue)), oklch(0.34 0.09 var(--wr-accent-hue)));
+  --wr-accent-text: light-dark(oklch(0.42 0.15 var(--wr-accent-hue)), oklch(0.85 0.1 var(--wr-accent-hue)));
+  --wr-focus: light-dark(oklch(0.5 0.17 var(--wr-accent-hue)), oklch(0.82 0.12 var(--wr-accent-hue)));
+  --wr-aurora-violet: #35c46a;
+  --wr-aurora-blue: #1e9bff;
+  --wr-aurora-strength: 0.62;
+  --wr-page-glow: light-dark(oklch(1 0 0), oklch(0.42 0.11 235));
+  --wr-glass: light-dark(oklch(1 0 0 / 0.5), oklch(0.36 0.09 245 / 0.5));
+  --wr-glass-strong: light-dark(oklch(1 0 0 / 0.85), oklch(0.28 0.07 248 / 0.9));
+  --wr-shine: light-dark(oklch(1 0 0 / 0.85), oklch(1 0 0 / 0.36));
+  --wr-grain: 0;
+  --wr-bloom: 0.75;
+}
+:root[data-skin='aero'] body::after {
+  opacity: 0.85;
+  mix-blend-mode: normal;
+  background:
+    radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 6% 78% / 9rem 9rem no-repeat,
+    radial-gradient(circle, transparent 56%, color-mix(in oklch, var(--wr-shine) 60%, transparent) 65%, transparent 70%) 6% 78% / 9rem 9rem no-repeat,
+    radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 93% 30% / 6rem 6rem no-repeat,
+    radial-gradient(circle, transparent 56%, color-mix(in oklch, var(--wr-shine) 60%, transparent) 65%, transparent 70%) 93% 30% / 6rem 6rem no-repeat,
+    radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 70% 92% / 4rem 4rem no-repeat,
+    radial-gradient(circle, transparent 56%, color-mix(in oklch, var(--wr-shine) 60%, transparent) 65%, transparent 70%) 70% 92% / 4rem 4rem no-repeat,
+    radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 38% 12% / 3rem 3rem no-repeat,
+    radial-gradient(circle, transparent 56%, color-mix(in oklch, var(--wr-shine) 60%, transparent) 65%, transparent 70%) 38% 12% / 3rem 3rem no-repeat;
+}
+
+/* Windows 95: gray, square and raised. It has no dark version, as the original had none. */
+:root:root[data-skin='win95'],
+:root:root[data-skin='win95'] .wr-accent-scope {
+  --wr-accent: #000080;
+  --wr-accent-light: #1084d0;
+  --wr-accent-hover: #0000a8;
+  --wr-accent-contrast: #ffffff;
+  --wr-accent-soft: #a6caf0;
+  --wr-accent-text: #000080;
+  --wr-focus: #000000;
+}
+:root:root[data-skin='win95'] {
+  color-scheme: light;
+  --font-interface: Tahoma, 'MS Sans Serif', 'Segoe UI', Arial, sans-serif;
+  --wr-surface: #c0c0c0;
+  --wr-surface-raised: #ffffff;
+  --wr-surface-sunken: #b0b0b0;
+  --wr-ooc-surface: #d4d0c8;
+  --wr-text: #000000;
+  --wr-text-muted: #333333;
+  --wr-border: #808080;
+  --wr-border-strong: #404040;
+  --wr-danger: #a00000;
+  --wr-danger-soft: #f0c8c8;
+  --wr-glass: #c0c0c0;
+  --wr-glass-strong: #c0c0c0;
+  --wr-glass-edge: #ffffff;
+  --wr-shine: transparent;
+  --wr-page-glow: transparent;
+  --wr-aurora-strength: 0;
+  --wr-rim: #ffffff;
+  --wr-rim-shade: #808080;
+  --wr-shadow-raised: 1px 1px 0 #000000;
+  --wr-grain: 0;
+  --wr-vignette: transparent;
+  --wr-bloom: 0;
+}
+:root[data-skin='win95'] body {
+  -webkit-font-smoothing: auto;
+}
+:root[data-skin='win95'] body::before,
+:root[data-skin='win95'] body::after {
+  display: none;
+}
+:root[data-skin='win95'] *,
+:root[data-skin='win95'] *::before,
+:root[data-skin='win95'] *::after {
+  border-radius: 0 !important;
+}
+:root[data-skin='win95'] .wr-glass,
+:root[data-skin='win95'] .wr-popover,
+:root[data-skin='win95'] .wr-chrome,
+:root[data-skin='win95'] .wr-gloss,
+:root[data-skin='win95'] .wr-gloss-light {
+  color: #000000;
+  background-color: #c0c0c0;
+  background-image: none;
+  backdrop-filter: none;
+  text-shadow: none;
+  filter: none;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #dfdfdf;
+}
+:root[data-skin='win95'] .wr-gloss {
+  font-weight: 700;
+}
+:root[data-skin='win95'] .wr-gloss:active:not(:disabled),
+:root[data-skin='win95'] .wr-gloss-light:active:not(:disabled) {
+  border-color: #404040 #ffffff #ffffff #404040;
+  box-shadow:
+    inset 1px 1px 0 #808080,
+    inset -1px -1px 0 #dfdfdf;
+  transform: none;
+}
+:root[data-skin='win95'] .wr-gloss:hover:not(:disabled),
+:root[data-skin='win95'] .wr-gloss-light:hover:not(:disabled) {
+  filter: none;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #dfdfdf;
+}
+:root[data-skin='win95'] .wr-title {
+  background-image: none;
+  -webkit-text-fill-color: currentcolor;
+  color: #000080;
+}
+
+/* Liquid Glass: clear, thick, very rounded glass over a vivid backdrop that it blurs and bends. */
+:root:root[data-skin='glass'] {
+  --wr-neutral-hue: 258;
+  --wr-accent-hue: 262;
+  --wr-surface: light-dark(oklch(0.965 0.014 258), oklch(0.17 0.03 265));
+  --wr-surface-raised: light-dark(oklch(1 0 0), oklch(0.25 0.03 265));
+  --wr-surface-sunken: light-dark(oklch(0.93 0.018 258), oklch(0.14 0.028 265));
+  --wr-ooc-surface: light-dark(oklch(0.93 0.025 258), oklch(0.27 0.04 265));
+  --wr-text: light-dark(oklch(0.23 0.025 262), oklch(0.96 0.01 255));
+  --wr-text-muted: light-dark(oklch(0.43 0.025 262), oklch(0.8 0.02 255));
+  --wr-border: light-dark(oklch(0.85 0.02 258 / 0.7), oklch(1 0 0 / 0.14));
+  --wr-border-strong: light-dark(oklch(0.68 0.03 258), oklch(1 0 0 / 0.34));
+  --wr-accent: light-dark(oklch(0.6 0.19 var(--wr-accent-hue)), oklch(0.74 0.15 var(--wr-accent-hue)));
+  --wr-accent-light: light-dark(oklch(0.7 0.16 var(--wr-accent-hue)), oklch(0.83 0.11 var(--wr-accent-hue)));
+  --wr-accent-hover: light-dark(oklch(0.55 0.19 var(--wr-accent-hue)), oklch(0.79 0.15 var(--wr-accent-hue)));
+  --wr-accent-contrast: light-dark(oklch(1 0 0), oklch(0.16 0.04 var(--wr-accent-hue)));
+  --wr-accent-soft: light-dark(oklch(0.92 0.045 var(--wr-accent-hue)), oklch(0.33 0.09 var(--wr-accent-hue)));
+  --wr-accent-text: light-dark(oklch(0.44 0.19 var(--wr-accent-hue)), oklch(0.86 0.1 var(--wr-accent-hue)));
+  --wr-focus: light-dark(oklch(0.5 0.2 var(--wr-accent-hue)), oklch(0.84 0.12 var(--wr-accent-hue)));
+  --wr-aurora-violet: #ff5fa2;
+  --wr-aurora-blue: #4f7dff;
+  --wr-aurora-strength: 0.78;
+  --wr-page-glow: light-dark(oklch(1 0 0), oklch(0.36 0.1 285));
+  --wr-glass: light-dark(oklch(1 0 0 / 0.34), oklch(1 0 0 / 0.07));
+  --wr-glass-strong: light-dark(oklch(1 0 0 / 0.66), oklch(0.22 0.03 265 / 0.62));
+  --wr-glass-edge: light-dark(oklch(1 0 0 / 0.9), oklch(1 0 0 / 0.24));
+  --wr-shine: light-dark(oklch(1 0 0 / 0.62), oklch(1 0 0 / 0.16));
+  --wr-rim: light-dark(oklch(1 0 0 / 0.98), oklch(1 0 0 / 0.42));
+  --wr-grain: 0.035;
+  --wr-bloom: 0.65;
+  --radius-lg: 0.85rem;
+  --radius-xl: 1.1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+:root[data-skin='glass'] .wr-glass {
+  backdrop-filter: blur(30px) saturate(1.9);
+}
+:root[data-skin='glass'] .wr-popover,
+:root[data-skin='glass'] .wr-chrome {
+  backdrop-filter: blur(42px) saturate(2);
+}
+:root[data-skin='glass'] .wr-gloss {
+  text-shadow: none;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root:root[data-skin] {
+    --wr-glass: var(--wr-surface-raised);
+    --wr-glass-strong: var(--wr-surface-raised);
+  }
+  :root[data-skin] .wr-glass {
+    backdrop-filter: none;
+  }
+}

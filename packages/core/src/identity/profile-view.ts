@@ -1,4 +1,4 @@
-import { DICE_THEMES, diceItemKey, isDiceTheme, updateProfileSchema, type DiceThemeKey, type Profile, type UpdateProfileInput } from '@worldroot/contracts';
+import { DICE_THEMES, diceItemKey, isDiceTheme, isSiteTheme, SITE_THEMES, updateProfileSchema, type SiteThemeKey, type DiceThemeKey, type Profile, type UpdateProfileInput } from '@worldroot/contracts';
 import { characters, communities, communityMembers, profiles, type Db } from '@worldroot/db';
 import { and, asc, eq, inArray, isNull, or } from 'drizzle-orm';
 import type { Actor } from '../platform/authorize';
@@ -46,6 +46,17 @@ export async function setDiceTheme(db: Db, actor: Actor, theme: unknown): Promis
     throw new DomainError('forbidden', 'You do not own that dice theme.');
   }
   const [row] = await db.update(profiles).set({ diceTheme: theme }).where(eq(profiles.userId, actor.userId)).returning({ userId: profiles.userId });
+  if (!row) throw new DomainError('not_found', 'Finish setting up your account first.');
+  return theme;
+}
+
+/** Chooses how the whole site looks for the actor. WorldRoot's own look is anyone's; the others come with Heartwood. */
+export async function setSiteTheme(db: Db, actor: Actor, theme: unknown): Promise<SiteThemeKey> {
+  if (!isSiteTheme(theme)) throw new DomainError('invalid_input', 'That is not a site theme.');
+  if (!SITE_THEMES[theme].free && !(await hasPremium(db, actor))) {
+    throw new DomainError('forbidden', 'That theme comes with WorldRoot Heartwood, which is coming soon.');
+  }
+  const [row] = await db.update(profiles).set({ siteTheme: theme }).where(eq(profiles.userId, actor.userId)).returning({ userId: profiles.userId });
   if (!row) throw new DomainError('not_found', 'Finish setting up your account first.');
   return theme;
 }

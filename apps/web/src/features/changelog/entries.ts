@@ -14,6 +14,12 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-site-themes',
+    date: '2026-10-09',
+    title: 'Site Themes For Heartwood',
+    items: ['Heartwood members can change how the whole site looks, under Settings, Customization: Book And Quill, Frutiger Aero, Windows 95 or Liquid Glass. Only you see your theme.'],
+  },
+  {
     id: '2026-10-09-gallery-rule',
     date: '2026-10-09',
     title: 'A Rule For Character Galleries',

@@ -6,6 +6,7 @@ import { getSeason } from '@worldroot/core';
 import { SeasonBanner } from '@/features/shell/season-banner';
 import { THEME_COOKIE } from '@/features/shell/theme';
 import { database } from '@/lib/server';
+import { getViewer } from '@/lib/session';
 import './globals.css';
 
 // Heebo and Pacifico are the two faces of the WorldRoot site. Pacifico is for the name only.
@@ -41,8 +42,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     .then(({ db }) => getSeason(db))
     .catch(() => 'none' as const);
 
+  // The site theme the signed-in person has chosen, rendered on the server so the page never flashes the wrong one.
+  const skin = await getViewer()
+    .then((viewer) => viewer?.profile?.siteTheme)
+    .catch(() => undefined);
+
   return (
-    <html lang="en" data-theme={theme} data-season={season === 'none' ? undefined : season} className={`${interfaceFont.variable} ${storyFont.variable} ${wordmarkFont.variable}`}>
+    <html lang="en" data-theme={theme} data-skin={skin && skin !== 'default' ? skin : undefined} data-season={season === 'none' ? undefined : season} className={`${interfaceFont.variable} ${storyFont.variable} ${wordmarkFont.variable}`}>
       <body className="min-h-dvh">
         {/* An illustrated banner for the site look, across the top of every page. Nothing unless a look is on. */}
         {season === 'none' ? null : (

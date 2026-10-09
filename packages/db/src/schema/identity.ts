@@ -114,6 +114,9 @@ export const profiles = pgTable('profiles', {
   website: text('website'),
   // A short line shown under the name: what they are up to, or a favorite quote.
   status: text('status'),
+  // How the whole site looks for this person. A key from the site theme registry in @worldroot/contracts.
+  // Themes other than the default are used only while the account has Heartwood.
+  siteTheme: text('site_theme').notNull().default('default'),
   // How this person's dice look when they roll. A key from the registry in @worldroot/contracts.
   diceTheme: text('dice_theme').notNull().default('classic'),
   handleChangedAt: timestamptz('handle_changed_at'),

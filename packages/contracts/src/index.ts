@@ -14,4 +14,5 @@ export * from './dice-themes';
 export * from './store';
 export * from './plans';
 export * from './player-roles';
+export * from './site-themes';
 export * from './seasons';

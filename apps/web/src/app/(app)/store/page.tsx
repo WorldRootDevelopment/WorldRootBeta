@@ -71,6 +71,7 @@ export default async function StorePage() {
           <li>
             Up to {PREMIUM_LIMITS.characterImages} pictures in each character&rsquo;s gallery. A free account adds {FREE_LIMITS.characterImages}.
           </li>
+          <li>Site themes: Book And Quill, Frutiger Aero, Windows 95 and Liquid Glass.</li>
           <li>The Heartwood badge on your profile.</li>
         </ul>
         <p className="mt-4 text-sm text-ink-muted">

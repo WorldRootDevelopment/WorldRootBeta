@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "site_theme" text DEFAULT 'default' NOT NULL;

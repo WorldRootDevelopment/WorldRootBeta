@@ -1,4 +1,4 @@
-import { createProfileSchema, toDiceTheme, toPlayerRoles, toProfileLinks, type CreateProfileInput, type Profile } from '@worldroot/contracts';
+import { createProfileSchema, DEFAULT_SITE_THEME, toDiceTheme, toPlayerRoles, toProfileLinks, toSiteTheme, type CreateProfileInput, type Profile } from '@worldroot/contracts';
 import { handleHistory, profiles, type Db } from '@worldroot/db';
 import { eq } from 'drizzle-orm';
 import { recordAudit } from '../platform/audit';
@@ -7,7 +7,7 @@ import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
 
-/** Links and a website are part of Heartwood. Without it they stay stored but are not shown to anyone. */
+/** Links, a website and site themes are part of Heartwood. Without it they stay stored but are not used. */
 const showsLinks = (held: readonly string[] | null) => toBadges(held).some((badge) => badge === 'premium' || badge === 'staff');
 
 const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | null): Profile => ({
@@ -24,6 +24,8 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   links: showsLinks(held) ? toProfileLinks(row.links) : [],
   website: showsLinks(held) ? row.website : null,
   status: row.status,
+  // Kept when Heartwood ends, and used again if it returns.
+  siteTheme: showsLinks(held) ? toSiteTheme(row.siteTheme) : DEFAULT_SITE_THEME,
   diceTheme: toDiceTheme(row.diceTheme),
   isStaff: toBadges(held).includes('staff'),
   badges: toBadges(held),
