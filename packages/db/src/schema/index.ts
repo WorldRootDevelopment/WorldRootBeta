@@ -10,3 +10,5 @@ export * from './community-access';
 export * from './messaging';
 export * from './moderation';
 export * from './notifications';
+export * from './discover';
+export * from './media';

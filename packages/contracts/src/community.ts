@@ -27,6 +27,8 @@ export const communitySettingsSchema = z.object({
   accentHue: z.coerce.number({ error: 'Choose a colour.' }).int().min(0).max(359),
   listed: z.boolean(),
   requireCharacterApproval: z.boolean(),
+  // Left out, it stays as it is.
+  dndMode: z.boolean().optional(),
 });
 
 export type CommunitySettingsInput = z.input<typeof communitySettingsSchema>;

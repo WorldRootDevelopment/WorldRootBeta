@@ -1,5 +1,6 @@
 import type { Character } from '@worldroot/core';
 import Link from 'next/link';
+import { Picture } from '@/features/shell/picture';
 import { cardClass } from '@/features/shell/prose';
 
 interface CharacterCardProps {
@@ -9,19 +10,15 @@ interface CharacterCardProps {
   note?: string;
 }
 
-export function CharacterAvatar({ name, className = 'size-12 text-lg' }: { name: string; className?: string }) {
-  return (
-    <span aria-hidden="true" className={`flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-serif font-semibold text-accent-text ${className}`}>
-      {name.charAt(0).toUpperCase()}
-    </span>
-  );
+export function CharacterAvatar({ name, mediaId = null, className = 'size-12 text-lg' }: { name: string; mediaId?: string | null; className?: string }) {
+  return <Picture mediaId={mediaId} name={name} className={className} />;
 }
 
 export function CharacterCard({ character, facts = [], note }: CharacterCardProps) {
   return (
     <Link href={`/characters/${character.id}`} className={cardClass}>
       <div className="flex items-start gap-4">
-        <CharacterAvatar name={character.name} />
+        <CharacterAvatar name={character.name} mediaId={character.portraitMediaId} />
         <div className="min-w-0">
           <h3 className="font-serif text-lg font-semibold text-ink">{character.name}</h3>
           {character.species ? <p className="text-sm text-ink-muted">{character.species}</p> : null}

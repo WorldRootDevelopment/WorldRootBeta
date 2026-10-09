@@ -9,6 +9,7 @@ import {
 import {
   communities,
   conversations,
+  lfrpListings,
   messages,
   profiles,
   reports,
@@ -91,6 +92,21 @@ async function resolveTarget(db: Db, actor: Actor, targetType: ReportTarget, tar
         where: `Profile of @${profile.handle}`,
         href: `/u/${profile.handle}`,
       },
+    };
+  }
+
+  if (targetType === 'lfrp') {
+    const [row] = await db
+      .select({ listing: lfrpListings, handle: profiles.handle })
+      .from(lfrpListings)
+      .innerJoin(profiles, eq(profiles.userId, lfrpListings.userId))
+      .where(eq(lfrpListings.id, targetId));
+    if (!row) throw missing();
+    // The board belongs to no community, so these go to WorldRoot staff.
+    return {
+      subjectUserId: row.listing.userId,
+      communityId: null,
+      snapshot: { text: clip(`${row.listing.title}\n\n${row.listing.body}`), where: `Looking for RP listing by @${row.handle}`, href: '/discover/partners' },
     };
   }
 

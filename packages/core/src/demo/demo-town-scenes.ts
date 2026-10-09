@@ -5,7 +5,7 @@ import type { Actor } from '../platform/authorize';
 import { createPost, createScene, setSceneStatus } from '../scenes/service';
 
 /** Prose for a demo post: blank lines separate paragraphs, and *asterisks* mark italics. */
-function prose(text: string): RichDoc {
+export function prose(text: string): RichDoc {
   const content: BlockNode[] = text.split(/\n{2,}/).map((paragraph) => ({
     type: 'paragraph',
     content: paragraph

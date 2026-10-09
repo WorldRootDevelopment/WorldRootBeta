@@ -1,5 +1,15 @@
 import 'server-only';
-import { connect, createAuth, ensurePlatformAdmin, grantDemoAccess, seedDemo, type Auth, type DbConnection } from '@worldroot/core';
+import {
+  connect,
+  createAuth,
+  DND_DEMO_COMMUNITY_SLUG,
+  ensurePlatformAdmin,
+  grantDemoAccess,
+  seedDemo,
+  seedDndDemo,
+  type Auth,
+  type DbConnection,
+} from '@worldroot/core';
 
 // Held on globalThis so development hot reloads reuse one connection.
 const globals = globalThis as { __worldrootDb?: Promise<DbConnection>; __worldrootAuth?: Promise<Auth> };
@@ -20,7 +30,10 @@ export function database(): Promise<DbConnection> {
     const embedded = !/^postgres(ql)?:\/\//.test(process.env.DATABASE_URL ?? '');
     const demo = embedded && process.env.WORLDROOT_DEMO !== 'off';
     if (embedded) await connection.migrate();
-    if (demo) await seedDemo(connection.db);
+    if (demo) {
+      await seedDemo(connection.db);
+      await seedDndDemo(connection.db);
+    }
 
     // The platform administrator is named in the server's own settings, never in code and never by a request.
     const adminEmail = process.env.WORLDROOT_ADMIN_EMAIL;
@@ -37,7 +50,10 @@ export function database(): Promise<DbConnection> {
         } else {
           const done = [admin.created && 'account created', admin.promoted && 'made an administrator', admin.passwordSet && 'password set from settings'].filter(Boolean);
           console.log(`[worldroot] Administrator ${adminEmail}: ${done.length > 0 ? done.join(', ') : 'already set up'}.`);
-          if (demo) await grantDemoAccess(connection.db, admin.userId);
+          if (demo) {
+            await grantDemoAccess(connection.db, admin.userId);
+            await grantDemoAccess(connection.db, admin.userId, DND_DEMO_COMMUNITY_SLUG);
+          }
         }
       } catch (error) {
         // A problem here must not stop the site from starting.

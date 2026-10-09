@@ -1,11 +1,11 @@
-import { listListedCommunities, listMyCommunities, type Community } from '@worldroot/core';
+import { listMyCommunities, type Community } from '@worldroot/core';
 import { buttonClass, EmptyState } from '@worldroot/ui';
 import { Users } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { PageHeader } from '@/features/shell/page-header';
-import { cardClass, SectionHeading } from '@/features/shell/prose';
+import { cardClass } from '@/features/shell/prose';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
@@ -31,9 +31,7 @@ function CommunityCard({ community }: { community: Community }) {
 export default async function CommunitiesPage() {
   const viewer = await requireViewer();
   const { db } = await database();
-  const [mine, listed] = await Promise.all([listMyCommunities(db, viewer.actor.userId), listListedCommunities(db)]);
-  const mineIds = new Set(mine.map((community) => community.id));
-  const others = listed.filter((community) => !mineIds.has(community.id));
+  const mine = await listMyCommunities(db, viewer.actor.userId);
 
   return (
     <>
@@ -54,23 +52,17 @@ export default async function CommunitiesPage() {
         </ul>
       ) : (
         <EmptyState icon={<Users className="size-8" aria-hidden="true" />} title="No communities yet">
-          {others.length > 0 ? 'Join one of the open communities below.' : 'Start one of your own, or join one when you are invited.'}
+          Start one of your own, find one in Discover, or join one when you are invited.
         </EmptyState>
       )}
 
-      {/* Stands in for Discover until it is built. */}
-      {others.length > 0 ? (
-        <>
-          <SectionHeading>Open to join</SectionHeading>
-          <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {others.map((community) => (
-              <li key={community.id}>
-                <CommunityCard community={community} />
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : null}
+      <p className="mt-10 text-sm text-ink-muted">
+        Looking for somewhere new?{' '}
+        <Link href="/discover" className="font-medium text-accent-text underline">
+          Find open communities in Discover
+        </Link>
+        .
+      </p>
     </>
   );
 }

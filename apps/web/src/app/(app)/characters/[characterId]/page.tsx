@@ -6,7 +6,8 @@ import type { CSSProperties } from 'react';
 import { cache } from 'react';
 import { CharacterAvatar } from '@/features/characters/character-card';
 import { ReportButton } from '@/features/moderation/report-client';
-import { Breadcrumbs, Prose, SectionHeading } from '@/features/shell/prose';
+import { Breadcrumbs, SectionHeading } from '@/features/shell/prose';
+import { RichText } from '@/features/shell/rich-text';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
@@ -37,15 +38,15 @@ export default async function CharacterPage({ params }: Props) {
   ].filter((fact): fact is { label: string; value: string } => Boolean(fact.value));
 
   const sections = [
-    { title: 'Appearance', text: character.appearance },
-    { title: 'Personality', text: character.personality },
-    { title: 'Biography', text: character.biography },
-    { title: 'Skills and abilities', text: character.skills },
-    { title: 'Likes', text: character.likes },
-    { title: 'Dislikes', text: character.dislikes },
-    { title: 'Voice', text: character.voice },
-    { title: 'Content and boundaries', text: character.boundaries },
-  ].filter((section): section is { title: string; text: string } => Boolean(section.text));
+    { title: 'Appearance', field: 'appearance', text: character.appearance },
+    { title: 'Personality', field: 'personality', text: character.personality },
+    { title: 'Biography', field: 'biography', text: character.biography },
+    { title: 'Skills and abilities', field: 'skills', text: character.skills },
+    { title: 'Likes', field: 'likes', text: character.likes },
+    { title: 'Dislikes', field: 'dislikes', text: character.dislikes },
+    { title: 'Voice', field: 'voice', text: character.voice },
+    { title: 'Content and boundaries', field: 'boundaries', text: character.boundaries },
+  ].filter((section): section is { title: string; field: string; text: string } => Boolean(section.text));
 
   return (
     <div
@@ -65,7 +66,7 @@ export default async function CharacterPage({ params }: Props) {
       />
 
       <header className="flex flex-wrap items-start gap-5">
-        <CharacterAvatar name={character.name} className="size-20 text-3xl" />
+        <CharacterAvatar name={character.name} mediaId={character.portraitMediaId} className="size-20 text-3xl" />
         <div className="min-w-0 flex-1">
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{character.name}</h1>
           {character.tagline ? <p className="mt-2 font-serif text-lg italic text-ink-muted">{character.tagline}</p> : null}
@@ -113,7 +114,7 @@ export default async function CharacterPage({ params }: Props) {
             sections.map((section) => (
               <section key={section.title}>
                 <SectionHeading>{section.title}</SectionHeading>
-                <Prose text={section.text} />
+                <RichText docs={character.docs} field={section.field} text={section.text} />
               </section>
             ))
           ) : (

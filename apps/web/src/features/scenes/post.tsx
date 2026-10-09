@@ -1,5 +1,6 @@
 import type { PostPage } from '@worldroot/core';
 import type { RichDoc } from '@worldroot/editor';
+import { Dices } from 'lucide-react';
 import Link from 'next/link';
 import { CharacterAvatar } from '@/features/characters/character-card';
 import { Badges } from '@/features/identity/badges';
@@ -28,6 +29,21 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
     return (
       <article id={`post-${post.seq}`} className="scroll-mt-24 rounded-xl border border-dashed border-line-strong px-4 py-3 text-sm text-ink-muted">
         {removedLine(post, 'post')}
+      </article>
+    );
+  }
+
+  if (post.kind === 'system') {
+    // A note from WorldRoot itself, such as a dice roll. It has no author controls: nobody can edit it.
+    return (
+      <article id={`post-${post.seq}`} className="flex scroll-mt-24 items-start gap-3 rounded-xl bg-surface-sunken px-4 py-3 text-sm text-ink">
+        <Dices className="mt-0.5 size-5 shrink-0 text-ink-muted" aria-hidden="true" />
+        <div className="min-w-0">
+          <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
+          <p className="mt-1 text-xs text-ink-muted">
+            {post.authorHandle ? `Rolled by @${post.authorHandle}` : 'Rolled by a former member'} · <time dateTime={post.createdAt.toISOString()}>{when(post.createdAt)}</time>
+          </p>
+        </div>
       </article>
     );
   }

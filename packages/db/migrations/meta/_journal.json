@@ -92,6 +92,34 @@
       "when": 1791493654886,
       "tag": "0012_zippy_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791506695032,
+      "tag": "0013_gifted_sentinels",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791507417846,
+      "tag": "0014_chunky_sleeper",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1791507837770,
+      "tag": "0015_fixed_crystal",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791508431891,
+      "tag": "0016_special_cyclops",
+      "breakpoints": true
     }
   ]
 }

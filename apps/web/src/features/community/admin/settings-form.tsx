@@ -14,6 +14,7 @@ interface SettingsValues {
   accentHue: number;
   listed: boolean;
   requireCharacterApproval: boolean;
+  dndMode: boolean;
 }
 
 interface SettingsFormProps {
@@ -42,7 +43,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
       accentHue: hue,
       listed: form.get('listed') === 'on',
       ...(community
-        ? { rules: form.get('rules'), requireCharacterApproval: form.get('requireCharacterApproval') === 'on' }
+        ? { rules: form.get('rules'), requireCharacterApproval: form.get('requireCharacterApproval') === 'on', dndMode: form.get('dndMode') === 'on' }
         : { slug: form.get('slug') }),
     };
     setPending(true);
@@ -149,6 +150,21 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
           </label>
         ) : null}
       </fieldset>
+
+      {community ? (
+        <fieldset className="flex flex-col">
+          <legend className="mb-1 text-sm font-medium text-ink">Play style</legend>
+          <label className={checkRow}>
+            <input type="checkbox" name="dndMode" defaultChecked={community.dndMode} className="mt-0.5 size-5 shrink-0 accent-accent" />
+            <span>
+              DnD mode
+              <span className="block text-ink-muted">
+                Writers can roll dice in this community’s scenes. Each roll is made by WorldRoot and recorded in the story, where it cannot be edited.
+              </span>
+            </span>
+          </label>
+        </fieldset>
+      ) : null}
 
       {saved ? (
         <p role="status" className="rounded-lg bg-accent-soft px-3 py-2 text-sm text-accent-text">

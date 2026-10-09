@@ -10,6 +10,7 @@ import { authClient } from '@/lib/auth-client';
 import { NAV_ITEMS } from './nav-items';
 import { ThemeToggle } from './theme-toggle';
 import { useCloseOnNavigate } from './use-close-on-navigate';
+import { Picture } from './picture';
 
 interface UserMenuProps {
   profile: Profile;
@@ -25,7 +26,6 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
   const router = useRouter();
   const ref = useCloseOnNavigate();
   const rail = placement === 'rail';
-  const initial = profile.displayName.charAt(0).toUpperCase();
 
   const signOut = async () => {
     await authClient.signOut();
@@ -42,9 +42,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
           rail && 'min-h-11 justify-center p-1 hover:bg-surface-sunken wide:justify-start wide:px-2',
         )}
       >
-        <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent-text">
-          {initial}
-        </span>
+        <Picture mediaId={profile.avatarId} name={profile.displayName} className="size-9 text-sm" />
         <span className={rail ? 'hidden min-w-0 wide:block' : 'sr-only'}>
           <span className="block truncate text-sm font-medium text-ink">{profile.displayName}</span>
           <span className="block truncate text-xs text-ink-muted">@{profile.handle}</span>

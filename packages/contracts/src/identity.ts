@@ -26,6 +26,8 @@ export const profileSchema = z.object({
   displayName: z.string(),
   pronouns: z.string().nullable(),
   bio: z.string().nullable(),
+  /** The id of their profile picture, served from /api/v1/media. */
+  avatarId: z.string().nullable(),
   /** WorldRoot staff. Kept beside `badges` because code asks this question directly. */
   isStaff: z.boolean(),
   /** Platform badges shown beside their name everywhere, most significant first. */

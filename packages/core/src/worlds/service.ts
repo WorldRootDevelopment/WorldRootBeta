@@ -4,6 +4,7 @@ import { randomBytes } from 'node:crypto';
 import { and, asc, eq, max } from 'drizzle-orm';
 import { assertSlug, communityGrants } from '../community/service';
 import { recordAudit } from '../platform/audit';
+import { takeRichFields, WORLD_RICH_FIELDS } from '../platform/rich-fields';
 import { authorize, authorizeOwner, can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
@@ -33,7 +34,8 @@ async function freeSlug(db: Db, owner: WorldOwner, name: string): Promise<string
 
 /** Creates a world in the actor's own library. Only the name is required. */
 export async function createWorld(db: Db, actor: Actor, input: CreateWorldInput): Promise<World> {
-  const values = parseInput(worldInputSchema, input);
+  const rich = takeRichFields(input, WORLD_RICH_FIELDS);
+  const values = { ...parseInput(worldInputSchema, rich.input), docs: rich.docs };
   if (input.slug) {
     assertSlug(input.slug);
     const [taken] = await db
@@ -66,7 +68,8 @@ export async function getLibraryWorld(db: Db, actor: Actor, worldId: string): Pr
 
 /** Updates a world's details. A library world by its owner, a community world by its managers. */
 export async function updateWorld(db: Db, actor: Actor, worldId: string, input: WorldInput): Promise<World> {
-  const values = parseInput(worldInputSchema, input);
+  const rich = takeRichFields(input, WORLD_RICH_FIELDS);
+  const values = { ...parseInput(worldInputSchema, rich.input), docs: rich.docs };
   const world = await requireWorld(db, worldId);
   if (world.ownerUserId) authorizeOwner(actor, world.ownerUserId);
   else await authorize(actor, 'world.manage', { communityId: world.ownerCommunityId!, worldId }, communityGrants(db));
@@ -224,6 +227,7 @@ async function cloneWorld(tx: Db, source: World, owner: WorldOwner): Promise<{ c
       name: source.name,
       summary: source.summary,
       description: source.description,
+      docs: source.docs,
     })
     .returning();
 

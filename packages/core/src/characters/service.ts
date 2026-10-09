@@ -4,6 +4,7 @@ import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
 import { communityGrants, isMember, listCharacterFields } from '../community/service';
 import { membersWithPermission, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
+import { CHARACTER_RICH_FIELDS, takeRichFields } from '../platform/rich-fields';
 import { authorize, authorizeOwner, can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
@@ -13,16 +14,17 @@ export type Character = typeof characters.$inferSelect;
 
 /** Creates a character in the actor's own library. Only the name is required. */
 export async function createCharacter(db: Db, actor: Actor, input: CharacterInput): Promise<Character> {
-  const values = parseInput(characterInputSchema, input);
+  const rich = takeRichFields(input, CHARACTER_RICH_FIELDS);
+  const values = parseInput(characterInputSchema, rich.input);
   const [character] = await db
     .insert(characters)
-    .values({ ...values, playerUserId: actor.userId })
+    .values({ ...values, docs: rich.docs, playerUserId: actor.userId })
     .returning();
   return character!;
 }
 
 /** A character is edited by its player, or in a community by staff who manage characters. */
-async function canEditCharacter(db: Db, actor: Actor, character: Character): Promise<boolean> {
+export async function canEditCharacter(db: Db, actor: Actor, character: Character): Promise<boolean> {
   if (character.playerUserId === actor.userId || actor.platformRole === 'staff') return true;
   if (!character.communityId) return false;
   return can(actor, 'character.manage', { communityId: character.communityId }, communityGrants(db));
@@ -33,7 +35,8 @@ async function canEditCharacter(db: Db, actor: Actor, character: Character): Pro
  * copies, and editing a copy never changes the original.
  */
 export async function updateCharacter(db: Db, actor: Actor, characterId: string, input: CharacterInput): Promise<Character> {
-  const values = parseInput(characterInputSchema, input);
+  const rich = takeRichFields(input, CHARACTER_RICH_FIELDS);
+  const values = { ...parseInput(characterInputSchema, rich.input), docs: rich.docs };
   const [character] = await db.select().from(characters).where(eq(characters.id, characterId));
   if (!character) throw new DomainError('not_found', 'That character does not exist.');
   if (!(await canEditCharacter(db, actor, character))) throw new DomainError('forbidden', 'You cannot edit this character.');

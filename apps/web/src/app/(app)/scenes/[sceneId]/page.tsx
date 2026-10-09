@@ -7,6 +7,7 @@ import { cache } from 'react';
 import { Badges } from '@/features/identity/badges';
 import { RatingBadge, StatusBadge } from '@/features/scenes/badges';
 import { Composer } from '@/features/scenes/composer';
+import { DiceRoller } from '@/features/scenes/dice-roller';
 import { OocMessage, StoryPost } from '@/features/scenes/post';
 import { InviteForm, JoinForm, OocForm, SceneLive, StatusControl } from '@/features/scenes/scene-actions';
 import { Breadcrumbs } from '@/features/shell/prose';
@@ -100,7 +101,10 @@ export default async function ScenePage({ params, searchParams }: Props) {
           ) : (
             <div className="mt-12 border-t border-line pt-8">
               {me.canPost ? (
-                <Composer sceneId={scene.id} characters={me.characters} draft={me.draft} />
+                <>
+                  <Composer sceneId={scene.id} characters={me.characters} draft={me.draft} />
+                  {view.dice ? <DiceRoller sceneId={scene.id} characters={me.characters} /> : null}
+                </>
               ) : closed ? (
                 <p className="text-ink-muted">
                   This scene is {scene.status === 'completed' ? 'complete' : 'archived'}. It stays here to be read.

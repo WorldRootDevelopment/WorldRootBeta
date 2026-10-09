@@ -3,13 +3,16 @@
 import type { Location, World } from '@worldroot/core';
 import { TextArea, TextField } from '@worldroot/ui';
 import { FormFooter } from '@/features/shell/form-footer';
+import { RichField, useRichFields } from '@/features/shell/rich-field';
 import { useApiForm } from '@/lib/use-api-form';
 
 /** Create or edit a library world. Only the name is required. */
 export function WorldForm({ world }: { world?: World }) {
+  const rich = useRichFields(['description'], world?.docs, () => world?.description);
   const { onSubmit, fields, error, pending } = useApiForm<{ world: { id: string } }>({
     method: world ? 'PATCH' : 'POST',
     url: world ? `/api/v1/worlds/${world.id}` : '/api/v1/worlds',
+    extra: rich.values,
     next: (body) => `/worlds/${body.world.id}`,
   });
 
@@ -24,12 +27,12 @@ export function WorldForm({ world }: { world?: World }) {
         maxLength={240}
         hint="One line. Shown on the world's card."
       />
-      <TextArea
+      <RichField
         label="Description"
-        name="description"
-        defaultValue={world?.description ?? ''}
+        initial={rich.values.description!}
+        onChange={(doc) => rich.set('description', doc)}
         error={fields.description}
-        rows={10}
+        minHeight="16rem"
         hint="The setting, its tone, what a writer should know before stepping in. Any genre."
       />
       <FormFooter

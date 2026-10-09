@@ -1,5 +1,6 @@
-import { boolean, index, pgEnum, pgTable, text, uuid } from 'drizzle-orm/pg-core';
+import { boolean, index, pgEnum, pgTable, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz, updatedAt } from './columns';
+import { media } from './media';
 
 export const platformRole = pgEnum('platform_role', ['user', 'staff']);
 
@@ -89,6 +90,8 @@ export const profiles = pgTable('profiles', {
   // When set, this person is never shown as online to anyone else.
   hideOnline: boolean('hide_online').notNull().default(false),
   // When the handle was last changed, for the cooldown between changes.
+  // The profile picture, if one has been uploaded.
+  avatarMediaId: uuid('avatar_media_id').references((): AnyPgColumn => media.id, { onDelete: 'set null' }),
   handleChangedAt: timestamptz('handle_changed_at'),
   createdAt: createdAt(),
   updatedAt: updatedAt(),

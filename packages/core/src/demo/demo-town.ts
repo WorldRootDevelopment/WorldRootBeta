@@ -1,6 +1,6 @@
 import type { CharacterInput } from '@worldroot/contracts';
 import { characters, communities, roleAssignments, roles, users, type Db } from '@worldroot/db';
-import { and, eq, inArray, ne } from 'drizzle-orm';
+import { and, eq, inArray, notInArray } from 'drizzle-orm';
 import { addCharacterToCommunity, createCharacter } from '../characters/service';
 import { addMember } from '../community/access';
 import { addCharacterField, createCommunity, createRole, listCharacterFields } from '../community/service';
@@ -36,6 +36,12 @@ const OLD_DEMO_EMAIL = 'demo@worldroot.test';
 const DEMO_ACCOUNT_EMAILS = [DEMO_ACCOUNT.email, OLD_DEMO_EMAIL];
 
 export const NARRATOR_NAME = 'Narrator';
+/** The cast of the DnD demo community, seeded in dnd-demo.ts. */
+export const DUNGEON_MASTER_NAME = 'Dungeon Master';
+export const SAMPLE_ADVENTURER_NAME = 'Brannoch Hale';
+
+/** The characters the demo account is meant to have. Anything else it plays is left over from an earlier demo. */
+const DEMO_CAST = [NARRATOR_NAME, DUNGEON_MASTER_NAME, SAMPLE_ADVENTURER_NAME];
 
 const NARRATOR: CharacterInput = {
   name: NARRATOR_NAME,
@@ -44,7 +50,7 @@ const NARRATOR: CharacterInput = {
   biography: 'Not a person in the town, but the one telling you about it. Use a character like this to run a scene for other writers.',
 };
 
-type LocationSeed = Omit<CreateLocationInput, 'parentId' | 'position'> & { children?: LocationSeed[] };
+export type LocationSeed = Omit<CreateLocationInput, 'parentId' | 'position'> & { children?: LocationSeed[] };
 
 const LOCATIONS: LocationSeed[] = [
   {
@@ -80,7 +86,7 @@ const LOCATIONS: LocationSeed[] = [
   { name: 'Riverside', summary: 'A quiet walk along the water, out past the last houses.' },
 ];
 
-async function ensureDemoActor(db: Db): Promise<Actor> {
+export async function ensureDemoActor(db: Db): Promise<Actor> {
   let [user] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
   if (!user) {
     const auth = createAuth({
@@ -102,7 +108,7 @@ async function ensureDemoActor(db: Db): Promise<Actor> {
 
 /**
  * Removes the characters earlier demos created: everything a demo account
- * plays except the Narrator. Characters belonging to real people are never
+ * plays except the current demo cast. Characters belonging to real people are never
  * touched. Posts those characters wrote keep the name they were written under.
  */
 async function removeOldDemoCharacters(db: Db): Promise<void> {
@@ -114,7 +120,7 @@ async function removeOldDemoCharacters(db: Db): Promise<void> {
         characters.playerUserId,
         accounts.map((account) => account.id),
       ),
-      ne(characters.name, NARRATOR_NAME),
+      notInArray(characters.name, DEMO_CAST),
     ),
   );
 }
@@ -159,7 +165,7 @@ async function ensureNarrator(db: Db, actor: Actor, communityId: string): Promis
   });
 }
 
-async function addLocations(db: Db, actor: Actor, worldId: string, seeds: LocationSeed[], parentId: string | null = null) {
+export async function addLocations(db: Db, actor: Actor, worldId: string, seeds: LocationSeed[], parentId: string | null = null) {
   for (const [position, { children, ...seed }] of seeds.entries()) {
     const location = await createLocation(db, actor, worldId, { ...seed, parentId, position });
     if (children) await addLocations(db, actor, worldId, children, location.id);
@@ -167,12 +173,12 @@ async function addLocations(db: Db, actor: Actor, worldId: string, seeds: Locati
 }
 
 /**
- * Makes someone a member and an owner of the demo community, so it shows among
+ * Makes someone a member and an owner of a demo community, so it shows among
  * their communities and they can change anything in it. Does nothing if the
  * demo is not there, and nothing new if they already own it.
  */
-export async function grantDemoAccess(db: Db, userId: string): Promise<void> {
-  const [demo] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, DEMO_COMMUNITY_SLUG));
+export async function grantDemoAccess(db: Db, userId: string, slug: string = DEMO_COMMUNITY_SLUG): Promise<void> {
+  const [demo] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, slug));
   if (!demo) return;
   await db.transaction(async (tx) => {
     await addMember(tx, demo.id, userId);

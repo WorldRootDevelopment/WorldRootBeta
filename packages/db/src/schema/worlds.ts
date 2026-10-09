@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { check, index, integer, pgTable, text, unique, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
+import { check, index, integer, jsonb, pgTable, text, unique, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { communities } from './community';
 import { users } from './identity';
@@ -22,6 +22,8 @@ export const worlds = pgTable(
     name: text('name').notNull(),
     summary: text('summary'),
     description: text('description'),
+    // The rich text document for the description, when it was written in the editor. `description` holds its plain text.
+    docs: jsonb('docs').$type<Record<string, unknown>>().notNull().default({}),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },

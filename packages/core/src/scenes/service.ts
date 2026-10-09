@@ -297,14 +297,32 @@ export async function inviteToScene(db: Db, actor: Actor, sceneId: string, handl
 }
 
 /** Adds an in-character or out-of-character post. In-character with no character is narration. */
-export async function createPost(db: Db, actor: Actor, sceneId: string, input: PostInput): Promise<ScenePost> {
-  const values = parseInput(postInputSchema, input);
+/** The scene, for a participant about to add to it. Refuses anyone who has not joined, and any scene in an archived community. */
+async function requireJoinedScene(db: Db, actor: Actor, sceneId: string): Promise<Scene> {
   const scene = await requireVisibleScene(db, actor, sceneId);
   if (!(await isParticipant(db, actor.userId, sceneId))) throw new DomainError('forbidden', 'Join the scene before posting.');
   if (scene.communityId) {
     const [home] = await db.select({ archivedAt: communities.archivedAt }).from(communities).where(eq(communities.id, scene.communityId));
     if (home?.archivedAt) throw new DomainError('conflict', 'This community is archived, so its scenes are closed.');
   }
+  return scene;
+}
+
+/** The scene, for a participant about to add to its story. Also refuses a scene that is closed to new posts. */
+export async function getSceneForPosting(db: Db, actor: Actor, sceneId: string): Promise<Scene> {
+  const scene = await requireJoinedScene(db, actor, sceneId);
+  if (!OPEN.includes(scene.status)) throw new DomainError('conflict', 'This scene is closed to new posts.');
+  return scene;
+}
+
+/** Adds a note written by WorldRoot itself, such as a dice roll, to a scene's story. Call inside a transaction. */
+export function insertSystemPost(tx: Db, sceneId: string, post: Omit<NewPost, 'kind'>): Promise<ScenePost> {
+  return insertPost(tx, sceneId, { ...post, kind: 'system' });
+}
+
+export async function createPost(db: Db, actor: Actor, sceneId: string, input: PostInput): Promise<ScenePost> {
+  const values = parseInput(postInputSchema, input);
+  const scene = await requireJoinedScene(db, actor, sceneId);
 
   if (values.kind === 'ooc') {
     if (scene.status === 'archived') throw new DomainError('conflict', 'This scene is archived.');
@@ -518,6 +536,8 @@ export interface SceneView {
   } | null;
   participants: Array<{ userId: string; displayName: string; handle: string; badges: BadgeKey[] }>;
   cast: Array<{ id: string; name: string; playerUserId: string | null }>;
+  /** Dice can be rolled here: the scene's community has DnD mode on. */
+  dice: boolean;
   viewer: {
     isParticipant: boolean;
     canManage: boolean;
@@ -536,8 +556,10 @@ export async function getSceneView(db: Db, actor: Actor, sceneId: string): Promi
   const scene = await requireVisibleScene(db, actor, sceneId);
 
   let place: SceneView['place'] = null;
+  let dice = false;
   if (scene.communityId) {
     const [community] = await db.select().from(communities).where(eq(communities.id, scene.communityId));
+    dice = Boolean(community?.dndMode);
     const [spot] = scene.locationId
       ? await db
           .select({ locationId: locations.id, locationName: locations.name, worldSlug: worlds.slug, worldName: worlds.name })
@@ -599,6 +621,7 @@ export async function getSceneView(db: Db, actor: Actor, sceneId: string): Promi
     place,
     participants: people.map(({ userId, displayName, handle, badges }) => ({ userId, displayName, handle, badges: toBadges(badges) })),
     cast,
+    dice,
     viewer: {
       isParticipant: Boolean(me),
       canManage: await canManageScene(db, actor, scene),

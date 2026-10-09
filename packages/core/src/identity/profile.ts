@@ -13,6 +13,7 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   displayName: row.displayName,
   pronouns: row.pronouns,
   bio: row.bio,
+  avatarId: row.avatarMediaId,
   isStaff: toBadges(held).includes('staff'),
   badges: toBadges(held),
 });

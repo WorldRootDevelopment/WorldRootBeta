@@ -2,6 +2,7 @@ import { getCharacterView } from '@worldroot/core';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CharacterForm } from '@/features/characters/character-form';
+import { ImageUpload } from '@/features/media/image-upload';
 import { PageHeader } from '@/features/shell/page-header';
 import { Breadcrumbs } from '@/features/shell/prose';
 import { load } from '@/lib/load';
@@ -28,6 +29,9 @@ export default async function EditCharacterPage({ params }: { params: Promise<{ 
             : 'This is the original in your library. Copies already in communities are not changed.'
         }
       />
+      <div className="mb-10 max-w-2xl">
+        <ImageUpload url={`/api/v1/characters/${character.id}/portrait`} mediaId={character.portraitMediaId} name={character.name} label="Portrait" />
+      </div>
       <CharacterForm character={character} />
     </>
   );

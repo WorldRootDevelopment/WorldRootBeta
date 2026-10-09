@@ -3,16 +3,21 @@
 import type { Character } from '@worldroot/core';
 import { TextArea, TextField } from '@worldroot/ui';
 import { FormFooter } from '@/features/shell/form-footer';
+import { RichField, useRichFields } from '@/features/shell/rich-field';
 import { useApiForm } from '@/lib/use-api-form';
+
+const RICH_FIELDS = ['appearance', 'personality', 'biography'] as const;
 
 const groupClass = 'flex flex-col gap-5 border-t border-line pt-8';
 const legendClass = 'font-serif text-xl font-semibold text-ink';
 
 /** Create or edit a character. Only the name is required; the rest can be filled in over time. */
 export function CharacterForm({ character }: { character?: Character }) {
+  const rich = useRichFields(RICH_FIELDS, character?.docs, (field) => character?.[field as keyof Character] as string | null | undefined);
   const { onSubmit, fields, error, pending } = useApiForm<{ character: { id: string } }>({
     method: character ? 'PATCH' : 'POST',
     url: character ? `/api/v1/characters/${character.id}` : '/api/v1/characters',
+    extra: rich.values,
     next: (body) => `/characters/${body.character.id}`,
   });
   const value = (key: keyof Character) => (character?.[key] as string | null | undefined) ?? '';
@@ -43,9 +48,16 @@ export function CharacterForm({ character }: { character?: Character }) {
 
       <fieldset className={groupClass}>
         <legend className={legendClass}>Who they are</legend>
-        <TextArea label="Appearance" name="appearance" defaultValue={value('appearance')} error={fields.appearance} />
-        <TextArea label="Personality" name="personality" defaultValue={value('personality')} error={fields.personality} />
-        <TextArea label="Biography" name="biography" defaultValue={value('biography')} error={fields.biography} rows={8} />
+        <RichField label="Appearance" initial={rich.values.appearance!} onChange={(doc) => rich.set('appearance', doc)} error={fields.appearance} />
+        <RichField label="Personality" initial={rich.values.personality!} onChange={(doc) => rich.set('personality', doc)} error={fields.personality} />
+        <RichField
+          label="Biography"
+          initial={rich.values.biography!}
+          onChange={(doc) => rich.set('biography', doc)}
+          error={fields.biography}
+          minHeight="14rem"
+          hint="Bold, italics, headings, quotes and links are available in these three."
+        />
       </fieldset>
 
       <fieldset className={groupClass}>

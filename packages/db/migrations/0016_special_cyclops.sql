@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ADD COLUMN "dnd_mode" boolean DEFAULT false NOT NULL;

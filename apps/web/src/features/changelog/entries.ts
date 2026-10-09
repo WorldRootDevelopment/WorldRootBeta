@@ -14,6 +14,58 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-demo-dungeon',
+    date: '2026-10-08',
+    title: 'Demo Dungeon: a D&D demo community',
+    items: [
+      'A second demo community, Demo Dungeon, has DnD mode switched on.',
+      'It comes with a small adventuring region, a Dungeon Master, a sample fighter, and character fields for class, level and background.',
+      'Read “The Sealed Door” to see dice rolls in a story, then add a character and answer the notice at the inn.',
+    ],
+  },
+  {
+    id: '2026-10-08-dnd-mode',
+    date: '2026-10-08',
+    title: 'DnD mode: dice in scenes',
+    items: [
+      'A community’s admins can switch on DnD mode in Settings.',
+      'In that community’s scenes, writers can roll dice as themselves or as a character: d20, 2d6, 3d8+2 and so on, with a note saying what the roll is for.',
+      'WorldRoot makes the roll and records it in the story. A roll cannot be edited.',
+    ],
+  },
+  {
+    id: '2026-10-08-pictures',
+    date: '2026-10-08',
+    title: 'Profile pictures and character portraits',
+    items: [
+      'Upload a profile picture in Settings, and a portrait for each character from its edit page.',
+      'PNG, JPEG, GIF and WebP, up to 2 MB.',
+      'Location, camera details and other hidden information are removed from every image before it is stored.',
+      'A character’s portrait goes with it when you add it to a community.',
+    ],
+  },
+  {
+    id: '2026-10-08-rich-descriptions',
+    date: '2026-10-08',
+    title: 'Formatting for characters and worlds',
+    items: [
+      'A character’s appearance, personality and biography, and a world’s description, now use the same editor as scene posts: bold, italics, headings, quotes and links.',
+      'What you had already written is kept exactly as it was, and becomes editable with formatting the next time you open it.',
+    ],
+  },
+  {
+    id: '2026-10-08-discover',
+    date: '2026-10-08',
+    title: 'Discover and Looking for RP',
+    items: [
+      'Discover is open. Browse and search the communities that are open to join, with how many members each has.',
+      'Looking for RP is a board where you say what you would like to write: genres, one partner or a group, pace and content rating.',
+      'Message a writer straight from their listing. If you share no community, it reaches them as a message request.',
+      'A listing stays up for 30 days or until you take it down, and you can have three open at once.',
+      'You never see listings from someone you have blocked, and they never see yours.',
+    ],
+  },
+  {
     id: '2026-10-08-notifications',
     date: '2026-10-08',
     title: 'Notifications',

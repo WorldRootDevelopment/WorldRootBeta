@@ -34,6 +34,7 @@ export default async function GeneralSettingsPage({ params }: { params: Promise<
             accentHue: community.accentHue,
             listed: community.listed,
             requireCharacterApproval: community.requireCharacterApproval,
+            dndMode: community.dndMode,
           }}
         />
       ) : null}

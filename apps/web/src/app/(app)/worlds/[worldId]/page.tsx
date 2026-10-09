@@ -1,7 +1,8 @@
 import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Breadcrumbs, Prose } from '@/features/shell/prose';
+import { Breadcrumbs } from '@/features/shell/prose';
+import { RichText } from '@/features/shell/rich-text';
 import { loadLibraryWorld } from '@/features/worlds/library-world';
 import { LocationTree } from '@/features/worlds/location-tree';
 import { WorldSharingPanel } from '@/features/worlds/world-sharing';
@@ -34,7 +35,7 @@ export default async function LibraryWorldPage({ params }: Props) {
         </Link>
       </div>
 
-      {world.description ? <Prose text={world.description} className="mt-8" /> : null}
+      {world.description ? <RichText docs={world.docs} field="description" text={world.description} className="mt-8" /> : null}
 
       <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
         <h2 className="font-serif text-xl font-semibold text-ink">Locations</h2>

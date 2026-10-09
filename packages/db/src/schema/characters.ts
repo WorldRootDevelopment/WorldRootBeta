@@ -2,6 +2,7 @@ import { index, jsonb, pgEnum, pgTable, primaryKey, text, uuid, type AnyPgColumn
 import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { communities } from './community';
 import { users } from './identity';
+import { media } from './media';
 import { worlds } from './worlds';
 
 export const characterApprovalStatus = pgEnum('character_approval_status', ['pending', 'approved', 'returned', 'rejected']);
@@ -29,6 +30,7 @@ export const characters = pgTable(
 
     name: text('name').notNull(),
     tagline: text('tagline'),
+    portraitMediaId: uuid('portrait_media_id').references(() => media.id, { onDelete: 'set null' }),
     pronouns: text('pronouns'),
     age: text('age'),
     gender: text('gender'),
@@ -41,6 +43,8 @@ export const characters = pgTable(
     dislikes: text('dislikes'),
     voice: text('voice'),
     boundaries: text('boundaries'),
+    // Rich text documents for the long fields written in the editor, keyed by column name. The text columns hold their plain text.
+    docs: jsonb('docs').$type<Record<string, unknown>>().notNull().default({}),
     customValues: jsonb('custom_values').$type<CharacterCustomValues>().notNull().default({}),
 
     createdAt: createdAt(),

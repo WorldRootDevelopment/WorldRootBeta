@@ -1,7 +1,8 @@
 import { getCommunityWorld, listLocations } from '@worldroot/core';
 import type { Metadata } from 'next';
 import { loadCommunity } from '@/features/community/community-view';
-import { Breadcrumbs, Prose, SectionHeading } from '@/features/shell/prose';
+import { Breadcrumbs, SectionHeading } from '@/features/shell/prose';
+import { RichText } from '@/features/shell/rich-text';
 import { LocationTree } from '@/features/worlds/location-tree';
 import { load } from '@/lib/load';
 
@@ -36,7 +37,7 @@ export default async function WorldPage(props: Props) {
         </p>
       ) : null}
 
-      {world.description ? <Prose text={world.description} className="mt-8" /> : null}
+      {world.description ? <RichText docs={world.docs} field="description" text={world.description} className="mt-8" /> : null}
 
       <SectionHeading>Locations</SectionHeading>
       {locations.length > 0 ? (

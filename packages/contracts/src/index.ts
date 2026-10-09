@@ -8,3 +8,4 @@ export * from './scenes';
 export * from './community';
 export * from './reports';
 export * from './notifications';
+export * from './lfrp';
