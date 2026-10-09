@@ -1,6 +1,7 @@
+import { assertRoomForCharacter } from '../identity/plan';
 import { checkAchievements } from '../identity/achievements';
 import { characterInputSchema, type CharacterInput } from '@worldroot/contracts';
-import { characters, characterWorldLinks, communities, worlds, type CharacterCustomValues, type Db } from '@worldroot/db';
+import { characterImages, characters, characterWorldLinks, communities, worlds, type CharacterCustomValues, type Db } from '@worldroot/db';
 import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
 import { communityGrants, isMember, listCharacterFields } from '../community/service';
 import { membersWithPermission, notifyMany } from '../notifications/service';
@@ -17,6 +18,7 @@ export type Character = typeof characters.$inferSelect;
 export async function createCharacter(db: Db, actor: Actor, input: CharacterInput): Promise<Character> {
   const rich = takeRichFields(input, CHARACTER_RICH_FIELDS);
   const values = parseInput(characterInputSchema, rich.input);
+  await assertRoomForCharacter(db, actor);
   const [character] = await db
     .insert(characters)
     .values({ ...values, docs: rich.docs, playerUserId: actor.userId })
@@ -139,6 +141,11 @@ export async function addCharacterToCommunity(
         customValues,
       })
       .returning();
+    // The copy shows the same pictures as the original, pointing at the same images.
+    const gallery = await tx.select().from(characterImages).where(eq(characterImages.characterId, source.id));
+    if (gallery.length > 0) {
+      await tx.insert(characterImages).values(gallery.map(({ mediaId, position }) => ({ characterId: copy!.id, mediaId, position })));
+    }
 
     if (worldIds.length > 0) {
       await tx.insert(characterWorldLinks).values(worldIds.map((worldId) => ({ characterId: copy!.id, worldId })));

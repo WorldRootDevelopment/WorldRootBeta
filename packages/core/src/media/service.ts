@@ -1,7 +1,9 @@
 import { checkAchievements } from '../identity/achievements';
-import { characters, media, profiles, scenePostImages, scenePosts, type Db } from '@worldroot/db';
-import { count, eq, or } from 'drizzle-orm';
+import { FREE_LIMITS, PREMIUM, PREMIUM_LIMITS } from '@worldroot/contracts';
+import { characterImages, characters, media, profiles, scenePostImages, scenePosts, type Db } from '@worldroot/db';
+import { and, asc, count, eq, max, or } from 'drizzle-orm';
 import { canEditCharacter } from '../characters/service';
+import { characterImageLimit } from '../identity/plan';
 import { recordAudit } from '../platform/audit';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -32,12 +34,13 @@ async function store(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8A
 /** Removes an image once no profile, character or post points at it. A community's copy of a character shares its original's portrait. */
 async function release(db: Db, storage: MediaStorage, mediaId: string | null): Promise<void> {
   if (!mediaId) return;
-  const [[asAvatar], [asPortrait], [inPost]] = await Promise.all([
+  const [[asAvatar], [asPortrait], [inPost], [inGallery]] = await Promise.all([
     db.select({ value: count() }).from(profiles).where(or(eq(profiles.avatarMediaId, mediaId), eq(profiles.bannerMediaId, mediaId))),
     db.select({ value: count() }).from(characters).where(eq(characters.portraitMediaId, mediaId)),
     db.select({ value: count() }).from(scenePostImages).where(eq(scenePostImages.mediaId, mediaId)),
+    db.select({ value: count() }).from(characterImages).where(eq(characterImages.mediaId, mediaId)),
   ]);
-  if ((asAvatar?.value ?? 0) + (asPortrait?.value ?? 0) + (inPost?.value ?? 0) > 0) return;
+  if ((asAvatar?.value ?? 0) + (asPortrait?.value ?? 0) + (inPost?.value ?? 0) + (inGallery?.value ?? 0) > 0) return;
   await db.delete(media).where(eq(media.id, mediaId));
   await storage.remove(mediaId);
 }
@@ -118,6 +121,52 @@ export async function removePortrait(db: Db, storage: MediaStorage, actor: Actor
     }
   });
   await release(db, storage, character.portraitMediaId);
+}
+
+export interface CharacterGallery {
+  /** The ids of the pictures, in order, served from /api/v1/media. */
+  images: string[];
+  /** How many this character may hold, by its player's plan. */
+  limit: number;
+}
+
+/** A character's gallery. Anyone who can see the character can see it, so the caller checks that first. */
+export async function getCharacterGallery(db: Db, character: { id: string; playerUserId: string | null }): Promise<CharacterGallery> {
+  const [rows, limit] = await Promise.all([
+    db.select({ mediaId: characterImages.mediaId }).from(characterImages).where(eq(characterImages.characterId, character.id)).orderBy(asc(characterImages.position)),
+    characterImageLimit(db, character.playerUserId),
+  ]);
+  return { images: rows.map((row) => row.mediaId), limit };
+}
+
+/** Adds a picture to a character's gallery. Whoever may edit the character may add to it, up to the player's limit. */
+export async function addCharacterImage(db: Db, storage: MediaStorage, actor: Actor, characterId: string, upload: Uint8Array): Promise<Media> {
+  const character = await editableCharacter(db, actor, characterId);
+  const limit = await characterImageLimit(db, character.playerUserId);
+  const [held] = await db.select({ value: count(), last: max(characterImages.position) }).from(characterImages).where(eq(characterImages.characterId, characterId));
+  if ((held?.value ?? 0) >= limit) {
+    const message =
+      limit >= PREMIUM_LIMITS.characterImages
+        ? `A character’s gallery holds ${PREMIUM_LIMITS.characterImages} pictures. Remove one to add another.`
+        : `A free account can add ${FREE_LIMITS.characterImages} picture to a character’s gallery. ${PREMIUM.name}, which is coming soon, allows ${PREMIUM_LIMITS.characterImages}.`;
+    throw new DomainError('forbidden', message, { fields: { image: message } });
+  }
+  const stored = await store(db, storage, actor, upload, { gif: false });
+  await db.insert(characterImages).values({ characterId, mediaId: stored.id, position: (held?.last ?? -1) + 1 });
+  return stored;
+}
+
+/** Takes a picture out of a character's gallery. When it is not the player doing it, the removal is recorded. */
+export async function removeCharacterImage(db: Db, storage: MediaStorage, actor: Actor, characterId: string, mediaId: string): Promise<void> {
+  const character = await editableCharacter(db, actor, characterId);
+  const removed = await db.transaction(async (tx) => {
+    const rows = await tx.delete(characterImages).where(and(eq(characterImages.characterId, characterId), eq(characterImages.mediaId, mediaId))).returning({ mediaId: characterImages.mediaId });
+    if (rows.length > 0 && character.playerUserId !== actor.userId) {
+      await recordAudit(tx, { actor, action: 'character.image.remove', targetType: 'character', targetId: characterId, communityId: character.communityId });
+    }
+    return rows.length > 0;
+  });
+  if (removed) await release(db, storage, mediaId);
 }
 
 /**

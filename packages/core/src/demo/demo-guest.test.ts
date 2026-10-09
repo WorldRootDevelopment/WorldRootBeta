@@ -5,8 +5,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getCommunityView } from '../community/service';
 import { createAuth } from '../identity/auth';
 import type { Actor } from '../platform/authorize';
+import { createCharacter } from '../characters/service';
+import { UNLIMITED_DEMO_EMAILS } from '../identity/plan';
 import { DEMO_GUEST, ensureDemoGuest, isDemoGuest, lockDemoGuest } from './demo-guest';
-import { DEMO_COMMUNITY_SLUG, seedDemo } from './demo-town';
+import { DEMO_ACCOUNT, DEMO_COMMUNITY_SLUG, seedDemo } from './demo-town';
 import { DND_DEMO_COMMUNITY_SLUG, seedDndDemo } from './dnd-demo';
 
 let connection: DbConnection;
@@ -40,6 +42,14 @@ describe('the shared guest account', () => {
       .innerJoin(roles, eq(roles.id, roleAssignments.roleId))
       .where(and(eq(roleAssignments.userId, guest!.id), eq(roles.isOwner, true)));
     expect(owned).toHaveLength(0);
+  });
+
+  it('is not held to one person’s character limit, because everyone shares it', async () => {
+    const { db } = connection;
+    expect([...UNLIMITED_DEMO_EMAILS].sort()).toEqual([DEMO_ACCOUNT.email, DEMO_GUEST.email].sort());
+    const [guest] = await db.select().from(users).where(eq(users.email, DEMO_GUEST.email));
+    const actor: Actor = { userId: guest!.id, platformRole: 'user' };
+    for (let index = 1; index <= 12; index += 1) await createCharacter(db, actor, { name: `Visitor ${index}` });
   });
 
   it('is recognized by its email and nothing else', () => {

@@ -1,4 +1,4 @@
-import { createProfileSchema, toDiceTheme, type CreateProfileInput, type Profile } from '@worldroot/contracts';
+import { createProfileSchema, toDiceTheme, toProfileLinks, type CreateProfileInput, type Profile } from '@worldroot/contracts';
 import { handleHistory, profiles, type Db } from '@worldroot/db';
 import { eq } from 'drizzle-orm';
 import { recordAudit } from '../platform/audit';
@@ -6,6 +6,9 @@ import { platformBadgesSql, toBadges } from './badges';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
+
+/** Links and a website are part of Premium. Without it they stay stored but are not shown to anyone. */
+const showsLinks = (held: readonly string[] | null) => toBadges(held).some((badge) => badge === 'premium' || badge === 'staff');
 
 const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | null): Profile => ({
   userId: row.userId,
@@ -17,6 +20,8 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   bannerId: row.bannerMediaId,
   accentHue: row.accentHue,
   theme: row.themeFrom && row.themeTo ? { from: row.themeFrom, to: row.themeTo, angle: row.themeAngle } : null,
+  links: showsLinks(held) ? toProfileLinks(row.links) : [],
+  website: showsLinks(held) ? row.website : null,
   status: row.status,
   diceTheme: toDiceTheme(row.diceTheme),
   isStaff: toBadges(held).includes('staff'),

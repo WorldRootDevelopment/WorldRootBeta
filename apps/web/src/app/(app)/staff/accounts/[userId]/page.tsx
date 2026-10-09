@@ -111,7 +111,7 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
       <AccountControls userId={account.userId} badges={account.badges} />
 
       <SectionHeading>Store Items</SectionHeading>
-      <p className="mb-4 text-sm text-ink-muted">Press a label to give or take back that item. Nothing in the store is on sale yet, so this is the only way to own one.</p>
+      <p className="mb-4 text-sm text-ink-muted">Press a label to give or take back that item. The store is not open yet, so this is the only way to own one.</p>
       <ItemControls userId={account.userId} owned={ownedItems} />
 
       {account.profile && !isSelf && (account.profile.avatarId || account.profile.bannerId) ? (

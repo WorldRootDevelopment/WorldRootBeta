@@ -1,4 +1,4 @@
-import { boolean, index, integer, pgEnum, pgTable, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, jsonb, pgEnum, pgTable, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { media } from './media';
 
@@ -104,6 +104,11 @@ export const profiles = pgTable('profiles', {
   themeTo: text('theme_to'),
   // The direction the two colors run in, in degrees.
   themeAngle: integer('theme_angle').notNull().default(135),
+  // Other places this person can be found, as { service, handle } pairs. The services are a registry in
+  // @worldroot/contracts. Shown only while the account has Premium; kept, unseen, when it does not.
+  links: jsonb('links').notNull().default([]),
+  // Their own website, as an https address. Shown only while the account has Premium.
+  website: text('website'),
   // A short line shown under the name: what they are up to, or a favorite quote.
   status: text('status'),
   // How this person's dice look when they roll. A key from the registry in @worldroot/contracts.

@@ -1,3 +1,4 @@
+import { assertRoomForCommunity } from '../identity/plan';
 import { checkAchievements } from '../identity/achievements';
 import { DEFAULT_MEMBER_PERMISSIONS, isPermissionKey, type PermissionKey } from '@worldroot/contracts';
 import {
@@ -60,6 +61,7 @@ export async function createCommunity(db: Db, actor: Actor, input: CreateCommuni
   if (!Number.isInteger(hue) || hue < 0 || hue >= 360) {
     throw new DomainError('invalid_input', 'The accent hue is a whole number from 0 to 359.');
   }
+  await assertRoomForCommunity(db, actor);
 
   const created = await db.transaction(async (tx) => {
     const [taken] = await tx.select({ id: communities.id }).from(communities).where(eq(communities.slug, input.slug));

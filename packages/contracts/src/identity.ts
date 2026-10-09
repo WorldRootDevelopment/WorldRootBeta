@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { BADGE_KEYS, type BadgeKey } from './badges';
+import { LINK_SERVICE_KEYS, profileLinksSchema, websiteSchema, type LinkServiceKey } from './plans';
 
 export const HANDLE_MIN = 3;
 export const HANDLE_MAX = 24;
@@ -47,6 +48,17 @@ export const profileSchema = z.object({
   accentHue: z.number().nullable(),
   /** Their own two-color background. Null takes the plain look. */
   theme: profileThemeSchema.nullable(),
+  /** Other places they can be found. Empty unless the account has Premium. */
+  links: z.array(
+    z.object({
+      service: z.enum(LINK_SERVICE_KEYS as [LinkServiceKey, ...LinkServiceKey[]]),
+      label: z.string(),
+      handle: z.string(),
+      url: z.string().nullable(),
+    }),
+  ),
+  /** Their own website. Null unless the account has Premium. */
+  website: z.string().nullable(),
   /** A short line shown under their name. */
   status: z.string().nullable(),
   /** How their dice look when they roll. A key from the dice theme registry. */
@@ -77,6 +89,9 @@ export const updateProfileSchema = z.object({
   status: optionalLine(80).optional(),
   accentHue: z.coerce.number().int().min(0).max(359).nullable().optional(),
   theme: profileThemeSchema.nullable().optional(),
+  // Premium only. Clearing them is always allowed.
+  links: profileLinksSchema.optional(),
+  website: websiteSchema.optional(),
 });
 
 export type UpdateProfileInput = z.input<typeof updateProfileSchema>;

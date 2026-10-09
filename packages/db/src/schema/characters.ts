@@ -1,4 +1,4 @@
-import { index, jsonb, pgEnum, pgTable, primaryKey, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgEnum, pgTable, primaryKey, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { communities } from './community';
 import { users } from './identity';
@@ -65,4 +65,25 @@ export const characterWorldLinks = pgTable(
       .references(() => worlds.id, { onDelete: 'cascade' }),
   },
   (t) => [primaryKey({ columns: [t.characterId, t.worldId] }), index('character_world_links_world_idx').on(t.worldId)],
+);
+
+/**
+ * Pictures in a character's gallery, in the order they are shown. This is apart from the portrait,
+ * which is the one small picture beside the character's name. A community's copy of a character
+ * starts with the same pictures as the original and points at the same images, so an image is
+ * removed only when nothing refers to it any more.
+ */
+export const characterImages = pgTable(
+  'character_images',
+  {
+    characterId: uuid('character_id')
+      .notNull()
+      .references(() => characters.id, { onDelete: 'cascade' }),
+    mediaId: uuid('media_id')
+      .notNull()
+      .references(() => media.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.characterId, t.mediaId] })],
 );

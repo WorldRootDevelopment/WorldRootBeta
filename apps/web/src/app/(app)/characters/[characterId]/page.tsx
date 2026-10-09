@@ -1,4 +1,4 @@
-import { getCharacterView } from '@worldroot/core';
+import { getCharacterGallery, getCharacterView } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -6,6 +6,7 @@ import type { CSSProperties } from 'react';
 import { cache } from 'react';
 import { CharacterAvatar } from '@/features/characters/character-card';
 import { ReportButton } from '@/features/moderation/report-client';
+import { CharacterGallery } from '@/features/characters/character-gallery';
 import { Breadcrumbs, SectionHeading } from '@/features/shell/prose';
 import { RichText } from '@/features/shell/rich-text';
 import { load } from '@/lib/load';
@@ -19,7 +20,9 @@ interface Props {
 const loadCharacter = cache(async (characterId: string) => {
   const viewer = await requireViewer();
   const { db } = await database();
-  return load(() => getCharacterView(db, viewer.actor, characterId));
+  // The view is refused for anyone who may not see the character, so the gallery is read only after it.
+  const view = await load(() => getCharacterView(db, viewer.actor, characterId));
+  return { ...view, gallery: await getCharacterGallery(db, view.character) };
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -27,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CharacterPage({ params }: Props) {
-  const { character, community, customFields, sourceName, canEdit } = await loadCharacter((await params).characterId);
+  const { character, community, customFields, sourceName, canEdit, gallery } = await loadCharacter((await params).characterId);
 
   const facts = [
     { label: 'Pronouns', value: character.pronouns },
@@ -97,7 +100,8 @@ export default async function CharacterPage({ params }: Props) {
         </p>
       ) : null}
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[16rem_1fr]">
+      {/* Two columns only when there are facts to fill the first; otherwise everything else would be squeezed into it. */}
+      <div className={facts.length > 0 ? 'mt-10 grid gap-10 lg:grid-cols-[16rem_1fr]' : 'mt-10'}>
         {facts.length > 0 ? (
           <dl className="h-fit space-y-4 wr-glass rounded-2xl p-5">
             {facts.map((fact) => (
@@ -110,6 +114,12 @@ export default async function CharacterPage({ params }: Props) {
         ) : null}
 
         <div className="min-w-0">
+          {gallery.images.length > 0 ? (
+            <section>
+              <SectionHeading>Gallery</SectionHeading>
+              <CharacterGallery name={character.name} images={gallery.images} />
+            </section>
+          ) : null}
           {sections.length > 0 ? (
             sections.map((section) => (
               <section key={section.title}>

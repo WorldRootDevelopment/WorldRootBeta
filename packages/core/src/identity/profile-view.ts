@@ -5,6 +5,7 @@ import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { parseInput } from '../platform/validate';
 import { ownsItem } from '../store/service';
+import { hasPremium } from './plan';
 import { getProfile, getProfileByHandle } from './profile';
 
 /** The actor's own profile settings, including what other people do not see. */
@@ -23,6 +24,10 @@ export async function getOwnProfileSettings(db: Db, actor: Actor): Promise<OwnPr
 /** Updates the actor's own profile. Nobody edits anyone else's. */
 export async function updateProfile(db: Db, actor: Actor, input: UpdateProfileInput): Promise<Profile> {
   const { theme, ...rest } = parseInput(updateProfileSchema, input);
+  // Links and a website come with Premium. Anyone may clear theirs.
+  if (((rest.links?.length ?? 0) > 0 || rest.website) && !(await hasPremium(db, actor))) {
+    throw new DomainError('forbidden', 'Links on your profile are part of WorldRoot Premium, which is coming soon.');
+  }
   // Left out, the background stays as it is. Null clears it.
   const background = theme === undefined ? {} : theme === null ? { themeFrom: null, themeTo: null } : { themeFrom: theme.from, themeTo: theme.to, themeAngle: theme.angle };
   const values = { ...rest, ...background };

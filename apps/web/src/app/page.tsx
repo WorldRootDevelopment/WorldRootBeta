@@ -27,6 +27,9 @@ export default async function LandingPage() {
       <header className="flex h-16 items-center justify-between">
         <Wordmark />
         <div className="flex items-center gap-1">
+          <Link href="/support" className={buttonClass('ghost')}>
+            Support Us
+          </Link>
           <Link href="/install" className={buttonClass('ghost')}>
             Get The App
           </Link>

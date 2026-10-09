@@ -12,4 +12,5 @@ export * from './lfrp';
 export * from './achievements';
 export * from './dice-themes';
 export * from './store';
+export * from './plans';
 export * from './seasons';

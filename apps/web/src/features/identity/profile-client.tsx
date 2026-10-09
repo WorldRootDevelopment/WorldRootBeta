@@ -1,7 +1,9 @@
 'use client';
 
-import type { ProfileTheme } from '@worldroot/contracts';
+import { LINK_SERVICE_KEYS, LINK_SERVICES, MAX_PROFILE_LINKS, type LinkServiceKey, type ProfileTheme } from '@worldroot/contracts';
 import { Button, TextArea, TextField } from '@worldroot/ui';
+import { Plus, X } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type CSSProperties, type FormEvent } from 'react';
 import { send } from '@/features/scenes/api';
@@ -16,6 +18,10 @@ interface ProfileFormProps {
   status: string | null;
   accentHue: number | null;
   theme: ProfileTheme | null;
+  /** Whether this account may have links and a website on its profile. */
+  premium: boolean;
+  links: Array<{ service: LinkServiceKey; handle: string }>;
+  website: string | null;
 }
 
 /** Starting points for a profile background. Any two colors can be chosen after picking one. */
@@ -31,13 +37,15 @@ const BACKGROUNDS: Array<{ name: string; from: string; to: string }> = [
 ];
 
 /** Edit your own profile and how you appear to others. */
-export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, status, accentHue, theme }: ProfileFormProps) {
+export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, status, accentHue, theme, premium, links: savedLinks, website }: ProfileFormProps) {
   const router = useRouter();
   // No color of your own means WorldRoot's.
   const [ownColor, setOwnColor] = useState(accentHue !== null);
   const [hue, setHue] = useState(accentHue ?? 62);
   const [ownBackground, setOwnBackground] = useState(theme !== null);
   const [background, setBackground] = useState<ProfileTheme>(theme ?? { from: BACKGROUNDS[0]!.from, to: BACKGROUNDS[0]!.to, angle: 135 });
+  const [links, setLinks] = useState(savedLinks);
+  const unused = LINK_SERVICE_KEYS.filter((key) => !links.some((link) => link.service === key));
   const [fields, setFields] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -55,6 +63,8 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
       status: form.get('status'),
       accentHue: ownColor ? hue : null,
       theme: ownBackground ? background : null,
+      // Left out without Premium, so what was saved before stays as it is.
+      ...(premium ? { links: links.filter((link) => link.handle.trim()), website: form.get('website') } : {}),
       hideOnline: form.get('hideOnline') === 'on',
     });
     setPending(false);
@@ -186,6 +196,85 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
             {fields.theme}
           </p>
         ) : null}
+      </fieldset>
+
+      <fieldset className="flex flex-col gap-3">
+        <legend className="mb-1 text-sm font-medium text-ink">Links</legend>
+        {premium ? (
+          <>
+            <p className="text-sm text-ink-muted">Where else people can find your writing and art. Enter your name on each site, not a full address.</p>
+            {links.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {links.map((link, index) => (
+                  <li key={link.service} className="flex flex-wrap items-center gap-2">
+                    <span className="w-40 shrink-0 text-sm font-medium text-ink">{LINK_SERVICES[link.service].label}</span>
+                    <input
+                      aria-label={`Your Name On ${LINK_SERVICES[link.service].label}`}
+                      value={link.handle}
+                      onChange={(event) => setLinks((current) => current.map((other, at) => (at === index ? { ...other, handle: event.target.value } : other)))}
+                      placeholder={LINK_SERVICES[link.service].hint}
+                      maxLength={80}
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      className="min-h-11 min-w-0 flex-1 rounded-lg border border-line-strong bg-surface-raised px-3 text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setLinks((current) => current.filter((_, at) => at !== index))}
+                      className="flex size-11 shrink-0 items-center justify-center rounded-lg text-ink-muted hover:bg-surface-sunken hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                    >
+                      <X className="size-4" aria-hidden="true" />
+                      <span className="sr-only">Remove {LINK_SERVICES[link.service].label}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {links.length < MAX_PROFILE_LINKS && unused.length > 0 ? (
+              <label className="flex flex-wrap items-center gap-2 text-sm text-ink">
+                <Plus className="size-4" aria-hidden="true" />
+                Add A Link
+                <select
+                  value=""
+                  onChange={(event) => {
+                    const service = event.target.value as LinkServiceKey;
+                    if (service) setLinks((current) => [...current, { service, handle: '' }]);
+                  }}
+                  className="min-h-11 rounded-lg border border-line-strong bg-surface-raised px-3 text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
+                >
+                  <option value="">Choose A Site…</option>
+                  {unused.map((key) => (
+                    <option key={key} value={key}>
+                      {LINK_SERVICES[key].label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+            {fields.links ? (
+              <p role="alert" className="text-sm text-danger">
+                {fields.links}
+              </p>
+            ) : null}
+            <TextField
+              label="Your Website"
+              name="website"
+              type="url"
+              defaultValue={website ?? ''}
+              error={fields.website}
+              maxLength={200}
+              placeholder="https://"
+              hint="Optional. Shown as a button on your profile picture. Must start with https://"
+            />
+          </>
+        ) : (
+          <p className="max-w-xl rounded-lg bg-surface-sunken px-4 py-3 text-sm text-ink">
+            Links to where else you write and draw, and a button for your own website, are part of WorldRoot Premium, which is coming soon.{' '}
+            <Link href="/store" className="font-medium text-accent-text underline">
+              See What Premium Includes
+            </Link>
+          </p>
+        )}
       </fieldset>
 
       <fieldset className="flex flex-col">

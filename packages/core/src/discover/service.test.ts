@@ -49,8 +49,10 @@ describe('discovering communities', () => {
     const harbour = await createCommunity(db, owner, { slug: 'harbour', name: 'Harbour Lights', tagline: 'Noir by the sea', listed: true });
     await createCommunity(db, owner, { slug: 'orchard', name: 'Orchard', listed: true });
     await createCommunity(db, owner, { slug: 'hidden', name: 'Hidden Harbour', listed: false });
-    const gone = await createCommunity(db, owner, { slug: 'gone', name: 'Gone Harbour', listed: true });
-    await setCommunityArchived(db, owner, gone.id, true);
+    // A free account owns at most three communities, so the fourth belongs to someone else.
+    const other = await addUser('second_founder');
+    const gone = await createCommunity(db, other, { slug: 'gone', name: 'Gone Harbour', listed: true });
+    await setCommunityArchived(db, other, gone.id, true);
     await joinCommunity(db, visitor, harbour.id);
 
     const found = await discoverCommunities(db, visitor);

@@ -1,4 +1,4 @@
-import { getOwnProfileSettings } from '@worldroot/core';
+import { getOwnProfileSettings, hasPremium } from '@worldroot/core';
 import type { Metadata } from 'next';
 import { ProfileForm } from '@/features/identity/profile-client';
 import { SettingsTabs } from '@/features/identity/settings-tabs';
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: 'Edit Profile' };
 export default async function EditProfilePage() {
   const viewer = await requireViewer();
   const { db } = await database();
-  const { profile, hideOnline } = await getOwnProfileSettings(db, viewer.actor);
+  const [{ profile, hideOnline }, premium] = await Promise.all([getOwnProfileSettings(db, viewer.actor), hasPremium(db, viewer.actor)]);
 
   return (
     <>
@@ -25,7 +25,7 @@ export default async function EditProfilePage() {
       <div className="mb-8 max-w-2xl">
         <ImageUpload url="/api/v1/profile/banner" mediaId={profile.bannerId} name={profile.displayName} label="Banner" shape="banner" />
       </div>
-      <ProfileForm handle={profile.handle} displayName={profile.displayName} pronouns={profile.pronouns} bio={profile.bio} hideOnline={hideOnline} status={profile.status} accentHue={profile.accentHue} theme={profile.theme} />
+      <ProfileForm handle={profile.handle} displayName={profile.displayName} pronouns={profile.pronouns} bio={profile.bio} hideOnline={hideOnline} status={profile.status} accentHue={profile.accentHue} theme={profile.theme} premium={premium} links={profile.links.map(({ service, handle }) => ({ service, handle }))} website={profile.website} />
     </>
   );
 }

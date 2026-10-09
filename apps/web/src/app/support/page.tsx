@@ -64,6 +64,12 @@ export default function SupportPage() {
           )}
         </div>
 
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link href="/store" className={buttonClass('secondary')}>
+            Visit The Store
+          </Link>
+        </div>
+
         <h2 className="mb-2 mt-10 font-display text-xl font-semibold text-ink">What A Donation Is</h2>
         <ul className="ml-5 list-disc space-y-1.5 leading-relaxed text-ink-muted">
           <li>A gift toward running costs. It is not a purchase, and it does not buy anything on WorldRoot.</li>

@@ -81,7 +81,7 @@ export function DiceStylePicker({ theme: saved, owned }: { theme: string; /** Ke
         <Link href="/store" className="font-medium text-accent-text underline">
           Store
         </Link>
-        . They are not on sale yet.
+        , which is coming soon.
       </p>
     </div>
   );

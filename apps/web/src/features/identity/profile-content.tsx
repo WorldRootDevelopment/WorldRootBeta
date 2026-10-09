@@ -1,6 +1,7 @@
 import 'server-only';
 import { friendState, getProfileView, hasBlocked, listAchievements } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
+import { Globe } from 'lucide-react';
 import Link from 'next/link';
 import type { CSSProperties } from 'react';
 import { cache } from 'react';
@@ -68,11 +69,28 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
           />
         )}
         <div className={`flex flex-wrap items-end gap-x-5 gap-y-4 px-5 pb-5 ${popup ? '' : 'md:px-8'}`}>
-          <Picture
-            mediaId={profile.avatarId}
-            name={profile.displayName}
-            className={popup ? '-mt-10 size-20 text-3xl ring-4 ring-surface-raised' : '-mt-10 size-24 text-4xl ring-4 ring-surface-raised md:-mt-12 md:size-28'}
-          />
+          <div className="relative shrink-0 self-start">
+            <Picture
+              mediaId={profile.avatarId}
+              name={profile.displayName}
+              className={popup ? '-mt-10 size-20 text-3xl ring-4 ring-surface-raised' : '-mt-10 size-24 text-4xl ring-4 ring-surface-raised md:-mt-12 md:size-28'}
+            />
+            {/* Their own website: the one link here that can point anywhere, so its address is in the label and nothing of ours goes with the visit. */}
+            {profile.website ? (
+              <a
+                href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer nofollow ugc"
+                title={`Their Website: ${new URL(profile.website).hostname}`}
+                className="wr-gloss absolute -bottom-1 -right-1 flex size-9 items-center justify-center rounded-full ring-2 ring-surface-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+              >
+                <Globe className="size-4" aria-hidden="true" />
+                <span className="sr-only">
+                  {profile.displayName}’s Website, {new URL(profile.website).hostname}. Opens In A New Tab.
+                </span>
+              </a>
+            ) : null}
+          </div>
           {/* The name keeps a sensible width; anything that does not fit beside it moves to the next row instead of squeezing it. */}
           <div className="min-w-56 flex-1 pt-3">
             <Name id={popup ? 'profile-popup-name' : undefined} className={`flex flex-wrap items-center gap-x-3 gap-y-1 break-words font-display font-bold tracking-tight text-ink ${popup ? 'text-2xl' : 'text-3xl md:text-4xl'}`}>
@@ -85,6 +103,30 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
               <span> · Joined {joinedAt.toLocaleDateString('en', { month: 'long', year: 'numeric' })}</span>
             </p>
             {profile.status ? <p className="mt-2 inline-flex max-w-full rounded-full bg-accent-soft px-3 py-1 text-sm font-medium text-accent-text">{profile.status}</p> : null}
+            {profile.links.length > 0 ? (
+              <ul aria-label="Elsewhere" className="mt-3 flex flex-wrap gap-2">
+                {profile.links.map((link) => (
+                  <li key={link.service}>
+                    {link.url ? (
+                      <a
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow ugc"
+                        className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line-strong bg-surface-raised px-3 text-sm text-ink hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                      >
+                        <span className="font-medium">{link.label}</span>
+                        <span className="text-ink-muted">{link.handle}</span>
+                      </a>
+                    ) : (
+                      <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line-strong bg-surface-raised px-3 text-sm text-ink">
+                        <span className="font-medium">{link.label}</span>
+                        <span className="select-all text-ink-muted">{link.handle}</span>
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
           {isSelf ? (
             <Link href="/settings/profile" className={buttonClass('secondary')}>

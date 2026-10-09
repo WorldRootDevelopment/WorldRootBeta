@@ -14,6 +14,24 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-character-gallery',
+    date: '2026-10-09',
+    title: 'Character Galleries',
+    items: [
+      'Characters now have a gallery beside their portrait. Add a picture from the character’s edit page; WorldRoot Premium, coming soon, will allow 10.',
+      'The Store and Support Us are now in the side rail, and Support Us is on the front page.',
+    ],
+  },
+  {
+    id: '2026-10-09-premium-preview',
+    date: '2026-10-09',
+    title: 'A First Look At WorldRoot Premium',
+    items: [
+      'The Store now shows WorldRoot Premium, planned at $5 a month and coming soon: unlimited characters and communities, links on your profile, and a button for your own website.',
+      'A free account keeps up to 10 characters in its library and, during the beta, owns up to 3 communities. Nothing you already have is taken away.',
+    ],
+  },
+  {
     id: '2026-10-09-scene-images-and-store',
     date: '2026-10-09',
     title: 'Pictures In Scenes, And A First Look At The Store',
