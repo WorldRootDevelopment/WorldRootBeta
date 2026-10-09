@@ -12,7 +12,7 @@ export default async function RolesPage({ params }: { params: Promise<{ communit
 
   return (
     <>
-      <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">Roles</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Roles</h2>
       <p className="mb-6 mt-2 max-w-2xl text-ink-muted">
         A member can do everything allowed by any role they hold. Roles only ever add permissions, never take them away. You can change
         roles ranked below your own.

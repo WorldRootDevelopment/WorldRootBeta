@@ -49,7 +49,7 @@ export function AddWorldForm({ communityId, communityName, worlds }: AddWorldFor
 
   return (
     <form onSubmit={submit} className="mt-8 flex max-w-2xl flex-col gap-4 rounded-2xl border border-dashed border-line-strong p-5">
-      <h3 className="font-serif text-lg font-semibold text-ink">Add a world</h3>
+      <h3 className="font-display text-lg font-semibold text-ink">Add a world</h3>
 
       <fieldset className="flex flex-col">
         <legend className="sr-only">Where the world comes from</legend>
@@ -76,7 +76,7 @@ export function AddWorldForm({ communityId, communityName, worlds }: AddWorldFor
             <label htmlFor="add-world" className="text-sm font-medium text-ink">
               World
             </label>
-            <select id="add-world" name="worldId" className={`${fieldClass} font-serif font-semibold`}>
+            <select id="add-world" name="worldId" className={`${fieldClass} font-display font-semibold`}>
               {worlds.map((world) => (
                 <option key={world.id} value={world.id}>
                   {world.name}

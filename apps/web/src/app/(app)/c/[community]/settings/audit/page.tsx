@@ -49,11 +49,11 @@ export default async function AuditLogPage({ params }: { params: Promise<{ commu
 
   return (
     <>
-      <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">Audit log</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Audit log</h2>
       <p className="mb-6 mt-2 max-w-2xl text-ink-muted">
         Every privileged action in this community, newest first. Entries cannot be edited or deleted. Showing the latest {entries.length}.
       </p>
-      <ol className="flex flex-col divide-y divide-line rounded-2xl border border-line bg-surface-raised">
+      <ol className="flex flex-col divide-y divide-line wr-glass rounded-2xl">
         {entries.map((entry) => {
           const before = detail(entry.before);
           const after = detail(entry.after);

@@ -31,9 +31,14 @@
 
   --shadow-raised: var(--wr-shadow-raised);
 
-  /* Sans for interface, serif for story text and long-form reading. */
+  /*
+   * Sans for the interface and for headings, serif for story text and
+   * long-form reading, and a script for the WorldRoot name alone.
+   */
   --font-sans: var(--font-interface), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-interface), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-story), ui-serif, Georgia, serif;
+  --font-brand: var(--font-wordmark), 'Brush Script MT', cursive;
 
   /* The plan's design breakpoints. 768 and 1280 are Tailwind's md and xl. */
   --breakpoint-wide: 1440px;
@@ -47,8 +52,218 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /*
+   * The light behind the page: a bright glow at the top, with caramel, violet
+   * and blue drifting in from the corners. It sits behind everything and never
+   * moves, so glass panels have something soft to be seen against.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(64rem 34rem at 50% -10rem, var(--wr-page-glow), transparent 72%),
+      radial-gradient(40rem 30rem at 4% 2%, color-mix(in oklch, var(--wr-accent-light) calc(var(--wr-aurora-strength) * 260%), transparent), transparent 70%),
+      radial-gradient(36rem 28rem at 100% 10%, color-mix(in srgb, var(--wr-aurora-violet) calc(var(--wr-aurora-strength) * 100%), transparent), transparent 70%),
+      radial-gradient(44rem 32rem at 88% 104%, color-mix(in srgb, var(--wr-aurora-blue) calc(var(--wr-aurora-strength) * 100%), transparent), transparent 70%),
+      radial-gradient(34rem 26rem at 0% 100%, color-mix(in oklch, var(--wr-accent-light) calc(var(--wr-aurora-strength) * 200%), transparent), transparent 70%);
+  }
+
+  /* A few soft bubbles, each a circle with a highlight near its top left. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.7;
+    background:
+      radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 6% 78% / 9rem 9rem no-repeat,
+      radial-gradient(circle, transparent 58%, color-mix(in oklch, var(--wr-shine) 55%, transparent) 66%, transparent 70%) 6% 78% / 9rem 9rem no-repeat,
+      radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 93% 34% / 6rem 6rem no-repeat,
+      radial-gradient(circle, transparent 58%, color-mix(in oklch, var(--wr-shine) 55%, transparent) 66%, transparent 70%) 93% 34% / 6rem 6rem no-repeat,
+      radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 72% 90% / 4rem 4rem no-repeat,
+      radial-gradient(circle, transparent 58%, color-mix(in oklch, var(--wr-shine) 55%, transparent) 66%, transparent 70%) 72% 90% / 4rem 4rem no-repeat;
+  }
+
   ::selection {
     background-color: var(--wr-accent-soft);
+  }
+}
+
+/*
+ * The glass and gloss of the interface. Each is one class, used wherever that
+ * kind of surface appears, so the look is changed here and nowhere else.
+ */
+
+/* A card or panel: translucent, with a bright upper edge and a soft shadow. */
+@utility wr-glass {
+  background-color: var(--wr-glass);
+  background-image: linear-gradient(180deg, color-mix(in oklch, var(--wr-shine) 50%, transparent), transparent 5rem);
+  border: 1px solid var(--wr-glass-edge);
+  box-shadow:
+    var(--wr-shadow-raised),
+    inset 0 1px 0 var(--wr-glass-edge);
+}
+
+/* A menu or pop-up: nearly solid, so what is behind it never competes with its text. */
+@utility wr-popover {
+  background-color: var(--wr-glass-strong);
+  border: 1px solid var(--wr-glass-edge);
+  box-shadow:
+    var(--wr-shadow-raised),
+    inset 0 1px 0 var(--wr-glass-edge);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+
+/* The frame of the app: the side rail and the top and bottom bars. */
+@utility wr-chrome {
+  background-color: var(--wr-glass);
+  border-color: var(--wr-glass-edge);
+  box-shadow: 0 0 24px -8px oklch(0.4 0.06 62 / 0.25);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+
+/* The main button: a pill of accent colour with a shine across its upper half. */
+@utility wr-gloss {
+  color: var(--wr-accent-contrast);
+  background-color: var(--wr-accent);
+  background-image:
+    linear-gradient(180deg, var(--wr-shine) 0%, color-mix(in oklch, var(--wr-shine) 30%, transparent) 48%, transparent 52%, color-mix(in oklch, var(--wr-shine) 22%, transparent) 100%),
+    linear-gradient(180deg, var(--wr-accent-light), var(--wr-accent));
+  border: 1px solid color-mix(in oklch, var(--wr-accent) 72%, black);
+  box-shadow:
+    inset 0 1px 0 var(--wr-glass-edge),
+    0 1px 2px oklch(0.3 0.04 62 / 0.2),
+    0 8px 18px -8px color-mix(in oklch, var(--wr-accent) 80%, transparent);
+  text-shadow: 0 1px 0 color-mix(in oklch, white 30%, transparent);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.06) saturate(1.05);
+  }
+  &:active:not(:disabled) {
+    filter: brightness(0.96);
+    transform: translateY(1px);
+  }
+}
+
+/* The quieter button: clear glass with the same shine. */
+@utility wr-gloss-light {
+  background-color: var(--wr-glass-strong);
+  background-image: linear-gradient(180deg, var(--wr-shine) 0%, transparent 50%, color-mix(in oklch, var(--wr-accent-soft) 60%, transparent) 100%);
+  border: 1px solid var(--wr-border-strong);
+  box-shadow:
+    inset 0 1px 0 var(--wr-glass-edge),
+    0 1px 2px oklch(0.3 0.04 62 / 0.12);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.04);
+    border-color: var(--wr-accent);
+  }
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+}
+
+/* A page title, lit from one side in the accent colour, as the WorldRoot site does. */
+@utility wr-title {
+  color: var(--wr-accent-text);
+  background-image: linear-gradient(70deg, var(--wr-accent-text) 10%, var(--wr-accent) 190%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  @media (forced-colors: active) {
+    background-image: none;
+    -webkit-text-fill-color: currentcolor;
+  }
+}
+
+/* A die face: a glossy tile that tumbles while a roll is in the air, then settles. */
+@utility wr-die {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  height: 3rem;
+  padding-inline: 0.5rem;
+  border-radius: 0.875rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--wr-accent-contrast);
+  background-color: var(--wr-accent);
+  background-image:
+    radial-gradient(120% 80% at 30% 0%, var(--wr-shine), transparent 60%),
+    linear-gradient(160deg, var(--wr-accent-light), var(--wr-accent));
+  border: 1px solid color-mix(in oklch, var(--wr-accent) 72%, black);
+  box-shadow:
+    inset 0 1px 0 var(--wr-glass-edge),
+    inset 0 -3px 6px color-mix(in oklch, var(--wr-accent) 60%, black 20%),
+    0 6px 14px -6px color-mix(in oklch, var(--wr-accent) 80%, black);
+}
+
+@keyframes wr-die-tumble {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-0.9rem) rotate(110deg) scale(1.06);
+  }
+  50% {
+    transform: translateY(0) rotate(200deg) scale(0.96);
+  }
+  75% {
+    transform: translateY(-0.5rem) rotate(290deg) scale(1.04);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg) scale(1);
+  }
+}
+
+@keyframes wr-die-land {
+  0% {
+    transform: translateY(-0.6rem) scale(1.25) rotate(-8deg);
+  }
+  55% {
+    transform: translateY(0.15rem) scale(0.94) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@utility wr-die-tumbling {
+  animation: wr-die-tumble 0.5s linear infinite;
+}
+
+@utility wr-die-landed {
+  animation: wr-die-land 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+/* People who ask for less motion get the result with no tumbling. */
+@media (prefers-reduced-motion: reduce) {
+  .wr-die-tumbling,
+  .wr-die-landed {
+    animation: none;
+  }
+}
+
+/* People who ask for less transparency get solid surfaces and a plain page. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --wr-glass: var(--wr-surface-raised);
+    --wr-glass-strong: var(--wr-surface-raised);
+  }
+  body::after {
+    display: none;
+  }
+  .wr-popover,
+  .wr-chrome {
+    backdrop-filter: none;
   }
 }
 

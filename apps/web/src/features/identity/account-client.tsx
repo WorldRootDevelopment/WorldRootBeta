@@ -126,7 +126,7 @@ export function BlockedList({ people }: { people: BlockedPerson[] }) {
   return (
     <ul className="flex max-w-md flex-col gap-2">
       {people.map((person) => (
-        <li key={person.userId} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-surface-raised px-4 py-2">
+        <li key={person.userId} className="flex items-center justify-between gap-3 wr-glass rounded-xl px-4 py-2">
           <span className="min-w-0 truncate text-sm text-ink">
             {person.displayName} <span className="text-ink-muted">@{person.handle}</span>
           </span>

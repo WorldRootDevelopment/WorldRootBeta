@@ -28,7 +28,7 @@ export function LocationTree({ locations, parentId = null, hrefFor }: LocationTr
   return (
     <ul className={parentId ? 'ml-4 mt-1 border-l border-line pl-4' : 'space-y-3'}>
       {level.map((location) => (
-        <li key={location.id} className={parentId ? 'py-1.5' : 'rounded-2xl border border-line bg-surface-raised p-5'}>
+        <li key={location.id} className={parentId ? 'py-1.5' : 'wr-glass rounded-2xl p-5'}>
           <Link
             href={hrefFor(location)}
             className="rounded font-medium text-ink hover:text-accent-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"

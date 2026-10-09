@@ -120,7 +120,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
             className="h-11 flex-1 accent-accent"
           />
           {/* A live sample of how the colour will look on buttons and highlights. */}
-          <span className="inline-flex min-h-9 items-center rounded-lg bg-accent px-3 text-sm font-medium text-accent-contrast">Button</span>
+          <span className="wr-gloss inline-flex min-h-9 items-center rounded-full px-3 text-sm font-medium">Button</span>
           <span className="inline-flex min-h-9 items-center rounded-lg bg-accent-soft px-3 text-sm font-medium text-accent-text">Highlight</span>
         </div>
         <p className="text-sm text-ink-muted">You choose the hue. WorldRoot sets the shades so text stays readable in light and dark.</p>

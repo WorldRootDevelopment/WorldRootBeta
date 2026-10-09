@@ -14,6 +14,18 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-new-look',
+    date: '2026-10-08',
+    title: 'A new look, and dice that tumble',
+    items: [
+      'WorldRoot has a new glossy, glassy look in the cream and caramel of the WorldRoot site, in light and dark.',
+      'Buttons are rounded and catch a shine. Cards and menus are glass over a softly lit page.',
+      'Headings use a clean sans-serif. Story text keeps its serif for comfortable reading.',
+      'Rolling dice now shows them tumbling before they land on the result.',
+      'If your device asks for less motion or less transparency, WorldRoot follows it.',
+    ],
+  },
+  {
     id: '2026-10-08-demo-dungeon',
     date: '2026-10-08',
     title: 'Demo Dungeon: a D&D demo community',

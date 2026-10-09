@@ -77,7 +77,7 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
               className="mt-0.5 size-5 shrink-0 accent-accent"
             />
             <span>
-              <span className="font-serif text-base font-semibold">{character.name}</span>
+              <span className="font-display text-base font-semibold">{character.name}</span>
               {character.tagline ? <span className="block text-ink-muted">{character.tagline}</span> : null}
             </span>
           </label>

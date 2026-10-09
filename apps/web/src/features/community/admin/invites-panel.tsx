@@ -76,7 +76,7 @@ export function InvitesPanel({ communityId, invites }: { communityId: string; in
   return (
     <div className="flex flex-col gap-8">
       <form onSubmit={create} className="flex max-w-2xl flex-col gap-4 rounded-2xl border border-dashed border-line-strong p-5">
-        <h3 className="font-serif text-lg font-semibold text-ink">New invite link</h3>
+        <h3 className="font-display text-lg font-semibold text-ink">New invite link</h3>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="expiresInDays" className="text-sm font-medium text-ink">
@@ -117,7 +117,7 @@ export function InvitesPanel({ communityId, invites }: { communityId: string; in
       ) : (
         <ul className="flex flex-col gap-3">
           {invites.map((invite) => (
-            <li key={invite.id} className="flex flex-col gap-3 rounded-2xl border border-line bg-surface-raised p-5">
+            <li key={invite.id} className="flex flex-col gap-3 wr-glass rounded-2xl p-5">
               {invite.state === 'active' ? <InviteLink code={invite.code} /> : null}
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-ink-muted">

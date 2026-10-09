@@ -103,9 +103,9 @@ function RoleCard({ role, grantable }: { role: EditableRole; grantable: Permissi
         : null;
 
   return (
-    <details className="group rounded-2xl border border-line bg-surface-raised">
+    <details className="group wr-glass rounded-2xl">
       <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
-        <span className="font-serif text-lg font-semibold text-ink">{role.name}</span>
+        <span className="font-display text-lg font-semibold text-ink">{role.name}</span>
         <span className="text-sm text-ink-muted">
           {role.isOwner ? 'All permissions' : `${role.permissions.length} ${role.permissions.length === 1 ? 'permission' : 'permissions'}`}
           <span aria-hidden="true" className="ml-3 inline-block transition-transform group-open:rotate-90">
@@ -176,7 +176,7 @@ function NewRole({ communityId, grantable }: { communityId: string; grantable: P
 
   return (
     <section className="flex flex-col gap-5 rounded-2xl border border-dashed border-line-strong p-5">
-      <h3 className="font-serif text-lg font-semibold text-ink">New role</h3>
+      <h3 className="font-display text-lg font-semibold text-ink">New role</h3>
       <div className="flex flex-col gap-1.5">
         <label htmlFor="new-role-name" className="text-sm font-medium text-ink">
           Role name

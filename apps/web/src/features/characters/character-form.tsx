@@ -9,7 +9,7 @@ import { useApiForm } from '@/lib/use-api-form';
 const RICH_FIELDS = ['appearance', 'personality', 'biography'] as const;
 
 const groupClass = 'flex flex-col gap-5 border-t border-line pt-8';
-const legendClass = 'font-serif text-xl font-semibold text-ink';
+const legendClass = 'font-display text-xl font-semibold text-ink';
 
 /** Create or edit a character. Only the name is required; the rest can be filled in over time. */
 export function CharacterForm({ character }: { character?: Character }) {

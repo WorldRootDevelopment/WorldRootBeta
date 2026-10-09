@@ -37,7 +37,7 @@ export function AppShell({ profile, inboxUnread, children }: AppShellProps) {
         Skip to content
       </a>
 
-      <aside className="sticky top-0 hidden h-dvh w-18 shrink-0 flex-col gap-4 border-r border-line bg-surface-raised p-3 md:flex wide:w-60 wide:p-4">
+      <aside className="sticky top-0 z-20 hidden h-dvh w-18 shrink-0 flex-col gap-4 border-r wr-chrome p-3 md:flex wide:w-60 wide:p-4">
         <Link href="/home" className={`flex min-h-11 items-center justify-center rounded-lg wide:justify-start wide:px-2 ${focusRing}`}>
           <Wordmark className="wide:hidden" markOnly />
           <Wordmark className="hidden wide:inline-flex" />
@@ -64,7 +64,7 @@ export function AppShell({ profile, inboxUnread, children }: AppShellProps) {
       </aside>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-line bg-surface-raised px-4 md:hidden">
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b wr-chrome px-4 md:hidden">
           <Link href="/home" className={`rounded-lg ${focusRing}`}>
             <Wordmark />
           </Link>
@@ -83,7 +83,7 @@ export function AppShell({ profile, inboxUnread, children }: AppShellProps) {
         </main>
       </div>
 
-      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 items-center border-t border-line bg-surface-raised px-2 pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 items-center border-t wr-chrome px-2 pb-[env(safe-area-inset-bottom)] md:hidden">
         {NAV_ITEMS.filter((item) => item.mobile).map(({ href, label, icon: Icon }, index) => (
           <div key={href} className="contents">
             {/* Create takes the centre slot of the bar. */}

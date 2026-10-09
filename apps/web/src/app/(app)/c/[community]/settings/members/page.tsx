@@ -15,7 +15,7 @@ export default async function MembersPage({ params }: { params: Promise<{ commun
 
   return (
     <>
-      <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">Members</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Members</h2>
       <p className="mb-6 mt-2 text-ink-muted">
         {members.length} {members.length === 1 ? 'member' : 'members'}, highest-ranked first.
       </p>

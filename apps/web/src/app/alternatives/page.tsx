@@ -27,7 +27,7 @@ const DISCIPLINES = [
   { name: 'Mending', line: 'Healing bodies, and sometimes things.' },
 ];
 
-const sectionHeading = 'font-serif text-2xl font-semibold tracking-tight text-ink';
+const sectionHeading = 'font-display text-2xl font-semibold tracking-tight text-ink';
 const body = 'mt-3 max-w-[68ch] font-serif text-[1.0625rem] leading-relaxed text-ink';
 
 export default async function AlternativesPage() {
@@ -48,7 +48,7 @@ export default async function AlternativesPage() {
 
       <main>
         <section className="py-12 md:py-16">
-          <h1 className="max-w-3xl font-serif text-4xl font-semibold leading-tight tracking-tight text-ink md:text-5xl">
+          <h1 className="max-w-3xl font-display text-4xl font-semibold leading-tight tracking-tight text-ink md:text-5xl">
             Alternatives to boycotted franchises
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
@@ -59,9 +59,9 @@ export default async function AlternativesPage() {
         </section>
 
         {/* Each universe takes its own accent, the way a community does. */}
-        <article className="wr-accent-scope rounded-3xl border border-line bg-surface-raised p-6 md:p-10" style={{ '--wr-accent-hue': 285 } as CSSProperties}>
+        <article className="wr-accent-scope wr-glass rounded-3xl p-6 md:p-10" style={{ '--wr-accent-hue': 285 } as CSSProperties}>
           <p className="text-sm font-medium text-accent-text">A school of magic, for everyone</p>
-          <h2 className="mt-1 font-serif text-4xl font-semibold tracking-tight text-ink">Varrowmere</h2>
+          <h2 className="mt-1 font-display text-4xl font-semibold tracking-tight text-ink">Varrowmere</h2>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink">
             For writers who love stories about schools of magic but have chosen not to support the Harry Potter franchise or its author, J.K.
             Rowling. Varrowmere is a different world with its own rules, written from scratch. Nothing in it is borrowed.
@@ -113,7 +113,7 @@ export default async function AlternativesPage() {
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {HEARTHS.map((hearth) => (
                 <li key={hearth.name} className="rounded-xl bg-accent-soft p-4">
-                  <p className="font-serif text-lg font-semibold text-ink">{hearth.name}</p>
+                  <p className="font-display text-lg font-semibold text-ink">{hearth.name}</p>
                   <p className="mt-1 text-sm leading-relaxed text-ink">{hearth.line}</p>
                 </li>
               ))}

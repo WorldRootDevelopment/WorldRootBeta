@@ -37,8 +37,8 @@ export function CreateMenu({ placement }: CreateMenuProps) {
           'flex cursor-pointer list-none items-center justify-center gap-2 font-medium [&::-webkit-details-marker]:hidden',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
           rail
-            ? 'min-h-11 rounded-lg bg-accent px-3 text-sm text-accent-contrast hover:bg-accent-hover'
-            : 'mx-auto size-11 rounded-full bg-accent text-accent-contrast',
+            ? 'wr-gloss min-h-11 rounded-full px-3 text-sm'
+            : 'wr-gloss mx-auto size-11 rounded-full',
         )}
       >
         <Plus className="size-5" aria-hidden="true" />
@@ -46,7 +46,7 @@ export function CreateMenu({ placement }: CreateMenuProps) {
       </summary>
       <ul
         className={cn(
-          'absolute z-20 w-60 rounded-xl border border-line bg-surface-raised p-1.5 shadow-raised',
+          'absolute z-20 w-60 wr-popover rounded-xl p-1.5',
           rail ? 'left-0 top-full mt-2' : 'bottom-full left-1/2 mb-3 -translate-x-1/2',
         )}
       >

@@ -13,7 +13,7 @@ export default async function CommunityReportsPage({ params }: { params: Promise
 
   return (
     <>
-      <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">Reports</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Reports</h2>
       <p className="mb-6 mt-2 max-w-2xl text-ink-muted">
         Things members have reported in {community.name}. Remove a post or message from where it sits, then mark the report resolved
         here. Reports about possible harm or law-breaking are also sent to WorldRoot staff.

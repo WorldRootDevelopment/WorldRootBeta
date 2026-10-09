@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Source_Serif_4 } from 'next/font/google';
+import { Heebo, Pacifico, Source_Serif_4 } from 'next/font/google';
 import { cookies } from 'next/headers';
 import type { ReactNode } from 'react';
 import { THEME_COOKIE } from '@/features/shell/theme';
 import './globals.css';
 
-const interfaceFont = Inter({ subsets: ['latin', 'latin-ext'], variable: '--font-interface' });
+// Heebo and Pacifico are the two faces of the WorldRoot site. Pacifico is for the name only.
+const interfaceFont = Heebo({ subsets: ['latin'], variable: '--font-interface' });
+const wordmarkFont = Pacifico({ subsets: ['latin'], weight: '400', variable: '--font-wordmark' });
 const storyFont = Source_Serif_4({
   subsets: ['latin', 'latin-ext'],
   style: ['normal', 'italic'],
@@ -22,8 +24,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   // Tints the browser or app window to match the page in each theme.
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fbfaf8' },
-    { media: '(prefers-color-scheme: dark)', color: '#17161a' },
+    { media: '(prefers-color-scheme: light)', color: '#fff8f2' },
+    { media: '(prefers-color-scheme: dark)', color: '#1d1814' },
   ],
 };
 
@@ -33,7 +35,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const theme = stored === 'light' || stored === 'dark' ? stored : undefined;
 
   return (
-    <html lang="en" data-theme={theme} className={`${interfaceFont.variable} ${storyFont.variable}`}>
+    <html lang="en" data-theme={theme} className={`${interfaceFont.variable} ${storyFont.variable} ${wordmarkFont.variable}`}>
       <body className="min-h-dvh">{children}</body>
     </html>
   );

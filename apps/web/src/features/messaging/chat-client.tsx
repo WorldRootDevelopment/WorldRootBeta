@@ -81,7 +81,7 @@ export function ChatLog({ conversationId, latestId, track, children }: ChatLogPr
         <button
           type="button"
           onClick={toBottom}
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-contrast shadow-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 wr-gloss rounded-full px-4 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
           New messages ↓
         </button>

@@ -37,7 +37,7 @@ export function ReportButton({ targetType, targetId, label = 'Report' }: { targe
   return (
     <details ref={details} className="relative inline-block">
       <summary className={`${linkButton} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}>{label}</summary>
-      <div className="absolute right-0 z-20 mt-2 w-72 rounded-xl border border-line bg-surface-raised p-4 text-left shadow-raised">
+      <div className="absolute right-0 z-20 mt-2 w-72 wr-popover rounded-xl p-4 text-left">
         {sent ? (
           <div role="status">
             <p className="text-sm font-medium text-ink">Thank you. It has been reported.</p>
@@ -96,7 +96,7 @@ function ReportCard({ report }: { report: ReportRow }) {
   };
 
   return (
-    <li className="rounded-2xl border border-line bg-surface-raised p-5">
+    <li className="wr-glass rounded-2xl p-5">
       <p className="flex flex-wrap items-center gap-2 text-sm">
         <span className="font-medium text-ink">{REPORT_CATEGORIES[report.category]?.label ?? report.category}</span>
         {report.escalated ? <span className="rounded-full bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger">Sent to WorldRoot staff</span> : null}

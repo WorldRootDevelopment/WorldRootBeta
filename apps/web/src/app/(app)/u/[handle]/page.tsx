@@ -43,7 +43,7 @@ export default async function ProfilePage({ params }: Props) {
       <header className="flex flex-wrap items-start gap-5">
         <Picture mediaId={profile.avatarId} name={profile.displayName} className="size-20 text-3xl" />
         <div className="min-w-0 flex-1">
-          <h1 className="flex flex-wrap items-center gap-3 font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">
+          <h1 className="flex flex-wrap items-center gap-3 font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">
             {profile.displayName}
             <Badges list={profile.badges} />
           </h1>
@@ -93,7 +93,7 @@ export default async function ProfilePage({ params }: Props) {
           {characters.map((character) => (
             <li key={character.id}>
               <Link href={`/characters/${character.id}`} className={cardClass}>
-                <h3 className="font-serif text-lg font-semibold text-ink">{character.name}</h3>
+                <h3 className="font-display text-lg font-semibold text-ink">{character.name}</h3>
                 <p className="text-sm text-ink-muted">in {character.communityName}</p>
                 {character.tagline ? <p className="mt-3 font-serif italic leading-relaxed text-ink">{character.tagline}</p> : null}
               </Link>

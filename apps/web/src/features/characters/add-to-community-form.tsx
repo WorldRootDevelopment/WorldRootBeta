@@ -52,7 +52,7 @@ export function AddToCommunityForm({ communityId, communitySlug, communityName, 
         <label htmlFor="characterId" className="text-sm font-medium text-ink">
           Character
         </label>
-        <select id="characterId" name="characterId" className={`${selectClass} font-serif font-semibold`} required>
+        <select id="characterId" name="characterId" className={`${selectClass} font-display font-semibold`} required>
           {characters.map((character) => (
             <option key={character.id} value={character.id}>
               {character.name}

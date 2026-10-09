@@ -45,21 +45,21 @@ export default async function LocationPage(props: Props) {
           { label: location.name },
         ]}
       />
-      <h2 className="font-serif text-3xl font-semibold tracking-tight text-ink">{location.name}</h2>
+      <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{location.name}</h2>
       {location.summary ? <p className="mt-2 max-w-2xl text-lg text-ink-muted">{location.summary}</p> : null}
       {location.description ? <Prose text={location.description} className="mt-8" /> : null}
 
       {childrenOf(locations, location.id).length > 0 ? (
         <>
           <SectionHeading>Inside {location.name}</SectionHeading>
-          <div className="rounded-2xl border border-line bg-surface-raised px-1 py-3">
+          <div className="wr-glass rounded-2xl px-1 py-3">
             <LocationTree locations={locations} parentId={location.id} hrefFor={hrefFor} />
           </div>
         </>
       ) : null}
 
       <div className="mb-4 mt-12 flex flex-wrap items-center justify-between gap-4">
-        <h2 className="font-serif text-xl font-semibold text-ink">Scenes</h2>
+        <h2 className="font-display text-xl font-semibold text-ink">Scenes</h2>
         {canStart ? (
           <Link href={`/scenes/new?location=${location.id}`} className={buttonClass('primary')}>
             Start a scene here

@@ -38,8 +38,8 @@ const day = (date: Date) => date.toLocaleDateString('en', { dateStyle: 'medium' 
 function Listing({ row, isStaff }: { row: ListingRow; isStaff: boolean }) {
   const { listing, author } = row;
   return (
-    <article className="rounded-2xl border border-line bg-surface-raised p-5">
-      <h3 className="font-serif text-lg font-semibold text-ink">{listing.title}</h3>
+    <article className="wr-glass rounded-2xl p-5">
+      <h3 className="font-display text-lg font-semibold text-ink">{listing.title}</h3>
       <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
         <Link href={`/u/${author.handle}`} className="font-medium text-ink hover:underline">
           {author.displayName}

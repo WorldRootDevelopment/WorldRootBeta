@@ -55,10 +55,10 @@ export default async function DiscoverPage({ searchParams }: { searchParams: Pro
           {found.map(({ community, memberCount, isMember }) => (
             <li key={community.id}>
               <Link href={`/c/${community.slug}`} className={`wr-accent-scope h-full ${cardClass}`} style={{ '--wr-accent-hue': community.accentHue } as CSSProperties}>
-                <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-xl bg-accent-soft font-serif text-lg font-semibold text-accent-text">
+                <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-xl bg-accent-soft font-display text-lg font-semibold text-accent-text">
                   {community.name.charAt(0)}
                 </span>
-                <h2 className="mt-3 font-serif text-lg font-semibold text-ink">{community.name}</h2>
+                <h2 className="mt-3 font-display text-lg font-semibold text-ink">{community.name}</h2>
                 {community.tagline ? <p className="mt-1 text-sm leading-relaxed text-ink-muted">{community.tagline}</p> : null}
                 <p className="mt-3 text-xs font-medium text-ink-muted">
                   {memberCount} {memberCount === 1 ? 'member' : 'members'}

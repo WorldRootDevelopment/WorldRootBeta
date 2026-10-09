@@ -140,7 +140,7 @@ export function Composer({ sceneId, characters, draft }: ComposerProps) {
               scheduleSave();
             }
           }}
-          className="min-h-11 rounded-lg border border-line-strong bg-surface-raised px-3 font-serif text-base font-semibold text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
+          className="min-h-11 rounded-lg border border-line-strong bg-surface-raised px-3 font-display text-base font-semibold text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
         >
           {characters.map((character) => (
             <option key={character.id} value={character.id}>

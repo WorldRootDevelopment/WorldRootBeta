@@ -159,7 +159,7 @@ export function ChatRoom({ page, members, href, viewingEarlier, placeholder, rea
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_15rem]">
       {/* Below the wide layout the member list folds away above the room. */}
-      <details className="rounded-2xl border border-line bg-surface-raised lg:hidden">
+      <details className="wr-glass rounded-2xl lg:hidden">
         <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-4 text-sm font-medium text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
           <span aria-hidden="true" className="size-2.5 rounded-full bg-online" />
           {online.length} online
@@ -170,7 +170,7 @@ export function ChatRoom({ page, members, href, viewingEarlier, placeholder, rea
         <div className="max-h-72 overflow-y-auto border-t border-line p-4">{lists}</div>
       </details>
 
-      <section aria-label="Lounge chat" className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden rounded-2xl border border-line bg-surface-raised">
+      <section aria-label="Lounge chat" className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden wr-glass rounded-2xl">
         <ChatLog conversationId={conversation.id} latestId={viewingEarlier ? null : (messages.at(-1)?.id ?? null)} track={track && !viewingEarlier}>
           {hasEarlier && messages[0] ? (
             <p className="mb-3 text-center">
@@ -203,7 +203,7 @@ export function ChatRoom({ page, members, href, viewingEarlier, placeholder, rea
         </div>
       </section>
 
-      <aside aria-label="Members" className="hidden h-[calc(100dvh-25rem)] min-h-[26rem] overflow-y-auto rounded-2xl border border-line bg-surface-raised p-4 lg:block">
+      <aside aria-label="Members" className="hidden h-[calc(100dvh-25rem)] min-h-[26rem] overflow-y-auto wr-glass rounded-2xl p-4 lg:block">
         {lists}
       </aside>
     </div>

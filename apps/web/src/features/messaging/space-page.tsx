@@ -46,7 +46,7 @@ export async function SpacePage({ slug, spaceKey, before }: SpacePageProps) {
   const page = await load(() => listMessages(db, viewer.actor, conversation.id, { beforeId: before }));
   return (
     <>
-      <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">{SPACES[spaceKey].label}</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">{SPACES[spaceKey].label}</h2>
       <p className="mb-8 mt-2 text-ink-muted">News from the people who run this community.</p>
       <MessageThread
         page={page}

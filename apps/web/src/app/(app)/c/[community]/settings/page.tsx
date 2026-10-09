@@ -3,7 +3,7 @@ import { loadAdmin, settingsSections } from '@/features/community/admin/admin-vi
 import { DangerZone } from '@/features/community/admin/danger-zone';
 import { CommunitySettingsForm } from '@/features/community/admin/settings-form';
 
-const heading = 'mb-6 font-serif text-2xl font-semibold tracking-tight text-ink';
+const heading = 'mb-6 font-display text-2xl font-semibold tracking-tight text-ink';
 
 export default async function GeneralSettingsPage({ params }: { params: Promise<{ community: string }> }) {
   const { community, admin, holds } = await loadAdmin((await params).community);

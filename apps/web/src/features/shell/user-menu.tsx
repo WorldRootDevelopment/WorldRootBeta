@@ -51,7 +51,7 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
 
       <div
         className={cn(
-          'absolute z-20 w-64 rounded-xl border border-line bg-surface-raised p-1.5 shadow-raised',
+          'absolute z-20 w-64 wr-popover rounded-xl p-1.5',
           rail ? 'bottom-full left-0 mb-2' : 'right-0 top-full mt-2',
         )}
       >

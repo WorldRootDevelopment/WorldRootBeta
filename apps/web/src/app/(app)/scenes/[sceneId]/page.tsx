@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: (await loadScene((await params).sceneId)).view.scene.title };
 }
 
-const panelClass = 'rounded-2xl border border-line bg-surface-raised p-5';
+const panelClass = 'wr-glass rounded-2xl p-5';
 const panelTitle = 'mb-3 text-xs font-medium uppercase tracking-wide text-ink-muted';
 
 export default async function ScenePage({ params, searchParams }: Props) {
@@ -72,7 +72,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
           <RatingBadge rating={scene.rating} />
           {place ? null : <span className="text-xs font-medium text-ink-muted">Private scene</span>}
         </div>
-        <h1 className="mt-3 font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{scene.title}</h1>
+        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">{scene.title}</h1>
         {scene.description ? <p className="mt-3 max-w-[68ch] text-ink-muted">{scene.description}</p> : null}
       </header>
 

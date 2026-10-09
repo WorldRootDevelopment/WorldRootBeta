@@ -20,7 +20,7 @@ export function CharacterCard({ character, facts = [], note }: CharacterCardProp
       <div className="flex items-start gap-4">
         <CharacterAvatar name={character.name} mediaId={character.portraitMediaId} />
         <div className="min-w-0">
-          <h3 className="font-serif text-lg font-semibold text-ink">{character.name}</h3>
+          <h3 className="font-display text-lg font-semibold text-ink">{character.name}</h3>
           {character.species ? <p className="text-sm text-ink-muted">{character.species}</p> : null}
         </div>
       </div>

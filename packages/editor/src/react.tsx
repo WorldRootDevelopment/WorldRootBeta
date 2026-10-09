@@ -90,7 +90,7 @@ function Toolbar({ editor }: { editor: Editor }) {
       </Tool>
       <span aria-hidden="true" className="mx-1 h-5 w-px bg-line" />
       <Tool label="Heading" active={state.heading} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-        <span className="font-serif font-semibold">H</span>
+        <span className="font-display font-semibold">H</span>
       </Tool>
       <Tool label="Quote" active={state.quote} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
         <span className="font-serif text-lg leading-none">&ldquo;</span>

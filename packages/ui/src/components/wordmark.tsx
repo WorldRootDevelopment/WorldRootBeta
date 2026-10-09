@@ -17,7 +17,7 @@ export function Wordmark({ className, markOnly = false }: { className?: string; 
   return (
     <span className={cn('inline-flex items-center gap-2 text-ink', className)}>
       <RootMark className="text-accent" />
-      <span className={cn('font-serif text-xl font-semibold tracking-tight', markOnly && 'sr-only')}>WorldRoot</span>
+      <span className={cn('wr-title pr-1 font-brand text-2xl leading-none', markOnly && 'sr-only')}>WorldRoot</span>
     </span>
   );
 }

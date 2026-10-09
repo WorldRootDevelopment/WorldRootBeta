@@ -11,7 +11,7 @@ export default async function InvitesPage({ params }: { params: Promise<{ commun
 
   return (
     <>
-      <h2 className="font-serif text-2xl font-semibold tracking-tight text-ink">Invites</h2>
+      <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">Invites</h2>
       <p className="mb-6 mt-2 max-w-2xl text-ink-muted">
         {community.listed
           ? 'This community is listed, so anyone can find and join it. Invite links are a quick way to bring a particular person straight here.'

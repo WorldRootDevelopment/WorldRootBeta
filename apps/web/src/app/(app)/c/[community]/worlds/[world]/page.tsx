@@ -29,7 +29,7 @@ export default async function WorldPage(props: Props) {
   return (
     <>
       <Breadcrumbs items={[{ label: 'Worlds', href: `/c/${community.slug}/worlds` }, { label: world.name }]} />
-      <h2 className="font-serif text-3xl font-semibold tracking-tight text-ink">{world.name}</h2>
+      <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">{world.name}</h2>
       {world.summary ? <p className="mt-2 max-w-2xl text-lg text-ink-muted">{world.summary}</p> : null}
       {world.copiedAt ? (
         <p className="mt-3 text-sm text-ink-muted">

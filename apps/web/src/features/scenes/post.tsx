@@ -54,7 +54,7 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
       <header className="mb-4 flex items-center gap-3">
         {narration ? null : <CharacterAvatar name={post.characterName!} className="size-10 text-base" />}
         <div className="min-w-0">
-          <p className={narration ? 'text-sm font-medium uppercase tracking-wide text-ink-muted' : 'font-serif text-lg font-semibold text-ink'}>
+          <p className={narration ? 'text-sm font-medium uppercase tracking-wide text-ink-muted' : 'font-display text-lg font-semibold text-ink'}>
             {narration ? 'Narration' : post.characterName}
           </p>
           <p className="text-xs text-ink-muted">

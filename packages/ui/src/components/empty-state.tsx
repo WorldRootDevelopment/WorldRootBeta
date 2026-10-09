@@ -14,7 +14,7 @@ export function EmptyState({ icon, title, children, action, className }: EmptySt
   return (
     <div className={cn('flex flex-col items-center rounded-2xl border border-dashed border-line-strong px-6 py-14 text-center', className)}>
       {icon ? <div className="mb-4 text-ink-muted">{icon}</div> : null}
-      <h2 className="font-serif text-xl font-semibold text-ink">{title}</h2>
+      <h2 className="font-display text-xl font-semibold text-ink">{title}</h2>
       {children ? <p className="mt-2 max-w-md text-ink-muted">{children}</p> : null}
       {action ? <div className="mt-6">{action}</div> : null}
     </div>

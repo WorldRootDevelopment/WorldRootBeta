@@ -17,7 +17,7 @@ export function Picture({ mediaId, name, className = 'size-12 text-lg' }: Pictur
     );
   }
   return (
-    <span aria-hidden="true" className={cn('flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-serif font-semibold text-accent-text', className)}>
+    <span aria-hidden="true" className={cn('flex shrink-0 items-center justify-center rounded-full bg-accent-soft font-display font-semibold text-accent-text', className)}>
       {name.charAt(0).toUpperCase()}
     </span>
   );

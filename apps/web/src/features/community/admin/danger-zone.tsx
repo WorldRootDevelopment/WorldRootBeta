@@ -44,7 +44,7 @@ export function DangerZone({ communityId, communityName, archived }: DangerZoneP
 
   return (
     <section aria-labelledby="danger-zone" className="mt-12 max-w-2xl rounded-2xl border border-danger p-5">
-      <h3 id="danger-zone" className="font-serif text-xl font-semibold text-ink">
+      <h3 id="danger-zone" className="font-display text-xl font-semibold text-ink">
         Archive or delete
       </h3>
 

@@ -27,7 +27,7 @@ export default async function LandingPage() {
       </header>
 
       <main className="flex flex-1 flex-col justify-center py-16">
-        <h1 className="max-w-3xl font-serif text-5xl font-semibold leading-tight tracking-tight text-ink md:text-6xl">
+        <h1 className="wr-title max-w-3xl pb-2 font-display text-5xl font-bold leading-tight tracking-tight md:text-6xl">
           Where stories take root.
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
@@ -51,10 +51,10 @@ export default async function LandingPage() {
           )}
         </div>
 
-        <ul className="mt-20 grid gap-8 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {PILLARS.map(({ title, body }) => (
-            <li key={title}>
-              <h2 className="font-serif text-lg font-semibold text-ink">{title}</h2>
+            <li key={title} className="wr-glass rounded-2xl p-5">
+              <h2 className="font-display text-lg font-semibold text-ink">{title}</h2>
               <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">{body}</p>
             </li>
           ))}
@@ -62,9 +62,9 @@ export default async function LandingPage() {
 
         <Link
           href="/alternatives"
-          className="group mt-12 block rounded-2xl border border-line bg-surface-raised p-6 transition-colors hover:border-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          className="group mt-12 block wr-glass rounded-2xl p-6 transition-colors hover:border-line-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
-          <h2 className="font-serif text-xl font-semibold text-ink">Alternatives to boycotted franchises</h2>
+          <h2 className="font-display text-xl font-semibold text-ink">Alternatives to boycotted franchises</h2>
           <p className="mt-2 max-w-2xl leading-relaxed text-ink-muted">
             Love a kind of story but stepped away from the franchise behind it? Start with Varrowmere, an original school of magic that is
             free for anyone to use.

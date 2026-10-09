@@ -55,7 +55,7 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
           const bannable = canBan && outranked;
 
           return (
-            <li key={member.userId} className="rounded-2xl border border-line bg-surface-raised p-5">
+            <li key={member.userId} className="wr-glass rounded-2xl p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <p className="min-w-0">
                   <Link href={`/u/${member.handle}`} className="font-medium text-ink rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
@@ -147,10 +147,10 @@ export function MembersTable({ communityId, members, assignable, viewerId, viewe
 
       {canBan && bans.length > 0 ? (
         <section className="mt-12">
-          <h3 className="mb-4 font-serif text-xl font-semibold text-ink">Banned</h3>
+          <h3 className="mb-4 font-display text-xl font-semibold text-ink">Banned</h3>
           <ul className="flex flex-col gap-3">
             {bans.map((ban) => (
-              <li key={ban.userId} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface-raised p-5">
+              <li key={ban.userId} className="flex flex-wrap items-center justify-between gap-3 wr-glass rounded-2xl p-5">
                 <p className="min-w-0 text-sm">
                   <span className="font-medium text-ink">{ban.displayName ?? 'Former user'}</span>
                   {ban.handle ? <span className="text-ink-muted"> @{ban.handle}</span> : null}

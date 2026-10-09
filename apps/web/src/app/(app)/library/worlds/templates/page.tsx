@@ -10,9 +10,9 @@ export const metadata: Metadata = { title: 'World templates' };
 function TemplateCard({ template }: { template: WorldTemplate }) {
   const places = countLocations(template.locations);
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-line bg-surface-raised p-5">
+    <article className="flex h-full flex-col wr-glass rounded-2xl p-5">
       <div className="flex flex-wrap items-center gap-2">
-        <h3 className="font-serif text-xl font-semibold text-ink">{template.name}</h3>
+        <h3 className="font-display text-xl font-semibold text-ink">{template.name}</h3>
         {template.popCulture ? (
           <span className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent-text">Pop culture</span>
         ) : null}

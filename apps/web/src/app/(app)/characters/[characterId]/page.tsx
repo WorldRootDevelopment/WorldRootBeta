@@ -68,7 +68,7 @@ export default async function CharacterPage({ params }: Props) {
       <header className="flex flex-wrap items-start gap-5">
         <CharacterAvatar name={character.name} mediaId={character.portraitMediaId} className="size-20 text-3xl" />
         <div className="min-w-0 flex-1">
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{character.name}</h1>
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">{character.name}</h1>
           {character.tagline ? <p className="mt-2 font-serif text-lg italic text-ink-muted">{character.tagline}</p> : null}
           <p className="mt-3 text-sm text-ink-muted">
             {community
@@ -99,7 +99,7 @@ export default async function CharacterPage({ params }: Props) {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[16rem_1fr]">
         {facts.length > 0 ? (
-          <dl className="h-fit space-y-4 rounded-2xl border border-line bg-surface-raised p-5">
+          <dl className="h-fit space-y-4 wr-glass rounded-2xl p-5">
             {facts.map((fact) => (
               <div key={fact.label}>
                 <dt className="text-xs font-medium uppercase tracking-wide text-ink-muted">{fact.label}</dt>

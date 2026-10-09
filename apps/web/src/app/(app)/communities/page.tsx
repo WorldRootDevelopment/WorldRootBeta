@@ -18,10 +18,10 @@ function CommunityCard({ community }: { community: Community }) {
       className={`wr-accent-scope ${cardClass}`}
       style={{ '--wr-accent-hue': community.accentHue } as CSSProperties}
     >
-      <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-xl bg-accent-soft font-serif text-lg font-semibold text-accent-text">
+      <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-xl bg-accent-soft font-display text-lg font-semibold text-accent-text">
         {community.name.charAt(0)}
       </span>
-      <h3 className="mt-3 font-serif text-lg font-semibold text-ink">{community.name}</h3>
+      <h3 className="mt-3 font-display text-lg font-semibold text-ink">{community.name}</h3>
       {community.archivedAt ? <p className="mt-1 text-xs font-medium uppercase tracking-wide text-ink-muted">Archived</p> : null}
       {community.tagline ? <p className="mt-1 text-sm leading-relaxed text-ink-muted">{community.tagline}</p> : null}
     </Link>

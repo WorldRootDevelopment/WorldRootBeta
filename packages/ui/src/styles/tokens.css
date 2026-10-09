@@ -5,33 +5,40 @@
  * mappings of the same names. The accent ramp is generated from one hue with
  * fixed lightness and chroma steps, so any hue a community picks stays readable.
  * A community theme sets --wr-accent-hue on its container and nothing else.
+ *
+ * The palette comes from the WorldRoot site: a cream page (#FFF8F2), caramel
+ * (#B58E70, lightening to #C9A68B), soft grey-brown text, and a violet-to-blue
+ * pair (#A464A1, #3B5DAD) kept for glows. The look is glossy and glassy:
+ * surfaces are translucent over a softly lit page, and buttons catch a
+ * highlight. Text on an accent fill is dark, because caramel is a light colour.
  */
 
 :root {
-  --wr-accent-hue: 155;
-  --wr-neutral-hue: 85;
+  --wr-accent-hue: 62;
+  --wr-neutral-hue: 65;
 
-  --wr-surface: oklch(0.985 0.004 var(--wr-neutral-hue));
+  --wr-surface: oklch(0.982 0.012 var(--wr-neutral-hue));
   --wr-surface-raised: oklch(1 0 0);
-  --wr-surface-sunken: oklch(0.96 0.006 var(--wr-neutral-hue));
-  --wr-ooc-surface: oklch(0.95 0.012 var(--wr-neutral-hue));
+  --wr-surface-sunken: oklch(0.955 0.014 var(--wr-neutral-hue));
+  --wr-ooc-surface: oklch(0.945 0.022 var(--wr-neutral-hue));
 
-  --wr-text: oklch(0.24 0.01 var(--wr-neutral-hue));
-  --wr-text-muted: oklch(0.47 0.012 var(--wr-neutral-hue));
+  --wr-text: oklch(0.3 0.02 var(--wr-neutral-hue));
+  --wr-text-muted: oklch(0.46 0.02 var(--wr-neutral-hue));
 
-  --wr-border: oklch(0.9 0.008 var(--wr-neutral-hue));
-  --wr-border-strong: oklch(0.78 0.012 var(--wr-neutral-hue));
+  --wr-border: oklch(0.9 0.02 var(--wr-neutral-hue));
+  --wr-border-strong: oklch(0.79 0.03 var(--wr-neutral-hue));
 
-  --wr-accent: oklch(0.48 0.12 var(--wr-accent-hue));
-  --wr-accent-hover: oklch(0.42 0.12 var(--wr-accent-hue));
-  --wr-accent-contrast: oklch(0.99 0.01 var(--wr-accent-hue));
-  --wr-accent-soft: oklch(0.94 0.04 var(--wr-accent-hue));
-  --wr-accent-text: oklch(0.4 0.11 var(--wr-accent-hue));
+  --wr-accent: oklch(0.67 0.075 var(--wr-accent-hue));
+  --wr-accent-light: oklch(0.77 0.065 var(--wr-accent-hue));
+  --wr-accent-hover: oklch(0.72 0.075 var(--wr-accent-hue));
+  --wr-accent-contrast: oklch(0.2 0.03 var(--wr-accent-hue));
+  --wr-accent-soft: oklch(0.94 0.03 var(--wr-accent-hue));
+  --wr-accent-text: oklch(0.43 0.075 var(--wr-accent-hue));
 
   --wr-danger: oklch(0.5 0.17 27);
   --wr-danger-soft: oklch(0.95 0.03 27);
 
-  --wr-focus: oklch(0.55 0.15 var(--wr-accent-hue));
+  --wr-focus: oklch(0.52 0.12 var(--wr-accent-hue));
 
   /* Badge colours. Fixed in both themes and outside any community accent, so a badge always means the same thing. */
   --wr-staff: oklch(0.47 0.17 268);
@@ -42,65 +49,93 @@
   /* The online indicator. A fixed green in both themes, and never the only cue. */
   --wr-online: oklch(0.66 0.17 150);
 
-  --wr-shadow-raised: 0 1px 2px oklch(0.2 0.01 85 / 0.06), 0 4px 12px oklch(0.2 0.01 85 / 0.05);
+  /* The violet and blue from the WorldRoot site. Used for glows behind the page, never for text. */
+  --wr-aurora-violet: #a464a1;
+  --wr-aurora-blue: #3b5dad;
+
+  /* Glass: what a panel is made of, the bright edge it catches, and the shine across a button. */
+  --wr-glass: oklch(1 0 0 / 0.58);
+  --wr-glass-strong: oklch(1 0 0 / 0.86);
+  --wr-glass-edge: oklch(1 0 0 / 0.9);
+  --wr-shine: oklch(1 0 0 / 0.55);
+  --wr-page-glow: oklch(1 0 0);
+  --wr-aurora-strength: 0.3;
+
+  --wr-shadow-raised: 0 1px 2px oklch(0.4 0.05 62 / 0.1), 0 10px 28px -8px oklch(0.4 0.06 62 / 0.22);
 
   color-scheme: light;
 }
 
 /* Dark values, applied when the user chooses dark or the system asks for it. */
 :root[data-theme='dark'] {
-  --wr-surface: oklch(0.19 0.006 var(--wr-neutral-hue));
-  --wr-surface-raised: oklch(0.23 0.007 var(--wr-neutral-hue));
-  --wr-surface-sunken: oklch(0.16 0.006 var(--wr-neutral-hue));
-  --wr-ooc-surface: oklch(0.25 0.012 var(--wr-neutral-hue));
+  --wr-surface: oklch(0.2 0.015 var(--wr-neutral-hue));
+  --wr-surface-raised: oklch(0.26 0.016 var(--wr-neutral-hue));
+  --wr-surface-sunken: oklch(0.17 0.014 var(--wr-neutral-hue));
+  --wr-ooc-surface: oklch(0.28 0.022 var(--wr-neutral-hue));
 
-  --wr-text: oklch(0.93 0.006 var(--wr-neutral-hue));
-  --wr-text-muted: oklch(0.72 0.01 var(--wr-neutral-hue));
+  --wr-text: oklch(0.94 0.01 var(--wr-neutral-hue));
+  --wr-text-muted: oklch(0.75 0.02 var(--wr-neutral-hue));
 
-  --wr-border: oklch(0.3 0.008 var(--wr-neutral-hue));
-  --wr-border-strong: oklch(0.42 0.01 var(--wr-neutral-hue));
+  --wr-border: oklch(0.33 0.02 var(--wr-neutral-hue));
+  --wr-border-strong: oklch(0.45 0.025 var(--wr-neutral-hue));
 
-  --wr-accent: oklch(0.76 0.12 var(--wr-accent-hue));
-  --wr-accent-hover: oklch(0.82 0.12 var(--wr-accent-hue));
-  --wr-accent-contrast: oklch(0.18 0.03 var(--wr-accent-hue));
-  --wr-accent-soft: oklch(0.3 0.05 var(--wr-accent-hue));
-  --wr-accent-text: oklch(0.8 0.11 var(--wr-accent-hue));
+  --wr-accent: oklch(0.76 0.075 var(--wr-accent-hue));
+  --wr-accent-light: oklch(0.84 0.06 var(--wr-accent-hue));
+  --wr-accent-hover: oklch(0.81 0.075 var(--wr-accent-hue));
+  --wr-accent-contrast: oklch(0.2 0.03 var(--wr-accent-hue));
+  --wr-accent-soft: oklch(0.33 0.04 var(--wr-accent-hue));
+  --wr-accent-text: oklch(0.83 0.07 var(--wr-accent-hue));
 
   --wr-danger: oklch(0.74 0.14 27);
   --wr-danger-soft: oklch(0.3 0.06 27);
 
-  --wr-focus: oklch(0.78 0.14 var(--wr-accent-hue));
+  --wr-focus: oklch(0.8 0.1 var(--wr-accent-hue));
 
-  --wr-shadow-raised: 0 1px 2px oklch(0 0 0 / 0.3), 0 4px 12px oklch(0 0 0 / 0.25);
+  --wr-glass: oklch(0.3 0.018 65 / 0.55);
+  --wr-glass-strong: oklch(0.27 0.016 65 / 0.9);
+  --wr-glass-edge: oklch(1 0 0 / 0.14);
+  --wr-shine: oklch(1 0 0 / 0.28);
+  --wr-page-glow: oklch(0.27 0.02 65);
+  --wr-aurora-strength: 0.34;
+
+  --wr-shadow-raised: 0 1px 2px oklch(0 0 0 / 0.35), 0 12px 30px -8px oklch(0 0 0 / 0.5);
 
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --wr-surface: oklch(0.19 0.006 var(--wr-neutral-hue));
-    --wr-surface-raised: oklch(0.23 0.007 var(--wr-neutral-hue));
-    --wr-surface-sunken: oklch(0.16 0.006 var(--wr-neutral-hue));
-    --wr-ooc-surface: oklch(0.25 0.012 var(--wr-neutral-hue));
+    --wr-surface: oklch(0.2 0.015 var(--wr-neutral-hue));
+    --wr-surface-raised: oklch(0.26 0.016 var(--wr-neutral-hue));
+    --wr-surface-sunken: oklch(0.17 0.014 var(--wr-neutral-hue));
+    --wr-ooc-surface: oklch(0.28 0.022 var(--wr-neutral-hue));
 
-    --wr-text: oklch(0.93 0.006 var(--wr-neutral-hue));
-    --wr-text-muted: oklch(0.72 0.01 var(--wr-neutral-hue));
+    --wr-text: oklch(0.94 0.01 var(--wr-neutral-hue));
+    --wr-text-muted: oklch(0.75 0.02 var(--wr-neutral-hue));
 
-    --wr-border: oklch(0.3 0.008 var(--wr-neutral-hue));
-    --wr-border-strong: oklch(0.42 0.01 var(--wr-neutral-hue));
+    --wr-border: oklch(0.33 0.02 var(--wr-neutral-hue));
+    --wr-border-strong: oklch(0.45 0.025 var(--wr-neutral-hue));
 
-    --wr-accent: oklch(0.76 0.12 var(--wr-accent-hue));
-    --wr-accent-hover: oklch(0.82 0.12 var(--wr-accent-hue));
-    --wr-accent-contrast: oklch(0.18 0.03 var(--wr-accent-hue));
-    --wr-accent-soft: oklch(0.3 0.05 var(--wr-accent-hue));
-    --wr-accent-text: oklch(0.8 0.11 var(--wr-accent-hue));
+    --wr-accent: oklch(0.76 0.075 var(--wr-accent-hue));
+    --wr-accent-light: oklch(0.84 0.06 var(--wr-accent-hue));
+    --wr-accent-hover: oklch(0.81 0.075 var(--wr-accent-hue));
+    --wr-accent-contrast: oklch(0.2 0.03 var(--wr-accent-hue));
+    --wr-accent-soft: oklch(0.33 0.04 var(--wr-accent-hue));
+    --wr-accent-text: oklch(0.83 0.07 var(--wr-accent-hue));
 
     --wr-danger: oklch(0.74 0.14 27);
     --wr-danger-soft: oklch(0.3 0.06 27);
 
-    --wr-focus: oklch(0.78 0.14 var(--wr-accent-hue));
+    --wr-focus: oklch(0.8 0.1 var(--wr-accent-hue));
 
-    --wr-shadow-raised: 0 1px 2px oklch(0 0 0 / 0.3), 0 4px 12px oklch(0 0 0 / 0.25);
+    --wr-glass: oklch(0.3 0.018 65 / 0.55);
+    --wr-glass-strong: oklch(0.27 0.016 65 / 0.9);
+    --wr-glass-edge: oklch(1 0 0 / 0.14);
+    --wr-shine: oklch(1 0 0 / 0.28);
+    --wr-page-glow: oklch(0.27 0.02 65);
+    --wr-aurora-strength: 0.34;
+
+    --wr-shadow-raised: 0 1px 2px oklch(0 0 0 / 0.35), 0 12px 30px -8px oklch(0 0 0 / 0.5);
 
     color-scheme: dark;
   }
@@ -113,30 +148,33 @@
  * declared, so changing the hue alone would not reach the values set on :root.
  */
 .wr-accent-scope {
-  --wr-accent: oklch(0.48 0.12 var(--wr-accent-hue));
-  --wr-accent-hover: oklch(0.42 0.12 var(--wr-accent-hue));
-  --wr-accent-contrast: oklch(0.99 0.01 var(--wr-accent-hue));
-  --wr-accent-soft: oklch(0.94 0.04 var(--wr-accent-hue));
-  --wr-accent-text: oklch(0.4 0.11 var(--wr-accent-hue));
-  --wr-focus: oklch(0.55 0.15 var(--wr-accent-hue));
+  --wr-accent: oklch(0.67 0.075 var(--wr-accent-hue));
+  --wr-accent-light: oklch(0.77 0.065 var(--wr-accent-hue));
+  --wr-accent-hover: oklch(0.72 0.075 var(--wr-accent-hue));
+  --wr-accent-contrast: oklch(0.2 0.03 var(--wr-accent-hue));
+  --wr-accent-soft: oklch(0.94 0.03 var(--wr-accent-hue));
+  --wr-accent-text: oklch(0.43 0.075 var(--wr-accent-hue));
+  --wr-focus: oklch(0.52 0.12 var(--wr-accent-hue));
 }
 
 :root[data-theme='dark'] .wr-accent-scope {
-  --wr-accent: oklch(0.76 0.12 var(--wr-accent-hue));
-  --wr-accent-hover: oklch(0.82 0.12 var(--wr-accent-hue));
-  --wr-accent-contrast: oklch(0.18 0.03 var(--wr-accent-hue));
-  --wr-accent-soft: oklch(0.3 0.05 var(--wr-accent-hue));
-  --wr-accent-text: oklch(0.8 0.11 var(--wr-accent-hue));
-  --wr-focus: oklch(0.78 0.14 var(--wr-accent-hue));
+  --wr-accent: oklch(0.76 0.075 var(--wr-accent-hue));
+  --wr-accent-light: oklch(0.84 0.06 var(--wr-accent-hue));
+  --wr-accent-hover: oklch(0.81 0.075 var(--wr-accent-hue));
+  --wr-accent-contrast: oklch(0.2 0.03 var(--wr-accent-hue));
+  --wr-accent-soft: oklch(0.33 0.04 var(--wr-accent-hue));
+  --wr-accent-text: oklch(0.83 0.07 var(--wr-accent-hue));
+  --wr-focus: oklch(0.8 0.1 var(--wr-accent-hue));
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) .wr-accent-scope {
-    --wr-accent: oklch(0.76 0.12 var(--wr-accent-hue));
-    --wr-accent-hover: oklch(0.82 0.12 var(--wr-accent-hue));
-    --wr-accent-contrast: oklch(0.18 0.03 var(--wr-accent-hue));
-    --wr-accent-soft: oklch(0.3 0.05 var(--wr-accent-hue));
-    --wr-accent-text: oklch(0.8 0.11 var(--wr-accent-hue));
-    --wr-focus: oklch(0.78 0.14 var(--wr-accent-hue));
+    --wr-accent: oklch(0.76 0.075 var(--wr-accent-hue));
+    --wr-accent-light: oklch(0.84 0.06 var(--wr-accent-hue));
+    --wr-accent-hover: oklch(0.81 0.075 var(--wr-accent-hue));
+    --wr-accent-contrast: oklch(0.2 0.03 var(--wr-accent-hue));
+    --wr-accent-soft: oklch(0.33 0.04 var(--wr-accent-hue));
+    --wr-accent-text: oklch(0.83 0.07 var(--wr-accent-hue));
+    --wr-focus: oklch(0.8 0.1 var(--wr-accent-hue));
   }
 }

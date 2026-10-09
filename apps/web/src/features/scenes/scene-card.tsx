@@ -25,7 +25,7 @@ export function SceneCard({ summary, unread = 0, waitingOnYou = false }: SceneCa
         <RatingBadge rating={scene.rating} />
         {unread > 0 ? <span className="text-xs font-medium text-accent-text">{unread} new</span> : null}
       </div>
-      <h3 className="mt-3 font-serif text-xl font-semibold text-ink">{scene.title}</h3>
+      <h3 className="mt-3 font-display text-xl font-semibold text-ink">{scene.title}</h3>
       <p className="mt-1 text-sm text-ink-muted">{where}</p>
       {scene.description ? <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-ink">{scene.description}</p> : null}
       <p className="mt-4 text-sm text-ink-muted">

@@ -7,7 +7,7 @@ export function WorldCard({ world, href, note }: { world: World; href?: string; 
   const body = (
     <>
       <Globe className="size-5 text-accent-text" aria-hidden="true" />
-      <h3 className="mt-3 font-serif text-lg font-semibold text-ink">{world.name}</h3>
+      <h3 className="mt-3 font-display text-lg font-semibold text-ink">{world.name}</h3>
       {world.summary ? <p className="mt-1 text-sm leading-relaxed text-ink-muted">{world.summary}</p> : null}
       {note ? <p className="mt-3 text-xs text-ink-muted">{note}</p> : null}
     </>

@@ -5,7 +5,7 @@ import { FieldsEditor, ReviewQueue } from '@/features/community/admin/character-
 
 export const metadata: Metadata = { title: 'Characters' };
 
-const heading = 'font-serif text-2xl font-semibold tracking-tight text-ink';
+const heading = 'font-display text-2xl font-semibold tracking-tight text-ink';
 
 export default async function CharacterSettingsPage({ params }: { params: Promise<{ community: string }> }) {
   const { community, holds, db } = await requireSection((await params).community, ['characterfield.manage', 'character.approve']);

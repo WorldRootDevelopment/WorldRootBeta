@@ -37,7 +37,7 @@ export default async function ConversationPage({ params, searchParams }: Props) 
       <Breadcrumbs items={[{ label: 'Inbox', href: '/inbox' }, { label: summary.title }]} />
       <header className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink">{summary.title}</h1>
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">{summary.title}</h1>
           <p className="mt-1 text-sm text-ink-muted">
             {summary.people.length === 0
               ? 'Only you'

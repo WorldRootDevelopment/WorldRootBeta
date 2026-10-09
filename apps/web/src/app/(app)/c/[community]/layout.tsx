@@ -30,7 +30,7 @@ export default async function CommunityLayout({ params, children }: Props) {
     <div className="wr-accent-scope" style={{ '--wr-accent-hue': community.accentHue } as CSSProperties}>
       <header className="rounded-2xl bg-accent-soft p-6 md:p-8">
         <p className="text-sm font-medium text-accent-text">Community</p>
-        <h1 className="mt-1 font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{community.name}</h1>
+        <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">{community.name}</h1>
         {community.tagline ? <p className="mt-2 max-w-2xl text-ink">{community.tagline}</p> : null}
         <div className="mt-5 flex flex-wrap items-center gap-4">
           {isMember ? (

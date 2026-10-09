@@ -67,9 +67,9 @@ export function ChangelogMenu() {
 
       <section
         aria-label="What’s new"
-        className="absolute right-0 top-full z-20 mt-2 flex max-h-[min(32rem,calc(100dvh-6rem))] w-[min(24rem,calc(100vw-2rem))] flex-col rounded-xl border border-line bg-surface-raised shadow-raised"
+        className="absolute right-0 top-full z-20 mt-2 flex max-h-[min(32rem,calc(100dvh-6rem))] w-[min(24rem,calc(100vw-2rem))] flex-col wr-popover rounded-xl"
       >
-        <h2 className="border-b border-line px-5 py-3 font-serif text-lg font-semibold text-ink">What’s new</h2>
+        <h2 className="border-b border-line px-5 py-3 font-display text-lg font-semibold text-ink">What’s new</h2>
         <ol className="overflow-y-auto px-5">
           {CHANGELOG.map((entry, index) => (
             <li key={entry.id} className="border-b border-line py-4 last:border-b-0">

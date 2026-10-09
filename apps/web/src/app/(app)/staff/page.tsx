@@ -60,7 +60,7 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
       </p>
       <ul className="flex flex-col gap-3">
         {accounts.map((account) => (
-          <li key={account.userId} className="rounded-2xl border border-line bg-surface-raised p-5">
+          <li key={account.userId} className="wr-glass rounded-2xl p-5">
             <p className="flex flex-wrap items-center gap-2">
               {account.handle ? (
                 <Link href={`/u/${account.handle}`} className={link}>
@@ -84,7 +84,7 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
 
       <SectionHeading>Communities</SectionHeading>
       <p className="mb-3 text-sm text-ink-muted">Every community, including unlisted and archived ones. As staff you can open and manage any of them.</p>
-      <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line bg-surface-raised">
+      <ul className="flex flex-col divide-y divide-line wr-glass rounded-2xl">
         {communities.map((community) => (
           <li key={community.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 text-sm">
             <Link href={`/c/${community.slug}`} className={link}>

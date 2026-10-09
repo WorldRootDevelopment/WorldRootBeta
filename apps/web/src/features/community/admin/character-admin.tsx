@@ -57,7 +57,7 @@ export function FieldsEditor({ communityId, fields }: { communityId: string; fie
       {fields.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {fields.map((field) => (
-            <li key={field.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-line bg-surface-raised px-4 py-3">
+            <li key={field.id} className="flex flex-wrap items-center justify-between gap-3 wr-glass rounded-xl px-4 py-3">
               <p className="min-w-0 text-sm">
                 <span className="font-medium text-ink">{field.label}</span>
                 <span className="text-ink-muted">
@@ -77,7 +77,7 @@ export function FieldsEditor({ communityId, fields }: { communityId: string; fie
       )}
 
       <form onSubmit={add} className="flex max-w-2xl flex-col gap-4 rounded-2xl border border-dashed border-line-strong p-5" noValidate>
-        <h3 className="font-serif text-lg font-semibold text-ink">Add a field</h3>
+        <h3 className="font-display text-lg font-semibold text-ink">Add a field</h3>
         <TextField label="Field name" name="label" error={errors.label} maxLength={60} placeholder="Rank" />
         <div className="flex flex-col gap-1.5">
           <label htmlFor="field-type" className="text-sm font-medium text-ink">
@@ -134,11 +134,11 @@ export function ReviewQueue({ characters }: { characters: PendingCharacter[] }) 
       ) : null}
       <ul className="flex flex-col gap-3">
         {characters.map((character) => (
-          <li key={character.id} className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-line bg-surface-raised p-5">
+          <li key={character.id} className="flex flex-wrap items-center justify-between gap-4 wr-glass rounded-2xl p-5">
             <div className="min-w-0">
               <Link
                 href={`/characters/${character.id}`}
-                className="rounded font-serif text-lg font-semibold text-ink hover:text-accent-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                className="rounded font-display text-lg font-semibold text-ink hover:text-accent-text hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
               >
                 {character.name}
               </Link>

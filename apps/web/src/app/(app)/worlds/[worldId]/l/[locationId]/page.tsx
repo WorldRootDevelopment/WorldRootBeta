@@ -41,7 +41,7 @@ export default async function LibraryLocationPage(props: Props) {
       />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{location.name}</h1>
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">{location.name}</h1>
           {location.summary ? <p className="mt-2 max-w-2xl text-lg text-ink-muted">{location.summary}</p> : null}
         </div>
         <Link href={`${hrefFor(location)}/edit`} className={buttonClass('secondary')}>
@@ -52,14 +52,14 @@ export default async function LibraryLocationPage(props: Props) {
       {location.description ? <Prose text={location.description} className="mt-8" /> : null}
 
       <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
-        <h2 className="font-serif text-xl font-semibold text-ink">Inside {location.name}</h2>
+        <h2 className="font-display text-xl font-semibold text-ink">Inside {location.name}</h2>
         <Link href={`${base}/locations/new?parent=${location.id}`} className={buttonClass('secondary')}>
           Add location here
         </Link>
       </div>
       <div className="mt-4">
         {hasChildren ? (
-          <div className="rounded-2xl border border-line bg-surface-raised px-1 py-3">
+          <div className="wr-glass rounded-2xl px-1 py-3">
             <LocationTree locations={locations} parentId={location.id} hrefFor={hrefFor} />
           </div>
         ) : (

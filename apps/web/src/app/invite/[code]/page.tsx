@@ -40,7 +40,7 @@ export default async function InvitePage({ params }: { params: Promise<{ code: s
 
       {!preview || !community ? (
         <>
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink">This invite is not valid</h1>
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">This invite is not valid</h1>
           <p className="mt-2 text-ink-muted">The link may have been mistyped or withdrawn. Ask whoever sent it for a new one.</p>
           <Link href="/home" className={`${buttonClass('secondary', 'lg')} mt-8 self-start`}>
             Go to Home
@@ -49,7 +49,7 @@ export default async function InvitePage({ params }: { params: Promise<{ code: s
       ) : (
         <>
           <p className="text-sm font-medium text-accent-text">You are invited to join</p>
-          <h1 className="mt-1 font-serif text-4xl font-semibold tracking-tight text-ink">{community.name}</h1>
+          <h1 className="mt-1 font-display text-4xl font-semibold tracking-tight text-ink">{community.name}</h1>
           {community.tagline ? <p className="mt-2 text-lg text-ink-muted">{community.tagline}</p> : null}
           <p className="mt-4 text-sm text-ink-muted">
             {community.memberCount} {community.memberCount === 1 ? 'member' : 'members'}

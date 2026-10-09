@@ -17,7 +17,7 @@ export default async function AddCharacterPage({ params }: { params: Promise<{ c
 
   return (
     <>
-      <h2 className="mb-6 font-serif text-2xl font-semibold tracking-tight text-ink">Add a character</h2>
+      <h2 className="mb-6 font-display text-2xl font-semibold tracking-tight text-ink">Add a character</h2>
       {!permissions.includes('character.submit') ? (
         <EmptyState title="Join the community first">Members of {community.name} can add their characters.</EmptyState>
       ) : characters.length === 0 ? (

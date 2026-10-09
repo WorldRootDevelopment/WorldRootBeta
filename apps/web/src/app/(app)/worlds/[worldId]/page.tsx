@@ -24,7 +24,7 @@ export default async function LibraryWorldPage({ params }: Props) {
       <Breadcrumbs items={[{ label: 'Library', href: '/library' }, { label: world.name }]} />
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-ink md:text-4xl">{world.name}</h1>
+          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">{world.name}</h1>
           {world.summary ? <p className="mt-2 max-w-2xl text-lg text-ink-muted">{world.summary}</p> : null}
           <p className="mt-3 text-sm text-ink-muted">
             {world.sourceWorldId ? 'Your own copy of a world that was shared with you.' : 'An original in your library.'} Only you can change it.
@@ -38,7 +38,7 @@ export default async function LibraryWorldPage({ params }: Props) {
       {world.description ? <RichText docs={world.docs} field="description" text={world.description} className="mt-8" /> : null}
 
       <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
-        <h2 className="font-serif text-xl font-semibold text-ink">Locations</h2>
+        <h2 className="font-display text-xl font-semibold text-ink">Locations</h2>
         <Link href={`${base}/locations/new`} className={buttonClass('secondary')}>
           Add location
         </Link>

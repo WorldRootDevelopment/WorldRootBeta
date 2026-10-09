@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Where stories take root. A home for text roleplay and collaborative storytelling.',
     start_url: '/home',
     display: 'standalone',
-    background_color: '#fbfaf8',
-    theme_color: '#2f6b4f',
+    background_color: '#fff8f2',
+    theme_color: '#b58e70',
     icons: [{ src: '/icon.svg', type: 'image/svg+xml', sizes: 'any', purpose: 'any' }],
   };
 }
