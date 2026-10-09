@@ -85,6 +85,14 @@ export default async function ProfilePage({ params }: Props) {
         </div>
       </header>
 
+      {viewerIsStaff ? (
+        <p className="mt-6">
+          <Link href={`/staff/accounts/${profile.userId}`} className={buttonClass('secondary')}>
+            Staff: manage this account
+          </Link>
+        </p>
+      ) : null}
+
       {viewerIsStaff && !isSelf && profile.bannerId ? (
         <div className="mt-6 rounded-lg border border-line px-4 py-3">
           <ImageUpload url={`/api/v1/staff/accounts/${profile.userId}/banner`} mediaId={profile.bannerId} name={profile.displayName} label="Staff: remove this banner" shape="banner" removeOnly />

@@ -14,6 +14,12 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-badge-labels',
+    date: '2026-10-08',
+    title: 'Badge labels no longer jump',
+    items: ['Pointing at a badge now shows what it means in a small label beneath it, without moving the badges beside it.'],
+  },
+  {
     id: '2026-10-08-dice-tray',
     date: '2026-10-08',
     title: 'A proper dice tray',

@@ -36,6 +36,7 @@ export async function requireActor(request: Request): Promise<Actor> {
   }
   const viewer = await getViewer();
   if (!viewer) throw new DomainError('unauthenticated', 'Sign in to continue.');
+  if (viewer.suspended) throw new DomainError('forbidden', 'This account is suspended.');
   return viewer.actor;
 }
 

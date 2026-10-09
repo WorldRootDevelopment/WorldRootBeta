@@ -39,3 +39,4 @@ export * from './scenes/dice';
 export * from './scenes/rolls';
 export * from './identity/achievements';
 export * from './identity/friends';
+export * from './identity/staff-accounts';

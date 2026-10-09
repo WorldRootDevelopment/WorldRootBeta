@@ -1,5 +1,5 @@
 import { listAllCommunities, listReports, searchAccounts } from '@worldroot/core';
-import { Button } from '@worldroot/ui';
+import { Button, buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -55,28 +55,27 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
         </Button>
       </form>
       <p className="mb-3 text-sm text-ink-muted">
-        {query ? `${accounts.length} matching` : `The ${accounts.length} newest accounts`}. Press a label to give or take away that badge.
+        {query ? `${accounts.length} matching` : `The ${accounts.length} newest accounts`}. Press a label to give or take away that badge, or Manage to suspend, sign out or review an account.
         Premium is set by hand here until billing exists.
       </p>
       <ul className="flex flex-col gap-3">
         {accounts.map((account) => (
           <li key={account.userId} className="wr-glass rounded-2xl p-5">
             <p className="flex flex-wrap items-center gap-2">
-              {account.handle ? (
-                <Link href={`/u/${account.handle}`} className={link}>
-                  {account.displayName}
-                </Link>
-              ) : (
-                <span className="font-medium text-ink-muted">Not set up yet</span>
-              )}
+              <Link href={`/staff/accounts/${account.userId}`} className={link}>
+                {account.displayName ?? 'Not set up yet'}
+              </Link>
               {account.handle ? <span className="text-sm text-ink-muted">@{account.handle}</span> : null}
               <Badges list={account.badges} all />
             </p>
             <p className="mt-1 text-sm text-ink-muted">
               {account.email} · joined {account.createdAt.toLocaleDateString('en', { dateStyle: 'medium' })}
             </p>
-            <div className="mt-3">
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <AccountControls userId={account.userId} badges={account.badges} />
+              <Link href={`/staff/accounts/${account.userId}`} className={buttonClass('secondary')}>
+                Manage
+              </Link>
             </div>
           </li>
         ))}

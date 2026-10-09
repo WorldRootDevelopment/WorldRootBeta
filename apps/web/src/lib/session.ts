@@ -1,6 +1,6 @@
 import 'server-only';
 import type { Profile } from '@worldroot/contracts';
-import { getProfile, type Actor } from '@worldroot/core';
+import { getProfile, getSuspension, type Actor } from '@worldroot/core';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
@@ -11,6 +11,8 @@ export interface Viewer {
   email: string;
   /** Null until onboarding is complete. */
   profile: Profile | null;
+  /** Set while WorldRoot staff have suspended this account. */
+  suspended: { since: Date; reason: string | null } | null;
 }
 
 /** The signed-in viewer for this request, or null. Resolved once per request. */
@@ -24,6 +26,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     actor: { userId: session.user.id, platformRole: session.user.platformRole === 'staff' ? 'staff' : 'user' },
     email: session.user.email,
     profile: await getProfile(db, session.user.id),
+    suspended: await getSuspension(db, session.user.id),
   };
 });
 
@@ -31,6 +34,8 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
 export async function requireViewer(): Promise<Viewer & { profile: Profile }> {
   const viewer = await getViewer();
   if (!viewer) redirect('/sign-in');
+  // A suspended account sees one page, which says so.
+  if (viewer.suspended) redirect('/suspended');
   if (!viewer.profile) redirect('/welcome');
   return viewer as Viewer & { profile: Profile };
 }
