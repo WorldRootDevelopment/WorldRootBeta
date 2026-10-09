@@ -25,13 +25,38 @@ export function errorResponse(error: unknown): Response {
   return Response.json(body, { status: 500 });
 }
 
+const hostOf = (url: string): string | null => {
+  try {
+    return new URL(url).host.toLowerCase();
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * The addresses this site answers at. Behind a host's proxy the request's own URL names the
+ * machine inside the host (localhost and a port), not the address people typed, so it cannot
+ * be compared with the browser's Origin. The site's configured address and the Host header
+ * can: a page on another site cannot make a browser send a different Host.
+ */
+function ownHosts(request: Request): Set<string | null> {
+  const hosts = new Set<string | null>();
+  const configured = process.env.BETTER_AUTH_URL;
+  if (configured) hosts.add(hostOf(configured));
+  const host = request.headers.get('host');
+  if (host) hosts.add(host.toLowerCase());
+  // An origin that cannot be read is never one of ours.
+  hosts.delete(null);
+  return hosts;
+}
+
 /**
  * Guards a state-changing request: it must come from this site and from a signed-in user.
  * Session cookies are SameSite=Lax; the origin check closes the remaining cross-site cases.
  */
 export async function requireActor(request: Request): Promise<Actor> {
   const origin = request.headers.get('origin');
-  if (origin && new URL(origin).host !== new URL(request.url).host) {
+  if (origin && !ownHosts(request).has(hostOf(origin))) {
     throw new DomainError('forbidden', 'Cross-site requests are not allowed.');
   }
   const viewer = await getViewer();
