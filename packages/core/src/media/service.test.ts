@@ -6,7 +6,7 @@ import { addCharacterToCommunity, createCharacter } from '../characters/service'
 import { createCommunity } from '../community/service';
 import { createProfile, getProfile } from '../identity/profile';
 import type { Actor } from '../platform/authorize';
-import { checkImage, MAX_IMAGE_BYTES } from './images';
+import { checkImage, MAX_GIF_BYTES, MAX_IMAGE_BYTES } from './images';
 import { readMedia, removeAvatar, removePortrait, setAvatar, setPortrait } from './service';
 import { memoryStorage } from './storage';
 
@@ -72,6 +72,39 @@ describe('checking an upload', () => {
     expect(cleanWebp.bytes[20]).toBe(0x10);
 
     expect(checkImage(gif).contentType).toBe('image/gif');
+  });
+
+  it('keeps an animated GIF moving and removes what was written into it', () => {
+    const blocks = (data: number[]) => [data.length, ...data, 0];
+    const frame = [0x2c, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, ...blocks([0x4c, 0x01])];
+    const timing = [0x21, 0xf9, ...blocks([0, 10, 0, 0])];
+    const animated = new Uint8Array([
+      ...text('GIF89a'), 2, 0, 2, 0, 0x80, 0, 0, 0, 0, 0, 255, 255, 255,
+      0x21, 0xff, 11, ...text('NETSCAPE2.0'), ...blocks([1, 0, 0]),
+      0x21, 0xfe, ...blocks(text('Made by Thea Example')),
+      0x21, 0xff, 11, ...text('XMP DataXMP'), ...blocks(text('GPS 51.5,-0.1')),
+      ...timing, ...frame,
+      ...timing, ...frame,
+      0x3b,
+      ...text('trailing junk'),
+    ]);
+
+    const clean = checkImage(animated);
+    expect(clean.contentType).toBe('image/gif');
+    expect(holds(clean.bytes, 'Thea Example') || holds(clean.bytes, 'GPS') || holds(clean.bytes, 'XMP') || holds(clean.bytes, 'junk')).toBe(false);
+    // Looping, both frames and their timing are all still there, and the file still ends properly.
+    expect(holds(clean.bytes, 'NETSCAPE2.0')).toBe(true);
+    expect(clean.bytes.filter((byte, at) => byte === 0x2c && clean.bytes[at - 1] === 0)).toHaveLength(2);
+    expect(clean.bytes.at(-1)).toBe(0x3b);
+
+    // A GIF may be larger than a still picture, but not without limit; one cut off mid-frame is refused.
+    const padded = (size: number) => {
+      const bytes = new Uint8Array(size);
+      bytes.set(gif.subarray(0, 13));
+      return bytes;
+    };
+    expect(() => checkImage(padded(MAX_GIF_BYTES + 1))).toThrow('Use a GIF under 5 MB.');
+    expect(() => checkImage(animated.subarray(0, animated.length - 20))).toThrow('could not be read');
   });
 
   it('refuses what is not an image, is too large, or is damaged', () => {

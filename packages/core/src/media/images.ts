@@ -1,7 +1,11 @@
 import { DomainError } from '../platform/errors';
 
-/** The largest upload accepted, in bytes. */
+/** The largest still image accepted, in bytes. */
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+/** The largest animated GIF accepted, in bytes. Animation cannot be shrunk in the browser the way a still picture can. */
+export const MAX_GIF_BYTES = 5 * 1024 * 1024;
+/** The largest upload of any kind, for refusing a request before reading it. */
+export const MAX_UPLOAD_BYTES = Math.max(MAX_IMAGE_BYTES, MAX_GIF_BYTES);
 /** The longest side accepted, in pixels, where the format lets it be read cheaply. */
 export const MAX_IMAGE_SIDE = 4_096;
 
@@ -139,10 +143,58 @@ function cleanWebp(bytes: Uint8Array): Uint8Array {
   return concat([header, body]);
 }
 
-function checkGif(bytes: Uint8Array): Uint8Array {
+// The only application blocks a GIF needs: they say how many times the animation repeats.
+const GIF_LOOPING = new Set(['NETSCAPE2.0', 'ANIMEXTS1.0']);
+
+/** Where a run of GIF data sub-blocks ends: each starts with its length, and a zero ends the run. */
+function gifBlocksEnd(bytes: Uint8Array, from: number): number {
+  let at = from;
+  for (;;) {
+    if (at >= bytes.length) throw damaged();
+    const length = bytes[at]!;
+    at += 1 + length;
+    if (length === 0) return at;
+  }
+}
+
+function cleanGif(bytes: Uint8Array): Uint8Array {
   if (bytes.length < 13) throw damaged();
   checkSize(bytes[6]! | (bytes[7]! << 8), bytes[8]! | (bytes[9]! << 8));
-  return bytes;
+  const colorTable = (flags: number) => (flags & 0x80 ? 3 * 2 ** ((flags & 0x07) + 1) : 0);
+  let at = 13 + colorTable(bytes[10]!);
+  if (at > bytes.length) throw damaged();
+  const parts: Uint8Array[] = [bytes.subarray(0, at)];
+  while (at < bytes.length) {
+    const kind = bytes[at]!;
+    // The end of the picture. Anything after it is dropped.
+    if (kind === 0x3b) {
+      parts.push(bytes.subarray(at, at + 1));
+      return concat(parts);
+    }
+    if (kind === 0x2c) {
+      // One frame: its position and size, perhaps its own colors, then the compressed picture.
+      if (at + 10 > bytes.length) throw damaged();
+      const end = gifBlocksEnd(bytes, at + 10 + colorTable(bytes[at + 9]!) + 1);
+      if (end > bytes.length) throw damaged();
+      parts.push(bytes.subarray(at, end));
+      at = end;
+    } else if (kind === 0x21) {
+      if (at + 2 > bytes.length) throw damaged();
+      const label = bytes[at + 1]!;
+      const end = gifBlocksEnd(bytes, at + 2);
+      if (end > bytes.length) throw damaged();
+      // Frame timing is kept. Comments and plain text are free text; application blocks can hold XMP,
+      // which names authors and software, so only the ones that set looping are kept.
+      const keep = label === 0xf9 || (label === 0xff && bytes[at + 2] === 11 && GIF_LOOPING.has(ascii(bytes, at + 3, 11)));
+      if (keep) parts.push(bytes.subarray(at, end));
+      at = end;
+    } else {
+      throw damaged();
+    }
+  }
+  // Some encoders leave the end marker off. Browsers show those, so they are completed, not refused.
+  parts.push(new Uint8Array([0x3b]));
+  return concat(parts);
 }
 
 /**
@@ -153,11 +205,13 @@ function checkGif(bytes: Uint8Array): Uint8Array {
  */
 export function checkImage(input: Uint8Array): CheckedImage {
   if (input.length === 0) throw refuse('Choose an image to upload.');
-  if (input.length > MAX_IMAGE_BYTES) throw refuse(`Use an image under ${MAX_IMAGE_BYTES / 1024 / 1024} MB.`);
+  const isGif = input.length >= 6 && (ascii(input, 0, 6) === 'GIF87a' || ascii(input, 0, 6) === 'GIF89a');
+  if (isGif && input.length > MAX_GIF_BYTES) throw refuse(`Use a GIF under ${MAX_GIF_BYTES / 1024 / 1024} MB.`);
+  if (!isGif && input.length > MAX_IMAGE_BYTES) throw refuse(`Use an image under ${MAX_IMAGE_BYTES / 1024 / 1024} MB.`);
 
   if (startsWith(input, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return { contentType: 'image/png', bytes: cleanPng(input) };
   if (startsWith(input, [0xff, 0xd8, 0xff])) return { contentType: 'image/jpeg', bytes: cleanJpeg(input) };
-  if (input.length >= 6 && (ascii(input, 0, 6) === 'GIF87a' || ascii(input, 0, 6) === 'GIF89a')) return { contentType: 'image/gif', bytes: checkGif(input) };
+  if (isGif) return { contentType: 'image/gif', bytes: cleanGif(input) };
   if (input.length >= 12 && ascii(input, 0, 4) === 'RIFF' && ascii(input, 8, 4) === 'WEBP') return { contentType: 'image/webp', bytes: cleanWebp(input) };
   throw notAnImage();
 }

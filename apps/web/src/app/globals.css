@@ -889,3 +889,23 @@
     animation: none;
   }
 }
+
+/*
+ * A person's own two-color profile background. The colors are theirs, so the
+ * text cannot be designed around them: a wash of the page's own surface color
+ * sits over the gradient wherever there is writing, which keeps it readable in
+ * light and dark alike. The full-strength colors show in the frame around the
+ * card and in the band across its top.
+ */
+.wr-profile-theme {
+  --wr-pt: linear-gradient(calc(var(--wr-pt-angle, 135) * 1deg), var(--wr-pt-from), var(--wr-pt-to));
+  --wr-pt-wash: color-mix(in oklch, var(--wr-surface-raised) 76%, transparent);
+  border: 3px solid transparent;
+  background-image: linear-gradient(var(--wr-pt-wash), var(--wr-pt-wash)), var(--wr-pt);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: var(--wr-shadow-raised);
+}
+.wr-profile-theme-band {
+  background-image: var(--wr-pt);
+}

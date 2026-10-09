@@ -14,6 +14,16 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-profile-backgrounds',
+    date: '2026-10-09',
+    title: 'Profile Backgrounds, Cropping And GIFs',
+    items: [
+      'Give your profile a two-color background: pick a ready-made pair or any two colors, and set the direction they run in. Find it under Settings, Profile.',
+      'Move and zoom a picture before it is saved, for profile pictures, banners and character portraits.',
+      'Animated GIFs work as profile pictures and banners, up to 5 MB.',
+    ],
+  },
+  {
     id: '2026-10-09-try-the-demo',
     date: '2026-10-09',
     title: 'Try The Demo',

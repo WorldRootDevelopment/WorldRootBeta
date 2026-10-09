@@ -21,7 +21,10 @@ export async function getOwnProfileSettings(db: Db, actor: Actor): Promise<OwnPr
 
 /** Updates the actor's own profile. Nobody edits anyone else's. */
 export async function updateProfile(db: Db, actor: Actor, input: UpdateProfileInput): Promise<Profile> {
-  const values = parseInput(updateProfileSchema, input);
+  const { theme, ...rest } = parseInput(updateProfileSchema, input);
+  // Left out, the background stays as it is. Null clears it.
+  const background = theme === undefined ? {} : theme === null ? { themeFrom: null, themeTo: null } : { themeFrom: theme.from, themeTo: theme.to, themeAngle: theme.angle };
+  const values = { ...rest, ...background };
   const [row] = await db.update(profiles).set(values).where(eq(profiles.userId, actor.userId)).returning({ userId: profiles.userId });
   if (!row) throw new DomainError('not_found', 'Finish setting up your account first.');
   return (await getProfile(db, actor.userId))!;

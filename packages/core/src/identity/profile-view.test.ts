@@ -49,6 +49,26 @@ describe('editing your profile', () => {
     });
     expect((await getProfileView(db, thea, 'marcus')).profile.displayName).toBe('marcus');
   });
+
+  it('gives a profile a two-color background, keeps it when left out, and clears it', async () => {
+    const { db } = connection;
+    const details = { displayName: 'Thea Bunn', hideOnline: false };
+    expect((await getProfileView(db, thea, 'thea')).profile.theme).toBeNull();
+
+    const set = await updateProfile(db, thea, { ...details, theme: { from: '#FF9A6B', to: '#ffd36b', angle: 90 } });
+    expect(set.theme).toEqual({ from: '#ff9a6b', to: '#ffd36b', angle: 90 });
+    // Other people see it too, and a save that does not mention it leaves it alone.
+    expect((await getProfileView(db, marcus, 'thea')).profile.theme).toEqual({ from: '#ff9a6b', to: '#ffd36b', angle: 90 });
+    expect((await updateProfile(db, thea, details)).theme).toEqual({ from: '#ff9a6b', to: '#ffd36b', angle: 90 });
+
+    // The colors go into the page's styles, so nothing but a plain color is accepted.
+    for (const from of ['red', '#fff', '#ff9a6b; background: url(https://example.com)', 'var(--wr-accent)']) {
+      await expect(updateProfile(db, thea, { ...details, theme: { from, to: '#ffd36b', angle: 90 } })).rejects.toMatchObject({ code: 'invalid_input' });
+    }
+    await expect(updateProfile(db, thea, { ...details, theme: { from: '#ff9a6b', to: '#ffd36b', angle: 720 } })).rejects.toMatchObject({ code: 'invalid_input' });
+
+    expect((await updateProfile(db, thea, { ...details, theme: null })).theme).toBeNull();
+  });
 });
 
 describe('a public profile', () => {

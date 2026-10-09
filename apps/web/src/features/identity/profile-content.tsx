@@ -44,13 +44,22 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
   const { profile, isSelf, joinedAt, communities, characters, blocked, viewerIsStaff, friendship, achievements } = await loadProfile(handle);
   const Name = popup ? 'h2' : 'h1';
   const columns = popup ? 'grid gap-3 sm:grid-cols-2' : 'grid gap-4 sm:grid-cols-2 xl:grid-cols-3';
+  // Their own background, if they chose one. It fills the pop-up, or the card at the top of the full page.
+  const themed = profile.theme !== null;
+  const look = {
+    ...(profile.accentHue === null ? {} : { '--wr-accent-hue': profile.accentHue }),
+    ...(profile.theme ? { '--wr-pt-from': profile.theme.from, '--wr-pt-to': profile.theme.to, '--wr-pt-angle': profile.theme.angle } : {}),
+  } as CSSProperties;
+  const scope = [profile.accentHue === null ? '' : 'wr-accent-scope', themed && popup ? 'wr-profile-theme rounded-3xl' : ''].filter(Boolean).join(' ');
 
   return (
-    <div className={profile.accentHue === null ? undefined : 'wr-accent-scope'} style={profile.accentHue === null ? undefined : ({ '--wr-accent-hue': profile.accentHue } as CSSProperties)}>
-      <header className={popup ? 'overflow-hidden' : 'wr-glass overflow-hidden rounded-3xl'}>
-        {/* The banner: their own picture, or a wash of their color. */}
+    <div className={scope || undefined} style={look}>
+      <header className={popup ? 'overflow-hidden' : `${themed ? 'wr-profile-theme' : 'wr-glass'} overflow-hidden rounded-3xl`}>
+        {/* The banner: their own picture, shown in the same 4 to 1 shape it was cut to when uploaded, or a wash of color. */}
         {profile.bannerId ? (
-          <img src={`/api/v1/media/${profile.bannerId}`} alt="" className={popup ? 'h-28 w-full object-cover' : 'h-36 w-full object-cover md:h-48'} />
+          <img src={`/api/v1/media/${profile.bannerId}`} alt="" className="aspect-[4/1] w-full object-cover" />
+        ) : themed ? (
+          <div aria-hidden="true" className={`wr-profile-theme-band w-full ${popup ? 'h-24' : 'h-28 md:h-36'}`} />
         ) : (
           <div
             aria-hidden="true"

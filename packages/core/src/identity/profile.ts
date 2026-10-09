@@ -16,6 +16,7 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   avatarId: row.avatarMediaId,
   bannerId: row.bannerMediaId,
   accentHue: row.accentHue,
+  theme: row.themeFrom && row.themeTo ? { from: row.themeFrom, to: row.themeTo, angle: row.themeAngle } : null,
   status: row.status,
   diceTheme: toDiceTheme(row.diceTheme),
   isStaff: toBadges(held).includes('staff'),

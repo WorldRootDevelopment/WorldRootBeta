@@ -5,6 +5,7 @@ import { Button, buttonClass } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useId, useRef, useState, type ChangeEvent } from 'react';
 import { Picture } from '@/features/shell/picture';
+import { ImageCropper } from './image-cropper';
 
 interface ImageUploadProps {
   /** The API address that takes the image with PUT and removes it with DELETE. */
@@ -21,7 +22,10 @@ interface ImageUploadProps {
   shape?: 'round' | 'banner';
 }
 
-const MAX_BYTES = 2 * 1024 * 1024;
+/** An animated GIF is sent as it is, so this is the server's limit for one. */
+const MAX_GIF_BYTES = 5 * 1024 * 1024;
+/** A still picture is cut and shrunk here first, so the original may be much larger than what is sent. */
+const MAX_ORIGINAL_BYTES = 25 * 1024 * 1024;
 
 /** Shows a picture with controls to upload a new one or remove it. The change is saved at once. */
 export function ImageUpload({ url, mediaId, name, label, removeOnly = false, shape = 'round' }: ImageUploadProps) {
@@ -30,6 +34,8 @@ export function ImageUpload({ url, mediaId, name, label, removeOnly = false, sha
   const input = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** A still picture waiting to be adjusted before it is sent. */
+  const [adjusting, setAdjusting] = useState<File | null>(null);
 
   const request = async (init: RequestInit) => {
     setPending(true);
@@ -44,14 +50,23 @@ export function ImageUpload({ url, mediaId, name, label, removeOnly = false, sha
     router.refresh();
   };
 
+  const upload = (body: Blob) => request({ method: 'PUT', headers: { 'content-type': 'application/octet-stream' }, body });
+
   const choose = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > MAX_BYTES) {
-      event.target.value = '';
-      return setError('Use an image under 2 MB.');
+    setError(null);
+    // Cutting a GIF here would freeze it on its first frame, so a GIF is sent whole and shown centered.
+    if (file.type === 'image/gif') {
+      if (file.size > MAX_GIF_BYTES) {
+        event.target.value = '';
+        return setError('Use a GIF under 5 MB.');
+      }
+      return void upload(file);
     }
-    void request({ method: 'PUT', headers: { 'content-type': 'application/octet-stream' }, body: file });
+    event.target.value = '';
+    if (file.size > MAX_ORIGINAL_BYTES) return setError('Use an image under 25 MB.');
+    setAdjusting(file);
   };
 
   return (
@@ -85,9 +100,24 @@ export function ImageUpload({ url, mediaId, name, label, removeOnly = false, sha
             {error}
           </p>
         ) : removeOnly ? null : (
-          <p className="text-sm text-ink-muted">PNG, JPEG, GIF or WebP, up to 2 MB. Location and camera details are removed.</p>
+          <p className="text-sm text-ink-muted">
+            PNG, JPEG, WebP or an animated GIF. You can move and zoom a picture before it is saved; a GIF is used whole, up to 5 MB. Location
+            and camera details are removed.
+          </p>
         )}
       </div>
+      {adjusting ? (
+        <ImageCropper
+          file={adjusting}
+          shape={shape}
+          label={label}
+          onCancel={() => setAdjusting(null)}
+          onDone={(image) => {
+            setAdjusting(null);
+            void upload(image);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

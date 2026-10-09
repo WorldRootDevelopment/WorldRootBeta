@@ -99,6 +99,11 @@ export const profiles = pgTable('profiles', {
   bannerMediaId: uuid('banner_media_id').references((): AnyPgColumn => media.id, { onDelete: 'set null' }),
   // The color of this person's profile, as a hue. Null takes WorldRoot's own.
   accentHue: integer('accent_hue'),
+  // This person's own two-color profile background: both colors as #rrggbb, or both null for the plain look.
+  themeFrom: text('theme_from'),
+  themeTo: text('theme_to'),
+  // The direction the two colors run in, in degrees.
+  themeAngle: integer('theme_angle').notNull().default(135),
   // A short line shown under the name: what they are up to, or a favorite quote.
   status: text('status'),
   // How this person's dice look when they roll. A key from the registry in @worldroot/contracts.

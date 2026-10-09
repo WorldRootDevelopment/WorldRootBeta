@@ -11,6 +11,19 @@ export const handleSchema = z
   .max(HANDLE_MAX, `Use at most ${HANDLE_MAX} characters.`)
   .regex(/^[A-Za-z0-9_]+$/, 'Use only letters, numbers and underscores.');
 
+/** A color as the browser's color picker gives it: #rrggbb. Checked strictly, because it is placed in a page's styles. */
+const hexColor = z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, 'Choose a color.').transform((value) => value.toLowerCase());
+
+/** A person's own two-color background for their profile. */
+export const profileThemeSchema = z.object({
+  from: hexColor,
+  to: hexColor,
+  /** The direction the colors run in, in degrees. */
+  angle: z.coerce.number().int().min(0, 'Choose a direction.').max(360, 'Choose a direction.'),
+});
+
+export type ProfileTheme = z.infer<typeof profileThemeSchema>;
+
 export const createProfileSchema = z.object({
   handle: handleSchema,
   displayName: z.string().trim().min(1, 'Enter a display name.').max(50, 'Use at most 50 characters.'),
@@ -32,6 +45,8 @@ export const profileSchema = z.object({
   bannerId: z.string().nullable(),
   /** The color of their profile, as a hue from 0 to 359. Null takes WorldRoot's own. */
   accentHue: z.number().nullable(),
+  /** Their own two-color background. Null takes the plain look. */
+  theme: profileThemeSchema.nullable(),
   /** A short line shown under their name. */
   status: z.string().nullable(),
   /** How their dice look when they roll. A key from the dice theme registry. */
@@ -58,9 +73,10 @@ export const updateProfileSchema = z.object({
   pronouns: optionalLine(40),
   bio: optionalLine(2_000),
   hideOnline: z.boolean(),
-  // Left out, these two stay as they are.
+  // Left out, these stay as they are.
   status: optionalLine(80).optional(),
   accentHue: z.coerce.number().int().min(0).max(359).nullable().optional(),
+  theme: profileThemeSchema.nullable().optional(),
 });
 
 export type UpdateProfileInput = z.input<typeof updateProfileSchema>;
