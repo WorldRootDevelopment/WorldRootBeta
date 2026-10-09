@@ -1,5 +1,6 @@
 import { buttonClass, Wordmark } from '@worldroot/ui';
 import Link from 'next/link';
+import { SignOutButton } from '@/features/identity/sign-out-button';
 import { LegalLinks } from '@/features/legal/legal-page';
 import { demoGuestEnabled } from '@/lib/server';
 import { getViewer } from '@/lib/session';
@@ -18,6 +19,8 @@ const PILLARS = [
  */
 export default async function LandingPage() {
   const viewer = await getViewer();
+  // Signed in, but the account has no name yet: Home would only send them back to choose one.
+  const unfinished = Boolean(viewer && !viewer.profile && !viewer.suspended);
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-5xl flex-col px-4 md:px-8">
@@ -27,8 +30,8 @@ export default async function LandingPage() {
           <Link href="/install" className={buttonClass('ghost')}>
             Get The App
           </Link>
-          <Link href={viewer ? '/home' : '/sign-in'} className={buttonClass('ghost')}>
-            {viewer ? 'Go to Home' : 'Sign in'}
+          <Link href={unfinished ? '/welcome' : viewer ? '/home' : '/sign-in'} className={buttonClass('ghost')}>
+            {unfinished ? 'Finish Setting Up' : viewer ? 'Go to Home' : 'Sign in'}
           </Link>
         </div>
       </header>
@@ -42,7 +45,14 @@ export default async function LandingPage() {
           scenes you write together, in one place built for writing.
         </p>
         <div className="mt-10 flex flex-wrap gap-3">
-          {viewer ? (
+          {unfinished ? (
+            <>
+              <Link href="/welcome" className={buttonClass('primary', 'lg')}>
+                Finish Setting Up
+              </Link>
+              <SignOutButton />
+            </>
+          ) : viewer ? (
             <Link href="/home" className={buttonClass('primary', 'lg')}>
               Go to your Home
             </Link>
@@ -62,6 +72,12 @@ export default async function LandingPage() {
             </>
           )}
         </div>
+
+        {unfinished && viewer ? (
+          <p className="mt-4 text-sm text-ink-muted">
+            You are signed in as <strong className="font-semibold text-ink">{viewer.email}</strong>, and the account still needs a name.
+          </p>
+        ) : null}
 
         <ul className="mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {PILLARS.map(({ title, body }) => (
