@@ -1,5 +1,6 @@
 'use client';
 
+import { CONTENT_RATING_LABELS, CONTENT_RATINGS } from '@worldroot/contracts';
 import { TextArea, TextField } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useState, type CSSProperties, type FormEvent } from 'react';
@@ -15,6 +16,7 @@ interface SettingsValues {
   listed: boolean;
   requireCharacterApproval: boolean;
   dndMode: boolean;
+  maxRating: string;
 }
 
 interface SettingsFormProps {
@@ -43,7 +45,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
       accentHue: hue,
       listed: form.get('listed') === 'on',
       ...(community
-        ? { rules: form.get('rules'), requireCharacterApproval: form.get('requireCharacterApproval') === 'on', dndMode: form.get('dndMode') === 'on' }
+        ? { rules: form.get('rules'), requireCharacterApproval: form.get('requireCharacterApproval') === 'on', dndMode: form.get('dndMode') === 'on', maxRating: form.get('maxRating') }
         : { slug: form.get('slug') }),
     };
     setPending(true);
@@ -154,6 +156,29 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
       {community ? (
         <fieldset className="flex flex-col">
           <legend className="mb-1 text-sm font-medium text-ink">Play Style</legend>
+          <label className="flex flex-col gap-1.5 py-2 text-sm text-ink">
+            <span className="font-medium">Highest Scene Rating</span>
+            <select
+              name="maxRating"
+              defaultValue={community.maxRating}
+              className="min-h-11 w-fit rounded-lg border border-line-strong bg-surface-raised px-3 text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
+            >
+              {CONTENT_RATINGS.map((rating) => (
+                <option key={rating} value={rating}>
+                  {CONTENT_RATING_LABELS[rating]}
+                </option>
+              ))}
+            </select>
+            <span className="text-ink-muted">
+              New scenes here cannot be rated above this. Choose Teen to keep Mature and Adult scenes out. Scenes that already exist keep their
+              rating.
+            </span>
+            {fields.maxRating ? (
+              <span role="alert" className="text-danger">
+                {fields.maxRating}
+              </span>
+            ) : null}
+          </label>
           <label className={checkRow}>
             <input type="checkbox" name="dndMode" defaultChecked={community.dndMode} className="mt-0.5 size-5 shrink-0 accent-accent" />
             <span>

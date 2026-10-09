@@ -1,0 +1,1 @@
+ALTER TABLE "communities" ADD COLUMN "max_rating" text DEFAULT 'adult' NOT NULL;

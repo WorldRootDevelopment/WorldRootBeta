@@ -20,6 +20,12 @@ export const CONTENT_RATING_LABELS: Record<ContentRating, string> = {
   adult: 'Adult',
 };
 
+/** The ratings a community allows when its highest is `max`, mildest first. An unknown value allows them all. */
+export function ratingsUpTo(max: string): ContentRating[] {
+  const at = CONTENT_RATINGS.indexOf(max as ContentRating);
+  return at < 0 ? [...CONTENT_RATINGS] : CONTENT_RATINGS.slice(0, at + 1);
+}
+
 export const CONTENT_RATING_HINTS: Record<ContentRating, string> = {
   everyone: 'Nothing a general audience would mind.',
   teen: 'Mild violence, mild language, romance without detail.',

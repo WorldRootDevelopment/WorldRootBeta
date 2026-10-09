@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PERMISSION_KEYS, type PermissionKey } from './permissions';
+import { CONTENT_RATINGS } from './scenes';
 
 const optionalText = (max: number) =>
   z
@@ -27,8 +28,10 @@ export const communitySettingsSchema = z.object({
   accentHue: z.coerce.number({ error: 'Choose a color.' }).int().min(0).max(359),
   listed: z.boolean(),
   requireCharacterApproval: z.boolean(),
-  // Left out, it stays as it is.
+  // Left out, these stay as they are.
   dndMode: z.boolean().optional(),
+  /** The highest rating a scene here may be given. */
+  maxRating: z.enum(CONTENT_RATINGS, { error: 'Choose a rating.' }).optional(),
 });
 
 export type CommunitySettingsInput = z.input<typeof communitySettingsSchema>;

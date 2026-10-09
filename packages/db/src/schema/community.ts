@@ -15,6 +15,9 @@ export const communities = pgTable('communities', {
   // Listed communities appear in Discover and can be joined without an invite.
   listed: boolean('listed').notNull().default(false),
   requireCharacterApproval: boolean('require_character_approval').notNull().default(false),
+  // The highest content rating a scene here may be given: 'everyone', 'teen', 'mature' or 'adult'.
+  // The default allows all of them. Lowering it does not change scenes that already exist.
+  maxRating: text('max_rating').notNull().default('adult'),
   // Turns on dice rolls in this community's scenes.
   dndMode: boolean('dnd_mode').notNull().default(false),
   // Set while the community is archived: kept and readable by its members, but frozen and hidden from everyone else.

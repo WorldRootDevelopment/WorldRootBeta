@@ -35,6 +35,7 @@ export default async function GeneralSettingsPage({ params }: { params: Promise<
             listed: community.listed,
             requireCharacterApproval: community.requireCharacterApproval,
             dndMode: community.dndMode,
+            maxRating: community.maxRating,
           }}
         />
       ) : null}

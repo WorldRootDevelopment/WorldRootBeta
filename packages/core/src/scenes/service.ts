@@ -2,7 +2,9 @@ import { checkAchievements } from '../identity/achievements';
 import {
   MAX_OOC_CHARACTERS,
   MAX_POST_CHARACTERS,
+  CONTENT_RATING_LABELS,
   postInputSchema,
+  ratingsUpTo,
   sceneInputSchema,
   type PostInput,
   type SceneInput,
@@ -199,6 +201,13 @@ export async function createScene(db: Db, actor: Actor, input: SceneInput): Prom
     }
     communityId = place.communityId;
     await authorize(actor, 'scene.create', { communityId, worldId: place.worldId }, communityGrants(db));
+    // A community may keep its scenes below a rating. Private scenes answer to nobody but the people in them.
+    const [home] = await db.select({ maxRating: communities.maxRating }).from(communities).where(eq(communities.id, communityId));
+    const allowed = ratingsUpTo(home?.maxRating ?? 'adult');
+    if (!allowed.includes(values.rating)) {
+      const message = `Scenes in this community can be rated up to ${CONTENT_RATING_LABELS[allowed.at(-1)!]}.`;
+      throw new DomainError('invalid_input', message, { fields: { rating: message } });
+    }
   }
 
   const cast = await requireEligible(db, actor, communityId, values.characterIds);
@@ -753,6 +762,8 @@ export interface SceneSetup {
     worldName: string;
     locationId: string;
     locationName: string;
+    /** The highest rating a scene here may be given. */
+    maxRating: string;
   } | null;
   /** Characters the actor may open the scene with. */
   characters: Array<{ id: string; name: string; tagline: string | null }>;
@@ -782,6 +793,7 @@ export async function getSceneSetup(db: Db, actor: Actor, locationId: string | n
       worldName: spot.world.name,
       locationId: spot.location.id,
       locationName: spot.location.name,
+      maxRating: spot.community.maxRating,
     },
     characters: await listEligibleCharacters(db, actor, spot.community.id),
     canCreate: await can(actor, 'scene.create', { communityId: spot.community.id, worldId: spot.world.id }, communityGrants(db)),

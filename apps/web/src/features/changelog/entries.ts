@@ -14,6 +14,12 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-community-rating-limit',
+    date: '2026-10-09',
+    title: 'Communities Can Limit Scene Ratings',
+    items: ['A community can now set the highest rating its scenes may have, under Settings, Play Style. Set it to Teen to keep Mature and Adult scenes out.'],
+  },
+  {
     id: '2026-10-09-character-gallery',
     date: '2026-10-09',
     title: 'Character Galleries',

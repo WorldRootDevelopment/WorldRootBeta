@@ -66,7 +66,7 @@ export default async function NewScenePage({ searchParams }: { searchParams: Pro
           </span>
         </EmptyState>
       ) : (
-        <NewSceneForm locationId={place?.locationId ?? null} characters={characters} cancelHref={backHref} />
+        <NewSceneForm locationId={place?.locationId ?? null} characters={characters} cancelHref={backHref} maxRating={place?.maxRating ?? 'adult'} communityName={place?.communityName ?? null} />
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { CONTENT_RATING_HINTS, CONTENT_RATING_LABELS, CONTENT_RATINGS, type ContentRating } from '@worldroot/contracts';
+import { CONTENT_RATING_HINTS, CONTENT_RATING_LABELS, CONTENT_RATINGS, ratingsUpTo, type ContentRating } from '@worldroot/contracts';
 import type { RichDoc } from '@worldroot/editor';
 import { RichTextEditor } from '@worldroot/editor/react';
 import { TextArea, TextField } from '@worldroot/ui';
@@ -14,10 +14,14 @@ interface NewSceneFormProps {
   locationId: string | null;
   characters: Array<{ id: string; name: string; tagline: string | null }>;
   cancelHref: string;
+  /** The highest rating the community allows. A private scene allows them all. */
+  maxRating: string;
+  communityName: string | null;
 }
 
 /** Start a scene: a title, who you are bringing, a rating and the opening post. */
-export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFormProps) {
+export function NewSceneForm({ locationId, characters, cancelHref, maxRating, communityName }: NewSceneFormProps) {
+  const ratings = ratingsUpTo(maxRating);
   const router = useRouter();
   const opening = useRef<RichDoc | null>(null);
   const [chosen, setChosen] = useState<string[]>(characters.length === 1 ? [characters[0]!.id] : []);
@@ -92,7 +96,7 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
 
       <fieldset className="flex flex-col gap-1">
         <legend className="mb-1 text-sm font-medium text-ink">Content Rating</legend>
-        {CONTENT_RATINGS.map((option) => (
+        {ratings.map((option) => (
           <label key={option} className="flex min-h-11 items-start gap-3 py-2 text-sm text-ink">
             <input
               type="radio"
@@ -108,6 +112,17 @@ export function NewSceneForm({ locationId, characters, cancelHref }: NewSceneFor
           </label>
         ))}
       </fieldset>
+
+      {ratings.length < CONTENT_RATINGS.length && communityName ? (
+        <p className="-mt-2 text-sm text-ink-muted">
+          {communityName} allows scenes rated up to {CONTENT_RATING_LABELS[ratings.at(-1)!]}.
+        </p>
+      ) : null}
+      {fields.rating ? (
+        <p role="alert" className="text-sm text-danger">
+          {fields.rating}
+        </p>
+      ) : null}
 
       <div className="flex flex-col gap-1.5">
         <p className="text-sm font-medium text-ink">Opening Post</p>
