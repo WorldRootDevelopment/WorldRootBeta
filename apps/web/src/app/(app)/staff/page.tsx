@@ -1,4 +1,4 @@
-import { getSeason, listAllCommunities, listReports, searchAccounts } from '@worldroot/core';
+import { getSeason, getSeasonMode, listAllCommunities, listReports, searchAccounts } from '@worldroot/core';
 import { Button, buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -22,11 +22,12 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
   if (viewer.actor.platformRole !== 'staff') notFound();
   const query = ((await searchParams).q ?? '').slice(0, 100);
   const { db } = await database();
-  const [accounts, communities, reports, season] = await Promise.all([
+  const [accounts, communities, reports, season, seasonMode] = await Promise.all([
     searchAccounts(db, viewer.actor, query),
     listAllCommunities(db, viewer.actor),
     listReports(db, viewer.actor, 'platform'),
     getSeason(db),
+    getSeasonMode(db),
   ]);
 
   return (
@@ -42,10 +43,10 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
 
       <SectionHeading>Site Look</SectionHeading>
       <p className="mb-4 max-w-2xl text-sm text-ink-muted">
-        Dress the whole site for an occasion. A look changes the logo and titles, button colors, the light behind the page, and adds an illustrated banner
+        Dress the whole site for an occasion. Left on Automatic, each look comes on at its own time of year; or hold one on yourself. A look changes the logo and titles, button colors, the light behind the page, and adds an illustrated banner
         across the top and a few drifting shapes, for everyone, at once. Text and each community’s own color stay as they are.
       </p>
-      <SeasonPicker season={season} />
+      <SeasonPicker mode={seasonMode} showing={season} />
 
       <SectionHeading>Accounts</SectionHeading>
       <form className="mb-5 flex max-w-xl gap-2">

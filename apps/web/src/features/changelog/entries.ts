@@ -14,6 +14,12 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-looks-by-calendar',
+    date: '2026-10-09',
+    title: 'Banners That Follow The Calendar',
+    items: ['WorldRoot now dresses for the time of year by itself: Halloween through October, Winter from December to February, Spring from March to May, Pride in June, and Trans Pride on the Trans Day of Visibility and through Trans Awareness Week.'],
+  },
+  {
     id: '2026-10-09-illustrated-banners',
     date: '2026-10-09',
     title: 'Illustrated Banners',
