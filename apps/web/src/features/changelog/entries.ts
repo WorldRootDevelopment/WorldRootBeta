@@ -14,6 +14,25 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-popups-achievements-dice',
+    date: '2026-10-09',
+    title: 'Profile pop-ups, more achievements and a better dice throw',
+    items: [
+      'Clicking someone’s name opens their profile in a pop-up over the page you are on. Close it and you are back where you were.',
+      'Nineteen achievements now, with a new Achievements tab in Settings that shows them all and how far along you are.',
+      'Profiles show only the achievements a person has earned.',
+      'Worldbuilder and Cartographer are also badges, shown in the badge row on your profile.',
+      'Dice are thrown into the tray: they bounce, roll and slow to a stop.',
+      'Spelling is now American English throughout.',
+    ],
+  },
+  {
+    id: '2026-10-09-customization',
+    date: '2026-10-09',
+    title: 'A Customization tab in Settings',
+    items: ['Dice styles moved out of the dice tray to Settings, under a new Customization tab, where you can see the whole set in each style.'],
+  },
+  {
     id: '2026-10-08-badge-labels',
     date: '2026-10-08',
     title: 'Badge labels no longer jump',
@@ -36,7 +55,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       'Badges are now a small icon. Point at one, or tab to it, to see its name.',
       'Founder, Premium, Early supporter and Beta tester badges are shown on profiles only.',
-      'The Staff badge still appears beside a name everywhere, so WorldRoot staff are always recognisable.',
+      'The Staff badge still appears beside a name everywhere, so WorldRoot staff are always recognizable.',
     ],
   },
   {
@@ -48,7 +67,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'The Inbox moved to the top right, beside What’s new, and now has Direct messages, Friends and Notifications.',
       'The sidebar has a Resources section (Discover, Scenes, Library) and lists every community you belong to.',
       'A community’s members are shown beside every page of the community, with who is online.',
-      'Profiles can have a banner, a colour of their own and a status line.',
+      'Profiles can have a banner, a color of their own and a status line.',
       'Achievements: ten badges to earn, such as Ensemble cast for ten characters and Worldbuilder for a world with five locations. They sit on your profile.',
       'Dice are now real 3D cubes that spin and settle.',
       'WorldRoot has its book-and-roots logo.',
@@ -148,7 +167,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Account settings, badges, blocking and message requests',
     items: [
       'Settings now has an Account tab: change your handle and password, sign out other devices, and manage who you have blocked.',
-      'New badges. WorldRoot staff have a filled Staff badge; a community’s own owner, admins and moderators have an outlined one in the community’s colour, shown only inside it.',
+      'New badges. WorldRoot staff have a filled Staff badge; a community’s own owner, admins and moderators have an outlined one in the community’s color, shown only inside it.',
       'More badges: Founder, Premium, Early supporter and Beta tester.',
       'Block someone from their profile. Neither of you can message the other or invite the other to a private scene, and they are not told.',
       'A first message from someone you share no community with now arrives as a request you can accept or decline.',
@@ -254,7 +273,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Create and run a community',
     items: [
       'Create your own community from the Create menu or the Communities page.',
-      'A Settings tab for owners and staff: name, about, rules, accent colour, and who can find it.',
+      'A Settings tab for owners and staff: name, about, rules, accent color, and who can find it.',
       'Build custom roles from a list of permissions, and give them to members.',
       'Define the fields every character is asked for, and switch on character review.',
       'Add worlds from your library, remove members, and read the audit log.',

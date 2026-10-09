@@ -1,3 +1,4 @@
+import { checkAchievements } from '../identity/achievements';
 import { characters, media, profiles, type Db } from '@worldroot/db';
 import { count, eq, or } from 'drizzle-orm';
 import { canEditCharacter } from '../characters/service';
@@ -41,6 +42,7 @@ export async function setAvatar(db: Db, storage: MediaStorage, actor: Actor, upl
   const stored = await store(db, storage, actor, upload);
   await db.update(profiles).set({ avatarMediaId: stored.id }).where(eq(profiles.userId, actor.userId));
   await release(db, storage, profile.avatarMediaId);
+  await checkAchievements(db, actor.userId, 'profile');
   return stored;
 }
 

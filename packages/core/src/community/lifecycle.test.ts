@@ -92,7 +92,7 @@ describe('archiving a community', () => {
     await expect(
       updateCommunity(db, owner, community.id, { name: 'Renamed', accentHue: 1, listed: true, requireCharacterApproval: false }),
     ).rejects.toMatchObject({ code: 'forbidden' });
-    // The owner is still recognised as the owner, which is what lets them restore or delete it.
+    // The owner is still recognized as the owner, which is what lets them restore or delete it.
     expect(await getAdminView(db, owner, community.id)).toMatchObject({ isOwner: true, permissions: [] });
 
     await setCommunityArchived(db, owner, community.id, false);

@@ -2,8 +2,8 @@ import { cn } from '../cn';
 
 /**
  * The WorldRoot mark: an open book whose spine grows down into roots.
- * The pages keep their own colours in both themes. The spine and roots take
- * the text colour, so they stay visible on a dark page.
+ * The pages keep their own colors in both themes. The spine and roots take
+ * the text color, so they stay visible on a dark page.
  */
 export function RootMark({ className }: { className?: string }) {
   return (

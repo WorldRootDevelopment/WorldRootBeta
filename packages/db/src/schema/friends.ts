@@ -6,7 +6,7 @@ export const friendshipStatus = pgEnum('friendship_status', ['pending', 'accepte
 
 /**
  * One row per pair of people, written by whoever asked first. While it is
- * pending only the person asked can accept it. Declining, cancelling and
+ * pending only the person asked can accept it. Declining, canceling and
  * unfriending all simply remove the row, so nobody is left with a record of
  * having been turned down.
  */

@@ -193,16 +193,16 @@ describe('message requests', () => {
 
   it('are skipped between people who share a community, and groups are only for such people', async () => {
     const { db } = connection;
-    const a = await addUser('neighbour_a');
-    const b = await addUser('neighbour_b');
+    const a = await addUser('neighbor_a');
+    const b = await addUser('neighbor_b');
     const outsider = await addUser('outsider_c');
-    const community = await createCommunity(db, a, { slug: 'neighbours', name: 'Neighbours', listed: true });
+    const community = await createCommunity(db, a, { slug: 'neighbors', name: 'Neighbors', listed: true });
     await joinCommunity(db, b, community.id);
 
-    expect((await startConversation(db, a, { handles: ['neighbour_b'] })).requestState).toBe('none');
-    await expect(startConversation(db, a, { handles: ['neighbour_b', 'outsider_c'] })).rejects.toMatchObject({ code: 'forbidden' });
+    expect((await startConversation(db, a, { handles: ['neighbor_b'] })).requestState).toBe('none');
+    await expect(startConversation(db, a, { handles: ['neighbor_b', 'outsider_c'] })).rejects.toMatchObject({ code: 'forbidden' });
     await joinCommunity(db, outsider, community.id);
-    await expect(startConversation(db, a, { handles: ['neighbour_b', 'outsider_c'] })).resolves.toMatchObject({ kind: 'group' });
+    await expect(startConversation(db, a, { handles: ['neighbor_b', 'outsider_c'] })).resolves.toMatchObject({ kind: 'group' });
   });
 });
 

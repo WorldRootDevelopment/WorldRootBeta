@@ -1,16 +1,16 @@
 /*
  * WorldRoot design tokens: the semantic layer.
  *
- * Components use these names only, never a raw colour. Light and dark are two
+ * Components use these names only, never a raw color. Light and dark are two
  * mappings of the same names. The accent ramp is generated from one hue with
  * fixed lightness and chroma steps, so any hue a community picks stays readable.
  * A community theme sets --wr-accent-hue on its container and nothing else.
  *
  * The palette comes from the WorldRoot site: a cream page (#FFF8F2), caramel
- * (#B58E70, lightening to #C9A68B), soft grey-brown text, and a violet-to-blue
+ * (#B58E70, lightening to #C9A68B), soft gray-brown text, and a violet-to-blue
  * pair (#A464A1, #3B5DAD) kept for glows. The look is glossy and glassy:
  * surfaces are translucent over a softly lit page, and buttons catch a
- * highlight. Text on an accent fill is dark, because caramel is a light colour.
+ * highlight. Text on an accent fill is dark, because caramel is a light color.
  */
 
 :root {
@@ -40,7 +40,7 @@
 
   --wr-focus: oklch(0.52 0.12 var(--wr-accent-hue));
 
-  /* Badge colours. Fixed in both themes and outside any community accent, so a badge always means the same thing. */
+  /* Badge colors. Fixed in both themes and outside any community accent, so a badge always means the same thing. */
   --wr-staff: oklch(0.47 0.17 268);
   --wr-staff-ink: oklch(0.99 0.01 268);
   --wr-premium: oklch(0.8 0.15 85);

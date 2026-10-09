@@ -7,7 +7,7 @@ interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   error?: string;
 }
 
-/** A labelled multi-line field. Set in the story typeface, since what goes here is prose. */
+/** A labeled multi-line field. Set in the story typeface, since what goes here is prose. */
 export function TextArea({ label, hint, error, className, id, rows = 5, ...props }: TextAreaProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;

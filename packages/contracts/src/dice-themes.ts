@@ -1,6 +1,6 @@
 /**
  * Dice themes: how a person's dice look when they roll. A theme is only a
- * set of colours; it never changes what is rolled.
+ * set of colors; it never changes what is rolled.
  *
  * `free` themes can be chosen by anyone. The others are shown as previews
  * and cannot be chosen yet: they are the ones meant to be earned with points
@@ -15,9 +15,9 @@ interface DiceThemeDefinition {
   free: boolean;
 }
 
-/** In display order. `classic` follows the colour of the community you are rolling in. */
+/** In display order. `classic` follows the color of the community you are rolling in. */
 export const DICE_THEMES = {
-  classic: { label: 'Classic', note: 'Takes the colour of the community.', free: true },
+  classic: { label: 'Classic', note: 'Takes the color of the community.', free: true },
   ivory: { label: 'Ivory', note: 'Bone white with dark numbers.', free: true },
   obsidian: { label: 'Obsidian', note: 'Black glass with gold numbers.', free: true },
   jade: { label: 'Jade', note: 'Deep green stone.', free: false },

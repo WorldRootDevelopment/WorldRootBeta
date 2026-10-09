@@ -232,6 +232,7 @@ export async function createScene(db: Db, actor: Actor, input: SceneInput): Prom
     return fresh!;
   });
   await checkAchievements(db, actor.userId, 'posts');
+  await checkAchievements(db, actor.userId, 'scenes');
   return started;
 }
 
@@ -644,7 +645,7 @@ export async function setSceneStatus(db: Db, actor: Actor, sceneId: string, stat
   const scene = await requireVisibleScene(db, actor, sceneId);
   if (!(await canManageScene(db, actor, scene))) throw new DomainError('forbidden', 'Only the scene’s creator can change its status.');
 
-  return db.transaction(async (tx) => {
+  const changed = await db.transaction(async (tx) => {
     const [updated] = await tx.update(scenes).set({ status }).where(eq(scenes.id, sceneId)).returning();
     if (scene.communityId) {
       await recordAudit(tx, {
@@ -660,6 +661,9 @@ export async function setSceneStatus(db: Db, actor: Actor, sceneId: string, stat
     await emitEvent(tx, 'scene.updated', { sceneId });
     return updated!;
   });
+  // Finishing a scene is its creator's achievement, whoever marked it complete.
+  if (status === 'completed' && scene.createdByUserId) await checkAchievements(db, scene.createdByUserId, 'scenes');
+  return changed;
 }
 
 /** Records how far the actor has read. The position only ever moves forward. */
@@ -754,7 +758,7 @@ export interface SceneSummary {
   cast: string[];
 }
 
-async function summarise(db: Db, rows: Scene[]): Promise<SceneSummary[]> {
+async function summarize(db: Db, rows: Scene[]): Promise<SceneSummary[]> {
   if (rows.length === 0) return [];
   const ids = rows.map((scene) => scene.id);
   const names = await db
@@ -797,7 +801,7 @@ export async function listMyScenes(db: Db, userId: string): Promise<MyScene[]> {
     .where(eq(sceneParticipants.userId, userId))
     .orderBy(desc(scenes.lastPostAt));
   const readBy = new Map(rows.map((row) => [row.scene.id, row.lastReadSeq]));
-  const summaries = await summarise(
+  const summaries = await summarize(
     db,
     rows.map((row) => row.scene),
   );
@@ -817,5 +821,5 @@ export async function listLocationScenes(db: Db, locationId: string): Promise<Sc
     .from(scenes)
     .where(and(eq(scenes.locationId, locationId), ne(scenes.status, 'archived')))
     .orderBy(desc(scenes.lastPostAt));
-  return summarise(db, rows);
+  return summarize(db, rows);
 }

@@ -1,5 +1,5 @@
 import { BADGES, COMMUNITY_BADGES, type BadgeKey, type CommunityBadgeKey } from '@worldroot/contracts';
-import { Crown, FlaskConical, Gem, Heart, ShieldCheck, Sprout, Wrench, type LucideIcon } from 'lucide-react';
+import { Crown, Earth, FlaskConical, Gem, Heart, Map as MapIcon, ShieldCheck, Sprout, Wrench, type LucideIcon } from 'lucide-react';
 
 const pill = 'relative inline-flex shrink-0 items-center rounded-full p-1 align-middle text-[0.6875rem] font-semibold leading-none';
 
@@ -9,9 +9,11 @@ const platformIcons: Record<BadgeKey, LucideIcon> = {
   premium: Gem,
   early_supporter: Heart,
   beta_tester: FlaskConical,
+  worldbuilder: Earth,
+  cartographer: MapIcon,
 };
 
-// Platform badges are filled, in fixed colours that no community theme can change.
+// Platform badges are filled, in fixed colors that no community theme can change.
 const platformTones: Record<(typeof BADGES)[BadgeKey]['tone'], string> = {
   staff: 'bg-staff text-staff-ink',
   premium: 'bg-premium text-premium-ink',
@@ -28,7 +30,7 @@ interface BadgesProps {
   /**
    * Show every platform badge. Only a profile does this. Everywhere else a
    * name carries the Staff badge alone, so the people who can act for
-   * WorldRoot are always recognisable and nothing else crowds a name.
+   * WorldRoot are always recognizable and nothing else crowds a name.
    */
   all?: boolean;
 }
@@ -49,7 +51,7 @@ const badge = `group/badge ${pill} cursor-default focus-visible:outline-2 focus-
 /**
  * The badges beside a person's name: an icon each, with what it means shown
  * on hover or focus. Platform badges are filled pills; a community badge is an
- * outlined pill in the community's own colour. The difference in shape is
+ * outlined pill in the community's own color. The difference in shape is
  * deliberate: WorldRoot staff must never be mistaken for a community's
  * admins, nor the reverse.
  */

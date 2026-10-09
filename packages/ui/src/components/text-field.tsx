@@ -7,7 +7,7 @@ interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-/** A labelled input with an optional hint and an error announced to screen readers. */
+/** A labeled input with an optional hint and an error announced to screen readers. */
 export function TextField({ label, hint, error, className, id, ...props }: TextFieldProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;

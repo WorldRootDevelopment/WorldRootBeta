@@ -10,10 +10,10 @@ import { touchPresence } from '../community/presence';
 import { listConversations, startConversation } from '../messaging/service';
 import { listNotifications } from '../notifications/service';
 import type { Actor } from '../platform/authorize';
-import { createScene } from '../scenes/service';
+import { createScene, setSceneStatus } from '../scenes/service';
 import { createLocation, createWorld } from '../worlds/service';
 import { blockUser } from './account';
-import { grantAchievement, listAchievements } from './achievements';
+import { grantAchievement, listAchievementProgress, listAchievements } from './achievements';
 import { acceptFriendRequest, countIncomingFriendRequests, friendState, listFriends, removeFriend, sendFriendRequest } from './friends';
 import { createProfile, getProfile } from './profile';
 import { updateProfile } from './profile-view';
@@ -66,7 +66,7 @@ describe('friends', () => {
     await acceptFriendRequest(db, marcus, thea.userId);
     expect(await friendState(db, thea.userId, marcus.userId)).toBe('friends');
     expect(await countIncomingFriendRequests(db, marcus.userId)).toBe(0);
-    expect((await lines(thea))[0]).toBe('Marcus accepted your friend request');
+    expect(await lines(thea)).toContain('Marcus accepted your friend request');
 
     // Friends see each other online, unless one is appearing offline.
     await touchPresence(db, marcus);
@@ -93,7 +93,7 @@ describe('friends', () => {
 });
 
 describe('a profile of your own', () => {
-  it('takes a status line and a colour, and leaves them alone when they are not sent', async () => {
+  it('takes a status line and a color, and leaves them alone when they are not sent', async () => {
     const { db } = connection;
     const wren = await addUser('wren');
     const base = { displayName: 'Wren', pronouns: null, bio: null, hideOnline: false };
@@ -117,9 +117,9 @@ describe('achievements', () => {
     expect(await earned(ada)).toEqual([]);
 
     for (let i = 1; i <= 9; i += 1) await createCharacter(db, ada, { name: `Character ${i}` });
-    expect(await earned(ada)).toEqual([]);
+    expect(await earned(ada)).toEqual(['new_face']);
     const tenth = await createCharacter(db, ada, { name: 'Character 10' });
-    expect(await earned(ada)).toEqual(['ensemble_cast']);
+    expect(await earned(ada)).toEqual(['new_face', 'ensemble_cast']);
 
     const world = await createWorld(db, ada, { name: 'Atlas' });
     for (let i = 1; i <= 4; i += 1) await createLocation(db, ada, world.id, { name: `Place ${i}` });
@@ -129,9 +129,20 @@ describe('achievements', () => {
     expect(await earned(ada)).not.toContain('cartographer');
 
     await createCommunity(db, ada, { slug: 'atlas', name: 'Atlas' });
-    await createScene(db, ada, { title: 'Opening', rating: 'everyone', characterIds: [tenth.id], openingPost: docFromText('Once.') });
+    const opening = await createScene(db, ada, { title: 'Opening', rating: 'everyone', characterIds: [tenth.id], openingPost: docFromText('Once.') });
     // Shown in the registry's order, whatever order they were earned in.
-    expect(await earned(ada)).toEqual(['first_words', 'ensemble_cast', 'worldbuilder', 'host']);
+    expect(await earned(ada)).toEqual(['first_words', 'new_face', 'ensemble_cast', 'world_seed', 'worldbuilder', 'host']);
+
+    // Progress counts toward what is not yet earned, and an earned one reads as complete.
+    const progress = new Map((await listAchievementProgress(db, ada.userId)).map((row) => [row.key, row]));
+    expect(progress.get('cartographer')).toMatchObject({ current: 5, target: 25, earnedAt: null });
+    expect(progress.get('scene_setter')).toMatchObject({ current: 1, target: 5 });
+    expect(progress.get('ensemble_cast')).toMatchObject({ current: 10, target: 10 });
+    expect(progress.get('natural_20')).toMatchObject({ current: 0, target: 1 });
+
+    // Finishing the scene earns its creator The end.
+    await setSceneStatus(db, ada, opening.id, 'completed');
+    expect(await earned(ada)).toContain('the_end');
 
     // Granting one twice changes nothing and tells nobody twice.
     expect(await grantAchievement(db, ada.userId, 'natural_20')).toBe(true);
@@ -139,7 +150,7 @@ describe('achievements', () => {
     const told = await lines(ada);
     expect(told.filter((line) => line === 'You have a new badge: Natural 20')).toHaveLength(1);
     expect(told).toContain('You have a new badge: Ensemble cast');
-    // Achievements are not badges beside a name.
-    expect((await getProfile(db, ada.userId))!.badges).toEqual([]);
+    // Most achievements are not badges. Worldbuilder is both, so it joins the badge row.
+    expect((await getProfile(db, ada.userId))!.badges).toEqual(['worldbuilder']);
   });
 });

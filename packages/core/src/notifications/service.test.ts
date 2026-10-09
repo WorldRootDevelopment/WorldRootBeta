@@ -62,6 +62,7 @@ describe('scene notifications', () => {
     const [mine, his, hers] = [await createCharacter(db, thea, { name: 'Captain' }), await createCharacter(db, marcus, { name: 'Hale' }), await createCharacter(db, sarah, { name: 'Finch' })];
     const scene = await createScene(db, thea, { title: 'The Late Train', rating: 'everyone', characterIds: [mine.id], openingPost: say('Late again.') });
 
+    await quiet();
     await inviteToScene(db, thea, scene.id, 'marcus');
     await inviteToScene(db, thea, scene.id, 'sarah');
     expect(await lines(marcus)).toEqual(['Thea invited you to the scene The Late Train']);

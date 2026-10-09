@@ -5,7 +5,7 @@ import { users } from './identity';
 
 /**
  * Domain events, written in the same transaction as the change that caused them
- * and delivered to consumers afterwards by the worker.
+ * and delivered to consumers afterward by the worker.
  */
 export const outboxEvents = pgTable(
   'outbox_events',

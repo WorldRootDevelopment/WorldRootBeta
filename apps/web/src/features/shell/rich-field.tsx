@@ -36,7 +36,7 @@ interface RichFieldProps {
   minHeight?: string;
 }
 
-/** A labelled rich text editor for a long field, matching the plain text areas beside it. */
+/** A labeled rich text editor for a long field, matching the plain text areas beside it. */
 export function RichField({ label, initial, onChange, hint, error, minHeight = '8rem' }: RichFieldProps) {
   return (
     <div className="flex flex-col gap-1.5">

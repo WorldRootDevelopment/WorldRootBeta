@@ -23,8 +23,8 @@ export const communitySettingsSchema = z.object({
   tagline: optionalText(160),
   description: optionalText(10_000),
   rules: optionalText(10_000),
-  // A hue on the colour wheel. The accent ramp is generated from it, so any value stays readable.
-  accentHue: z.coerce.number({ error: 'Choose a colour.' }).int().min(0).max(359),
+  // A hue on the color wheel. The accent ramp is generated from it, so any value stays readable.
+  accentHue: z.coerce.number({ error: 'Choose a color.' }).int().min(0).max(359),
   listed: z.boolean(),
   requireCharacterApproval: z.boolean(),
   // Left out, it stays as it is.

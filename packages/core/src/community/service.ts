@@ -181,6 +181,7 @@ export async function joinCommunity(db: Db, actor: Actor, communityId: string): 
     if (!community.listed || community.archivedAt) throw new DomainError('forbidden', 'This community is joined by invitation.');
     await addMember(tx, communityId, actor.userId);
   });
+  await checkAchievements(db, actor.userId, 'communities');
 }
 
 export interface CommunityView {

@@ -126,7 +126,7 @@
   backdrop-filter: blur(18px) saturate(1.4);
 }
 
-/* The main button: a pill of accent colour with a shine across its upper half. */
+/* The main button: a pill of accent color with a shine across its upper half. */
 @utility wr-gloss {
   color: var(--wr-accent-contrast);
   background-color: var(--wr-accent);
@@ -167,7 +167,7 @@
   }
 }
 
-/* A page title, lit from one side in the accent colour, as the WorldRoot site does. */
+/* A page title, lit from one side in the accent color, as the WorldRoot site does. */
 @utility wr-title {
   color: var(--wr-accent-text);
   background-image: linear-gradient(70deg, var(--wr-accent-text) 10%, var(--wr-accent) 190%);
@@ -202,7 +202,7 @@
     --die: 2.5rem;
     margin: 0.35rem 0.45rem;
   }
-  .wr-die-small::after {
+  .wr-die-small .wr-die-travel::after {
     display: none;
   }
   /* A cube drawn in perspective reads larger than a flat die of the same width, so it is drawn smaller. */
@@ -213,8 +213,14 @@
     font-size: 0.9rem;
     border-radius: 0.5rem;
   }
-  /* The shadow the die throws on the table. */
-  .wr-die-stage::after {
+  .wr-die-travel {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  /* The shadow the die throws on the table. It travels with the die and fades as the die leaves the surface. */
+  .wr-die-travel::after {
     content: '';
     position: absolute;
     left: 8%;
@@ -314,15 +320,9 @@
     font-weight: 800;
     font-variant-numeric: tabular-nums;
   }
-  .wr-die-tumbling .wr-die-flat {
-    animation: wr-die-spin-flat 0.6s linear infinite;
-  }
-  .wr-die-landed .wr-die-flat {
-    animation: wr-die-settle-flat 0.55s cubic-bezier(0.2, 0.85, 0.3, 1.15) both;
-  }
 
   /*
-   * Dice themes. A theme is five colours: the face towards you, the body, the
+   * Dice themes. A theme is five colors: the face toward you, the body, the
    * faces in shadow, the edges and the numbers. Classic follows the accent of
    * wherever you are rolling; the rest are fixed.
    */
@@ -386,96 +386,6 @@
       inset 0 -1px 0 var(--wr-glass-edge);
   }
 
-  .wr-die-tumbling .wr-die-cube {
-    animation: wr-die-spin 0.7s linear infinite;
-  }
-  .wr-die-tumbling .wr-die-hop {
-    animation: wr-die-hop 0.45s ease-in-out infinite alternate;
-  }
-  .wr-die-landed .wr-die-cube {
-    animation: wr-die-settle 0.55s cubic-bezier(0.2, 0.85, 0.3, 1.15) both;
-  }
-  .wr-die-landed .wr-die-hop {
-    animation: wr-die-drop 0.55s cubic-bezier(0.3, 1.4, 0.5, 1) both;
-  }
-}
-
-@keyframes wr-die-spin {
-  from {
-    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-  }
-  to {
-    transform: rotateX(720deg) rotateY(360deg) rotateZ(360deg);
-  }
-}
-
-@keyframes wr-die-spin-flat {
-  0% {
-    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
-  }
-  25% {
-    transform: rotateX(55deg) rotateY(20deg) rotateZ(90deg);
-  }
-  50% {
-    transform: rotateX(0deg) rotateY(55deg) rotateZ(180deg);
-  }
-  75% {
-    transform: rotateX(-55deg) rotateY(20deg) rotateZ(270deg);
-  }
-  100% {
-    transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);
-  }
-}
-
-@keyframes wr-die-settle-flat {
-  from {
-    transform: rotateX(50deg) rotateZ(-220deg) scale(1.15);
-  }
-  to {
-    transform: rotateX(0deg) rotateZ(0deg) scale(1);
-  }
-}
-
-@keyframes wr-die-hop {
-  from {
-    transform: translateY(0.2rem);
-  }
-  to {
-    transform: translateY(-1.1rem);
-  }
-}
-
-@keyframes wr-die-settle {
-  from {
-    transform: rotateX(-290deg) rotateY(250deg) rotateZ(40deg);
-  }
-  to {
-    transform: rotateX(-18deg) rotateY(24deg) rotateZ(0deg) scale(0.8);
-  }
-}
-
-@keyframes wr-die-drop {
-  0% {
-    transform: translateY(-1.2rem);
-  }
-  60% {
-    transform: translateY(0.18rem);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-/* People who ask for less motion get the die at rest, showing the result. */
-@media (prefers-reduced-motion: reduce) {
-  .wr-die-tumbling .wr-die-cube,
-  .wr-die-tumbling .wr-die-flat,
-  .wr-die-tumbling .wr-die-hop,
-  .wr-die-landed .wr-die-cube,
-  .wr-die-landed .wr-die-flat,
-  .wr-die-landed .wr-die-hop {
-    animation: none;
-  }
 }
 
 /* People who ask for less transparency get solid surfaces and a plain page. */
@@ -555,5 +465,166 @@
     height: 0;
     pointer-events: none;
     color: var(--wr-text-muted);
+  }
+}
+
+/*
+ * A thrown roll, as one continuous motion. Each die comes in from the left of
+ * the tray, bounces three times, each lower than the last, and rolls to a
+ * stop, slowing as it goes. Three things move together: the die travels
+ * sideways, hops up and down, and turns. The turning and the travel share one
+ * easing, so a die turns fast while it moves fast and stops turning as it
+ * stops moving, the way a real one does.
+ */
+@layer components {
+  .wr-die-rolling .wr-die-travel {
+    animation: wr-die-travel var(--roll-time, 1.3s) cubic-bezier(0.3, 0.45, 0.35, 1) both;
+  }
+  .wr-die-rolling .wr-die-travel::after {
+    animation: wr-die-shadow var(--roll-time, 1.3s) linear both;
+  }
+  .wr-die-rolling .wr-die-hop {
+    animation: wr-die-bounce var(--roll-time, 1.3s) linear both;
+  }
+  .wr-die-rolling .wr-die-flat {
+    animation: wr-die-roll-flat var(--roll-time, 1.3s) cubic-bezier(0.3, 0.45, 0.35, 1) both;
+  }
+  .wr-die-rolling .wr-die-cube {
+    animation: wr-die-roll-cube var(--roll-time, 1.3s) cubic-bezier(0.3, 0.45, 0.35, 1) both;
+  }
+  /* The total arrives with a small pop once the dice are still. */
+  .wr-dice-total {
+    animation: wr-dice-total 0.28s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  }
+}
+
+@keyframes wr-die-travel {
+  from {
+    transform: translateX(var(--roll-from, -16rem));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Falling speeds up and rising slows down, so each segment has its own easing. */
+@keyframes wr-die-bounce {
+  0% {
+    transform: translateY(-3.4rem);
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
+  }
+  24% {
+    transform: translateY(0) scale(1.06, 0.92);
+    animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
+  }
+  42% {
+    transform: translateY(-1.7rem);
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
+  }
+  60% {
+    transform: translateY(0) scale(1.04, 0.95);
+    animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
+  }
+  72% {
+    transform: translateY(-0.6rem);
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
+  }
+  84% {
+    transform: translateY(0) scale(1.02, 0.98);
+    animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
+  }
+  91% {
+    transform: translateY(-0.14rem);
+    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes wr-die-shadow {
+  0% {
+    opacity: 0.25;
+    transform: scale(0.55);
+  }
+  24%,
+  60%,
+  84%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  42% {
+    opacity: 0.5;
+    transform: scale(0.75);
+  }
+  72% {
+    opacity: 0.8;
+    transform: scale(0.9);
+  }
+}
+
+/* A drawn die rolls like a wheel: it turns in the direction it travels. */
+@keyframes wr-die-roll-flat {
+  from {
+    transform: rotate(calc(var(--roll-turns, 2.5) * -360deg));
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* The cube tumbles end over end and comes to rest showing its top and one side. */
+@keyframes wr-die-roll-cube {
+  from {
+    transform: rotateX(-738deg) rotateY(-516deg) rotateZ(calc(var(--roll-turns, 2.5) * -120deg)) scale(0.8);
+  }
+  to {
+    transform: rotateX(-18deg) rotateY(24deg) rotateZ(0deg) scale(0.8);
+  }
+}
+
+@keyframes wr-dice-total {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* People who ask for less motion get the dice at rest, showing the result. */
+@media (prefers-reduced-motion: reduce) {
+  .wr-die-rolling .wr-die-travel,
+  .wr-die-rolling .wr-die-travel::after,
+  .wr-die-rolling .wr-die-hop,
+  .wr-die-rolling .wr-die-flat,
+  .wr-die-rolling .wr-die-cube,
+  .wr-dice-total {
+    animation: none;
+  }
+}
+
+/* A slim progress bar in the accent color, for counts toward something. */
+@layer components {
+  .wr-progress {
+    appearance: none;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    background-color: var(--wr-surface-sunken);
+  }
+  .wr-progress::-webkit-progress-bar {
+    background-color: var(--wr-surface-sunken);
+  }
+  .wr-progress::-webkit-progress-value {
+    border-radius: 999px;
+    background-image: linear-gradient(90deg, var(--wr-accent-light), var(--wr-accent));
+  }
+  .wr-progress::-moz-progress-bar {
+    border-radius: 999px;
+    background-image: linear-gradient(90deg, var(--wr-accent-light), var(--wr-accent));
   }
 }

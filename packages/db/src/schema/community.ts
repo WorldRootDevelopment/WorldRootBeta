@@ -10,7 +10,7 @@ export const communities = pgTable('communities', {
   tagline: text('tagline'),
   description: text('description'),
   rules: text('rules'),
-  // A community picks a hue, not a colour. The accent ramp is generated from it.
+  // A community picks a hue, not a color. The accent ramp is generated from it.
   accentHue: integer('accent_hue').notNull().default(155),
   // Listed communities appear in Discover and can be joined without an invite.
   listed: boolean('listed').notNull().default(false),

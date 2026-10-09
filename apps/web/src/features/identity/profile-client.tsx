@@ -19,8 +19,8 @@ interface ProfileFormProps {
 /** Edit your own profile and how you appear to others. */
 export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, status, accentHue }: ProfileFormProps) {
   const router = useRouter();
-  // No colour of your own means WorldRoot's.
-  const [ownColour, setOwnColour] = useState(accentHue !== null);
+  // No color of your own means WorldRoot's.
+  const [ownColor, setOwnColor] = useState(accentHue !== null);
   const [hue, setHue] = useState(accentHue ?? 62);
   const [fields, setFields] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
       pronouns: form.get('pronouns'),
       bio: form.get('bio'),
       status: form.get('status'),
-      accentHue: ownColour ? hue : null,
+      accentHue: ownColor ? hue : null,
       hideOnline: form.get('hideOnline') === 'on',
     });
     setPending(false);
@@ -58,7 +58,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
         defaultValue={status ?? ''}
         error={fields.status}
         maxLength={80}
-        hint="Optional. A short line under your name: what you are up to, or a favourite quote."
+        hint="Optional. A short line under your name: what you are up to, or a favorite quote."
       />
       <TextField
         label="Pronouns"
@@ -79,15 +79,15 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
       />
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-medium text-ink">Profile colour</legend>
+        <legend className="mb-1 text-sm font-medium text-ink">Profile color</legend>
         <label className="flex min-h-11 items-center gap-3 text-sm text-ink">
-          <input type="checkbox" checked={ownColour} onChange={(event) => setOwnColour(event.target.checked)} className="size-5 shrink-0 accent-accent" />
-          Give my profile its own colour
+          <input type="checkbox" checked={ownColor} onChange={(event) => setOwnColor(event.target.checked)} className="size-5 shrink-0 accent-accent" />
+          Give my profile its own color
         </label>
-        {ownColour ? (
+        {ownColor ? (
           <div className="wr-accent-scope flex flex-wrap items-center gap-4" style={{ '--wr-accent-hue': hue } as CSSProperties}>
             <label htmlFor="profile-hue" className="sr-only">
-              Colour
+              Color
             </label>
             <input
               id="profile-hue"

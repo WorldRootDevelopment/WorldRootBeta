@@ -12,7 +12,7 @@ interface PictureProps {
 export function Picture({ mediaId, name, className = 'size-12 text-lg' }: PictureProps) {
   if (mediaId) {
     return (
-      // A plain img: these are small, already-sized uploads served by our own route, which the image optimiser cannot fetch without the session.
+      // A plain img: these are small, already-sized uploads served by our own route, which the image optimizer cannot fetch without the session.
       <img src={`/api/v1/media/${mediaId}`} alt="" loading="lazy" decoding="async" className={cn('shrink-0 rounded-full bg-surface-sunken object-cover', className)} />
     );
   }

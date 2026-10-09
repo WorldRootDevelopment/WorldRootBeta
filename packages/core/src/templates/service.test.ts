@@ -28,7 +28,7 @@ afterAll(async () => {
   await connection.close();
 });
 
-describe('the template catalogue', () => {
+describe('the template catalog', () => {
   it('is well-formed: unique ids, known categories, and nothing nested deeper than a world allows', () => {
     const ids = WORLD_TEMPLATES.map((template) => template.id);
     expect(new Set(ids).size).toBe(ids.length);

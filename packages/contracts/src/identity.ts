@@ -30,7 +30,7 @@ export const profileSchema = z.object({
   avatarId: z.string().nullable(),
   /** The id of the wide picture across the top of their profile. */
   bannerId: z.string().nullable(),
-  /** The colour of their profile, as a hue from 0 to 359. Null takes WorldRoot's own. */
+  /** The color of their profile, as a hue from 0 to 359. Null takes WorldRoot's own. */
   accentHue: z.number().nullable(),
   /** A short line shown under their name. */
   status: z.string().nullable(),

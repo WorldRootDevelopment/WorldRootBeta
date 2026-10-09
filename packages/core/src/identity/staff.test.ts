@@ -130,7 +130,10 @@ describe('the platform administrator', () => {
     const me = members.find((member) => member.handle === 'thea_admin')!;
     expect(me).toMatchObject({ badges: ['staff'], communityBadge: 'owner' });
     expect(me.roles.map((role) => role.name).sort()).toEqual(['Member', 'Owner']);
-    expect(members.find((member) => member.handle === DEMO_ACCOUNT.handle)).toMatchObject({ badges: [], communityBadge: 'owner' });
+    // The demo host has earned a badge by building the demo world, but is not staff.
+    const demoHost = members.find((member) => member.handle === DEMO_ACCOUNT.handle)!;
+    expect(demoHost.communityBadge).toBe('owner');
+    expect(demoHost.badges).not.toContain('staff');
     expect((await listMemberPresence(db, view.community.id)).find((row) => row.handle === 'thea_admin')!.badges).toEqual(['staff']);
 
     const { conversation } = await getSpace(db, staff, view.community.id, 'announcements');
@@ -140,7 +143,8 @@ describe('the platform administrator', () => {
     const page = await listMessages(db, hostActor, conversation.id);
     expect(page.messages.map((message) => [message.authorHandle, message.authorBadges, message.authorCommunityBadge])).toEqual([
       ['thea_admin', ['staff'], 'owner'],
-      [DEMO_ACCOUNT.handle, [], 'owner'],
+      // The demo host built the demo world, which earns the Worldbuilder badge. It is not a staff badge.
+      [DEMO_ACCOUNT.handle, ['worldbuilder'], 'owner'],
     ]);
 
     // The same holds in scenes: on each post's byline and in the list of writers.
@@ -158,12 +162,12 @@ describe('the platform administrator', () => {
     const story = await listPosts(db, hostActor, scene.id, { stream: 'story' });
     expect(story.posts.map((post) => [post.authorHandle, post.authorBadges])).toEqual([
       ['thea_admin', ['staff']],
-      [DEMO_ACCOUNT.handle, []],
+      [DEMO_ACCOUNT.handle, ['worldbuilder']],
     ]);
     const { participants } = await getSceneView(db, hostActor, scene.id);
     expect(participants.map((person) => [person.handle, person.badges])).toEqual([
       ['thea_admin', ['staff']],
-      [DEMO_ACCOUNT.handle, []],
+      [DEMO_ACCOUNT.handle, ['worldbuilder']],
     ]);
   });
 });

@@ -1,16 +1,47 @@
-import { ACHIEVEMENT_KEYS, ACHIEVEMENTS, type AchievementKey } from '@worldroot/contracts';
-import type { EarnedAchievement } from '@worldroot/core';
-import { Dices, Drama, Earth, Feather, HeartHandshake, Lock, Map as MapIcon, PenTool, Skull, Sparkles, Tent, type LucideIcon } from 'lucide-react';
+import { ACHIEVEMENTS, type AchievementKey } from '@worldroot/contracts';
+import type { AchievementProgress, EarnedAchievement } from '@worldroot/core';
+import {
+  BookOpen,
+  Camera,
+  Clapperboard,
+  Dices,
+  Drama,
+  Earth,
+  Feather,
+  Flag,
+  Heart,
+  HeartHandshake,
+  Lock,
+  Map as MapIcon,
+  Megaphone,
+  PenTool,
+  Skull,
+  Sparkles,
+  Sprout,
+  Tent,
+  UserPlus,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import type { CSSProperties } from 'react';
 
-// Each achievement has its own picture and its own colour, fixed whatever the profile's colour is.
+// Each achievement has its own picture and its own color, fixed whatever the profile's color is.
 const LOOK: Record<AchievementKey, { icon: LucideIcon; hue: number }> = {
   first_words: { icon: Feather, hue: 200 },
+  storyteller: { icon: BookOpen, hue: 230 },
   wordsmith: { icon: PenTool, hue: 265 },
+  scene_setter: { icon: Clapperboard, hue: 290 },
+  the_end: { icon: Flag, hue: 20 },
+  new_face: { icon: UserPlus, hue: 345 },
   ensemble_cast: { icon: Drama, hue: 330 },
-  worldbuilder: { icon: Earth, hue: 150 },
+  world_seed: { icon: Sprout, hue: 140 },
+  worldbuilder: { icon: Earth, hue: 160 },
   cartographer: { icon: MapIcon, hue: 95 },
   host: { icon: Tent, hue: 40 },
+  regular: { icon: Users, hue: 60 },
+  open_call: { icon: Megaphone, hue: 25 },
+  face_to_the_name: { icon: Camera, hue: 215 },
+  kindred_spirit: { icon: Heart, hue: 0 },
   good_company: { icon: HeartHandshake, hue: 10 },
   dice_goblin: { icon: Dices, hue: 130 },
   natural_20: { icon: Sparkles, hue: 85 },
@@ -19,40 +50,66 @@ const LOOK: Record<AchievementKey, { icon: LucideIcon; hue: number }> = {
 
 const day = (date: Date) => date.toLocaleDateString('en', { dateStyle: 'medium' });
 
-interface AchievementsProps {
-  earned: EarnedAchievement[];
-  /** Also show the ones not yet earned, greyed, with how to earn them. For your own profile. */
-  showLocked: boolean;
+function Medallion({ id, earned }: { id: AchievementKey; earned: boolean }) {
+  const { icon: Icon, hue } = LOOK[id];
+  return (
+    <span
+      aria-hidden="true"
+      style={{ '--wr-accent-hue': hue } as CSSProperties}
+      className={`wr-accent-scope flex size-12 shrink-0 items-center justify-center rounded-full ${earned ? 'wr-gloss' : 'border border-dashed border-line-strong text-ink-muted'}`}
+    >
+      {earned ? <Icon className="size-6" /> : <Lock className="size-5" />}
+    </span>
+  );
 }
 
-/** A person's achievements as a shelf of glossy medallions. */
-export function Achievements({ earned, showLocked }: AchievementsProps) {
-  const have = new Map(earned.map((row) => [row.key, row.earnedAt]));
-  const keys = ACHIEVEMENT_KEYS.filter((key) => showLocked || have.has(key));
-  if (keys.length === 0) return <p className="text-ink-muted">No achievements yet.</p>;
+/** The achievements a person has earned, as a shelf of glossy medallions. This is all a profile shows. */
+export function Achievements({ earned, compact = false }: { earned: EarnedAchievement[]; compact?: boolean }) {
+  if (earned.length === 0) return <p className="text-ink-muted">No achievements yet.</p>;
+  return (
+    <ul className={compact ? 'grid gap-3 sm:grid-cols-2' : 'grid gap-3 sm:grid-cols-2 xl:grid-cols-3'}>
+      {earned.map(({ key, earnedAt }) => (
+        <li key={key} className="wr-glass flex items-center gap-3 rounded-2xl p-3">
+          <Medallion id={key} earned />
+          <span className="min-w-0">
+            <span className="block font-display text-sm font-semibold text-ink">{ACHIEVEMENTS[key].label}</span>
+            <span className="block text-xs leading-snug text-ink-muted">{ACHIEVEMENTS[key].how}</span>
+            <span className="mt-0.5 block text-xs text-ink-muted">Earned {day(earnedAt)}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
+/** Every achievement, with how far along the person is. For their own Achievements page. */
+export function AchievementProgressList({ rows }: { rows: AchievementProgress[] }) {
   return (
     <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {keys.map((key) => {
-        const earnedAt = have.get(key);
-        const { icon: Icon, hue } = LOOK[key];
+      {rows.map(({ key, earnedAt, current, target }) => {
+        const { label, how } = ACHIEVEMENTS[key];
         return (
-          <li key={key} className={`wr-glass flex items-center gap-3 rounded-2xl p-3 ${earnedAt ? '' : 'opacity-60'}`}>
-            <span
-              aria-hidden="true"
-              style={{ '--wr-accent-hue': hue } as CSSProperties}
-              className={`wr-accent-scope flex size-12 shrink-0 items-center justify-center rounded-full ${earnedAt ? 'wr-gloss' : 'border border-dashed border-line-strong text-ink-muted'}`}
-            >
-              {earnedAt ? <Icon className="size-6" /> : <Lock className="size-5" />}
-            </span>
-            <span className="min-w-0">
-              <span className="block font-display text-sm font-semibold text-ink">
-                {ACHIEVEMENTS[key].label}
+          <li key={key} className={`wr-glass flex items-start gap-3 rounded-2xl p-3 ${earnedAt ? '' : 'opacity-80'}`}>
+            <Medallion id={key} earned={Boolean(earnedAt)} />
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-sm font-semibold text-ink">
+                {label}
                 {earnedAt ? null : <span className="sr-only"> (not earned yet)</span>}
-              </span>
-              <span className="block text-xs leading-snug text-ink-muted">{ACHIEVEMENTS[key].how}</span>
-              {earnedAt ? <span className="mt-0.5 block text-xs text-ink-muted">Earned {day(earnedAt)}</span> : null}
-            </span>
+              </p>
+              <p className="text-xs leading-snug text-ink-muted">{how}</p>
+              {earnedAt ? (
+                <p className="mt-1 text-xs font-medium text-accent-text">Earned {day(earnedAt)}</p>
+              ) : target > 1 ? (
+                <div className="mt-2">
+                  <progress value={current} max={target} aria-label={`${label}: ${current} of ${target}`} className="wr-progress block h-1.5 w-full" />
+                  <p className="mt-1 text-xs tabular-nums text-ink-muted">
+                    {current} of {target}
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-1 text-xs text-ink-muted">Not yet</p>
+              )}
+            </div>
           </li>
         );
       })}

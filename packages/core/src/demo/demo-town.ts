@@ -217,7 +217,7 @@ export async function seedDemo(db: Db): Promise<DemoSeedResult> {
     name: 'Demo Town',
     tagline: 'A small town where nothing much happens, until you arrive.',
     description:
-      'A simple place to try WorldRoot. Demo Town is an ordinary small town: a square, a main street, a station, a park. No lore to learn and no rules to memorise.\n\nJoin, add a character, and step into a scene. Or start one of your own anywhere in town.',
+      'A simple place to try WorldRoot. Demo Town is an ordinary small town: a square, a main street, a station, a park. No lore to learn and no rules to memorize.\n\nJoin, add a character, and step into a scene. Or start one of your own anywhere in town.',
     rules: '1. Be kind to the other writers.\n2. Keep in-character and out-of-character apart.\n3. Nobody controls another writer\'s character without asking.',
     accentHue: 155,
     listed: true,

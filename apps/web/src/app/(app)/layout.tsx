@@ -4,7 +4,8 @@ import { AppShell } from '@/features/shell/app-shell';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
-export default async function AppLayout({ children }: { children: ReactNode }) {
+/** `modal` is whatever is open over the page, such as a profile pop-up. Usually nothing. */
+export default async function AppLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
   const viewer = await requireViewer();
   const { db } = await database();
   const { userId } = viewer.actor;
@@ -22,6 +23,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       communities={mine.filter((community) => !community.archivedAt).map(({ slug, name, accentHue }) => ({ slug, name, accentHue }))}
     >
       {children}
+      {modal}
     </AppShell>
   );
 }

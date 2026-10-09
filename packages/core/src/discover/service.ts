@@ -1,3 +1,4 @@
+import { checkAchievements } from '../identity/achievements';
 import { isLfrpGenre, LFRP_DAYS, lfrpInputSchema, MAX_OPEN_LFRP, toBadges, type BadgeKey } from '@worldroot/contracts';
 import { communities, communityMembers, lfrpListings, profiles, userBlocks, type Db } from '@worldroot/db';
 import { and, asc, count, desc, eq, gt, ilike, isNull, or, sql } from 'drizzle-orm';
@@ -56,6 +57,7 @@ export async function createListing(db: Db, actor: Actor, input: unknown): Promi
     .insert(lfrpListings)
     .values({ ...data, genres: [...new Set(data.genres)], userId: actor.userId, expiresAt: new Date(Date.now() + LFRP_DAYS * 86_400_000) })
     .returning();
+  await checkAchievements(db, actor.userId, 'listings');
   return listing!;
 }
 

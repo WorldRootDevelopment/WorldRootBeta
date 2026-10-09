@@ -20,7 +20,7 @@ export interface ShellCommunity {
 
 /**
  * The frame around every signed-in page.
- * Under 768px: a top bar and a five-item bottom bar. From 768px: an icon rail. From 1440px: a labelled rail.
+ * Under 768px: a top bar and a five-item bottom bar. From 768px: an icon rail. From 1440px: a labeled rail.
  * The rail holds Home, a Resources section, and the communities you belong to.
  * The Inbox and the "What's new" menu sit at the top right at every size.
  */
@@ -143,7 +143,7 @@ export function AppShell({ profile, inboxUnread, communities, children }: AppShe
       <nav aria-label="Primary" className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-5 items-center border-t wr-chrome px-2 pb-[env(safe-area-inset-bottom)] md:hidden">
         {MOBILE_ITEMS.map(({ href, label, icon: Icon }, index) => (
           <div key={href} className="contents">
-            {/* Create takes the centre slot of the bar. */}
+            {/* Create takes the center slot of the bar. */}
             {index === 2 ? <CreateMenu placement="bar" /> : null}
             <NavLink
               href={href}

@@ -19,7 +19,7 @@ const HEARTHS = [
 ];
 
 const DISCIPLINES = [
-  { name: 'Lumenwork', line: 'Light, colour and illusion.' },
+  { name: 'Lumenwork', line: 'Light, color and illusion.' },
   { name: 'Binding', line: 'Wards, oaths and agreements that hold.' },
   { name: 'Rootlore', line: 'Plants that heal, harm and listen.' },
   { name: 'Tidereading', line: 'Reading what comes next in the sea.' },

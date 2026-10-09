@@ -97,9 +97,9 @@ export const profiles = pgTable('profiles', {
   avatarMediaId: uuid('avatar_media_id').references((): AnyPgColumn => media.id, { onDelete: 'set null' }),
   // The wide picture across the top of the profile, if one has been uploaded.
   bannerMediaId: uuid('banner_media_id').references((): AnyPgColumn => media.id, { onDelete: 'set null' }),
-  // The colour of this person's profile, as a hue. Null takes WorldRoot's own.
+  // The color of this person's profile, as a hue. Null takes WorldRoot's own.
   accentHue: integer('accent_hue'),
-  // A short line shown under the name: what they are up to, or a favourite quote.
+  // A short line shown under the name: what they are up to, or a favorite quote.
   status: text('status'),
   // How this person's dice look when they roll. A key from the registry in @worldroot/contracts.
   diceTheme: text('dice_theme').notNull().default('classic'),

@@ -1,3 +1,4 @@
+import { checkAchievements } from '../identity/achievements';
 import { randomBytes } from 'node:crypto';
 import { communities, communityBans, communityInvites, communityMembers, profiles, roleAssignments, roles, type Db } from '@worldroot/db';
 import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
@@ -151,7 +152,7 @@ export async function getInvitePreview(db: Db, actor: Actor, code: string): Prom
 
 /** Joins a community with an invite link. Returns the community's address. */
 export async function acceptInvite(db: Db, actor: Actor, code: string): Promise<{ slug: string }> {
-  return db.transaction(async (tx) => {
+  const joined = await db.transaction(async (tx) => {
     const [row] = await tx
       .select({ invite: communityInvites, slug: communities.slug })
       .from(communityInvites)
@@ -178,6 +179,8 @@ export async function acceptInvite(db: Db, actor: Actor, code: string): Promise<
     await addMember(tx, row.invite.communityId, actor.userId);
     return { slug: row.slug };
   });
+  await checkAchievements(db, actor.userId, 'communities');
+  return joined;
 }
 
 /** The highest role position a person holds in a community, or -1. */

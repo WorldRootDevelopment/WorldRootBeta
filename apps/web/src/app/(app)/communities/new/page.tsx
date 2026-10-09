@@ -11,7 +11,7 @@ export default function NewCommunityPage() {
       <Breadcrumbs items={[{ label: 'Communities', href: '/communities' }, { label: 'New community' }]} />
       <PageHeader
         title="New community"
-        lead="A shared home for worlds, characters and scenes. You become its owner and can set up roles, rules and a character template afterwards."
+        lead="A shared home for worlds, characters and scenes. You become its owner and can set up roles, rules and a character template afterward."
       />
       <CommunitySettingsForm />
     </>

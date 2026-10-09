@@ -49,6 +49,7 @@ export async function createWorld(db: Db, actor: Actor, input: CreateWorldInput)
     .insert(worlds)
     .values({ ...values, slug: input.slug ?? (await freeSlug(db, { userId: actor.userId }, values.name)), ownerUserId: actor.userId })
     .returning();
+  await checkAchievements(db, actor.userId, 'worlds');
   return world!;
 }
 
@@ -184,7 +185,7 @@ const newShareCode = () => {
 };
 
 /** Accepts an id however it was typed or pasted: any case, with or without the hyphen or spaces. */
-const normaliseShareCode = (value: string) => {
+const normalizeShareCode = (value: string) => {
   const letters = value.toUpperCase().replace(/[^0-9A-Z]/g, '');
   return letters.length === 8 ? `${letters.slice(0, 4)}-${letters.slice(4)}` : null;
 };
@@ -208,7 +209,7 @@ export async function setWorldSharing(db: Db, actor: Actor, worldId: string, sha
 
 /** The library world a share id points at. An unknown or retired id tells the caller nothing more. */
 async function requireSharedWorld(db: Db, code: string): Promise<World> {
-  const clean = normaliseShareCode(code);
+  const clean = normalizeShareCode(code);
   const [world] = clean ? await db.select().from(worlds).where(eq(worlds.shareCode, clean)) : [];
   if (!world?.ownerUserId) {
     const message = 'No world is shared under that ID. Check it with whoever gave it to you.';

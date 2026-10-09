@@ -92,7 +92,7 @@ describe('reporting', () => {
     expect(entry).toMatchObject({ actorUserId: moderator.userId, communityId: community.id });
   });
 
-  it('keeps what a post said even if its author rewrites it afterwards', async () => {
+  it('keeps what a post said even if its author rewrites it afterward', async () => {
     const { db } = connection;
     const original = await createCharacter(db, troll, { name: 'Edgelord' });
     const scene = await createScene(db, troll, { title: 'Bad Night', rating: 'everyone', characterIds: [original.id], openingPost: docFromText('The original nasty words.') });

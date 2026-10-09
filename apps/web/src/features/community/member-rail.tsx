@@ -15,7 +15,7 @@ function MemberList({ title, members }: { title: string; members: PresenceRow[] 
           <li key={member.userId} className={`flex items-center gap-2.5 rounded-lg px-1.5 py-1 ${member.online ? '' : 'opacity-60'}`}>
             <span className="relative">
               <Picture mediaId={member.avatarId} name={member.displayName} className="size-9 text-sm" />
-              {/* The dot repeats what the section heading already says, so status never rests on colour alone. */}
+              {/* The dot repeats what the section heading already says, so status never rests on color alone. */}
               <span
                 aria-hidden="true"
                 className={`absolute -bottom-0.5 -right-0.5 size-3 rounded-full ring-2 ring-surface-raised ${member.online ? 'bg-online' : 'bg-line-strong'}`}

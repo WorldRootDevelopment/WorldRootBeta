@@ -72,7 +72,7 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
     popCulture: true,
     summary: 'A starting village, the wilds beyond it, a dungeon and a distant city.',
     description:
-      'A classic adventuring region in the Dungeons & Dragons mould: somewhere safe to begin, somewhere dangerous to go, and somewhere grand to aim for. The place names are placeholders, ready to be replaced with your own campaign setting.',
+      'A classic adventuring region in the Dungeons & Dragons mold: somewhere safe to begin, somewhere dangerous to go, and somewhere grand to aim for. The place names are placeholders, ready to be replaced with your own campaign setting.',
     locations: [
       {
         name: 'The Village of Oakhollow',
@@ -147,7 +147,7 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
         name: 'The Teaching Wing',
         summary: 'Six disciplines, six sets of rooms.',
         children: [
-          { name: 'The Lumenwork Studio', summary: 'Light, colour and illusion. Blackout curtains on every window.' },
+          { name: 'The Lumenwork Studio', summary: 'Light, color and illusion. Blackout curtains on every window.' },
           { name: 'The Binding Room', summary: 'Wards, oaths and agreements. Nothing said here is said lightly.' },
           { name: 'The Glasshouses', summary: 'Rootlore: plants that heal, plants that harm, plants that listen.' },
           { name: 'The Tide Observatory', summary: 'Tidereading: what the sea knows about what comes next.' },
@@ -204,7 +204,7 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
       {
         name: 'Yavin 4',
         summary: 'A jungle moon with ancient temples and a hidden base.',
-        children: [{ name: 'The Hangar' }, { name: 'The Command Centre' }, { name: 'The Jungle' }],
+        children: [{ name: 'The Hangar' }, { name: 'The Command Center' }, { name: 'The Jungle' }],
       },
       {
         name: 'An Imperial Star Destroyer',
@@ -231,10 +231,10 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
     popCulture: true,
     summary: 'An island theme park of living dinosaurs. The fences are holding. For now.',
     description:
-      'The island resort, from the visitor centre to the paddocks to the parts guests never see. Play it on opening day, or on the day everything stops working.',
+      'The island resort, from the visitor center to the paddocks to the parts guests never see. Play it on opening day, or on the day everything stops working.',
     locations: [
       {
-        name: 'The Visitor Centre',
+        name: 'The Visitor Center',
         summary: 'Where every tour begins.',
         children: [{ name: 'The Rotunda', summary: 'Skeletons overhead.' }, { name: 'The Laboratory', summary: 'Where the animals are made.' }, { name: 'The Control Room', summary: 'Every fence and gate, on one screen.' }],
       },
@@ -255,7 +255,7 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
       { name: 'The Restricted Zone', summary: 'Not on the map given to guests.' },
     ],
     suggestedFields: [
-      { label: 'Job', examples: ['Palaeontologist', 'Game warden', 'Geneticist', 'Systems engineer', 'Guest'] },
+      { label: 'Job', examples: ['Paleontologist', 'Game warden', 'Geneticist', 'Systems engineer', 'Guest'] },
       { label: 'Department', examples: ['Science', 'Animal control', 'Operations', 'Security', 'Visitor'] },
       { label: 'Clearance level' },
     ],
@@ -314,7 +314,7 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
           { name: 'Hell’s Kitchen', summary: 'Street-level trouble.' },
           { name: 'The Daily Bugle' },
           { name: 'The Sanctum Sanctorum', summary: 'A townhouse on Bleecker Street that is larger inside.' },
-          { name: 'Queens', summary: 'A friendly neighbourhood.' },
+          { name: 'Queens', summary: 'A friendly neighborhood.' },
         ],
       },
       {
@@ -322,7 +322,7 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
         summary: 'A school in Westchester with an unusual curriculum.',
         children: [{ name: 'The Classrooms' }, { name: 'The Danger Room' }, { name: 'The Grounds' }],
       },
-      { name: 'The S.H.I.E.L.D. Helicarrier', summary: 'A flying command centre.' },
+      { name: 'The S.H.I.E.L.D. Helicarrier', summary: 'A flying command center.' },
       { name: 'Wakanda', summary: 'A hidden nation, far ahead of the rest of the world.', children: [{ name: 'The Golden City' }] },
       { name: 'Asgard', summary: 'A realm of gods, reached by a bridge of light.' },
     ],

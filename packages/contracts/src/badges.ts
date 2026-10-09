@@ -11,9 +11,9 @@ interface BadgeDefinition {
   label: string;
   /** Shown on hover and read by screen readers. */
   title: string;
-  /** Which fixed colour the badge takes. Never the community's accent. */
+  /** Which fixed color the badge takes. Never the community's accent. */
   tone: 'staff' | 'premium' | 'special';
-  /** Staff may hand this out by hand. Staff and Premium are derived from the account instead. */
+  /** Staff may hand this out by hand. Staff and Premium are derived from the account, and earned badges are earned. */
   grantable: boolean;
 }
 
@@ -24,6 +24,9 @@ export const BADGES = {
   premium: { label: 'Premium', title: 'WorldRoot Premium member', tone: 'premium', grantable: false },
   early_supporter: { label: 'Early supporter', title: 'Supported WorldRoot from the start', tone: 'special', grantable: true },
   beta_tester: { label: 'Beta tester', title: 'Helped test WorldRoot before launch', tone: 'special', grantable: true },
+  // Earned, not granted. These two are achievements that also sit in the badge row; the keys match the achievement registry.
+  worldbuilder: { label: 'Worldbuilder', title: 'Built a world with 5 locations', tone: 'special', grantable: false },
+  cartographer: { label: 'Cartographer', title: 'Mapped 25 locations across their worlds', tone: 'special', grantable: false },
 } as const satisfies Record<string, BadgeDefinition>;
 
 export type BadgeKey = keyof typeof BADGES;

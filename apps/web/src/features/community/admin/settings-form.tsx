@@ -107,7 +107,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
 
       <div className="flex flex-col gap-2">
         <label htmlFor="accentHue" className="text-sm font-medium text-ink">
-          Accent colour
+          Accent color
         </label>
         <div className="wr-accent-scope flex items-center gap-4" style={{ '--wr-accent-hue': hue } as CSSProperties}>
           <input
@@ -119,7 +119,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
             onChange={(event) => setHue(Number(event.target.value))}
             className="h-11 flex-1 accent-accent"
           />
-          {/* A live sample of how the colour will look on buttons and highlights. */}
+          {/* A live sample of how the color will look on buttons and highlights. */}
           <span className="wr-gloss inline-flex min-h-9 items-center rounded-full px-3 text-sm font-medium">Button</span>
           <span className="inline-flex min-h-9 items-center rounded-lg bg-accent-soft px-3 text-sm font-medium text-accent-text">Highlight</span>
         </div>

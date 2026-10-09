@@ -9,7 +9,7 @@ interface AuthCardProps {
   children: ReactNode;
 }
 
-/** The centred card used by sign-in, sign-up and onboarding. */
+/** The centered card used by sign-in, sign-up and onboarding. */
 export function AuthCard({ title, lead, footer, children }: AuthCardProps) {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-4 py-12">

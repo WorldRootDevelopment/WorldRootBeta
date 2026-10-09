@@ -2,10 +2,12 @@
  * One die, drawn as the shape it really is: a four-sided die is a pyramid, a
  * twenty-sided die an icosahedron, and so on. The six-sided die is a true
  * cube in 3D. The others are drawn as their familiar faceted outline, shaded
- * so the face towards you is the brightest.
+ * so the face toward you is the brightest.
  *
- * Colours come from the dice theme on an ancestor (`wr-dice-…`), never from here.
+ * Colors come from the dice theme on an ancestor (`wr-dice-…`), never from here.
  */
+
+import type { CSSProperties } from 'react';
 
 type Shade = 'light' | 'base' | 'dark';
 type Point = [number, number];
@@ -24,7 +26,7 @@ const ring = (count: number, radius: number, startDegrees = -90): Point[] =>
 
 const D4: Shape = {
   facets: [
-    // The face towards you, with one side face seen edge-on beside it.
+    // The face toward you, with one side face seen edge-on beside it.
     { points: [[46, 8], [82, 88], [6, 88]], shade: 'light' },
     { points: [[46, 8], [95, 76], [82, 88]], shade: 'dark' },
   ],
@@ -99,7 +101,7 @@ function shapeFor(sides: number): Shape {
 
 const path = (points: Point[]) => points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
 
-/** Other numbers this die could show, for the five faces of a cube that are not towards you. */
+/** Other numbers this die could show, for the five faces of a cube that are not toward you. */
 function otherFaces(value: number, sides: number): number[] {
   return Array.from({ length: 5 }, (_, index) => ((value - 1 + index + 1) % Math.max(sides, 2)) + 1);
 }
@@ -108,29 +110,32 @@ interface DieProps {
   sides: number;
   /** What the die shows. */
   value: number | string;
-  /** `resting` sits still, `tumbling` is in the air, `landed` has just come down. */
-  state?: 'resting' | 'tumbling' | 'landed';
-  /** Position among several dice, so they do not all move in step. */
+  /** `resting` sits still. `rolling` plays the throw once, ending at rest. */
+  state?: 'resting' | 'rolling';
+  /** Position among several dice. Each is thrown a moment after the last, from a little further back, with its own spin. */
   order?: number;
   /** A small one, for buttons and swatches. */
   small?: boolean;
 }
 
 export function Die({ sides, value, state = 'resting', order = 0, small = false }: DieProps) {
-  const delay = { animationDelay: `${order * 70}ms` };
-  const stage = `wr-die-stage ${small ? 'wr-die-small' : ''} ${state === 'tumbling' ? 'wr-die-tumbling' : state === 'landed' ? 'wr-die-landed' : ''}`;
+  // Dice thrown together should not move as one: later dice start later, travel further and turn a different amount.
+  const throwStyle = { '--roll-from': `${-14 - order * 4.5}rem`, '--roll-turns': 2.25 + ((order * 7) % 5) * 0.25, '--roll-time': `${1.15 + order * 0.07}s` } as CSSProperties;
+  const stage = `wr-die-stage ${small ? 'wr-die-small' : ''} ${state === 'rolling' ? 'wr-die-rolling' : ''}`;
 
   if (sides === 6) {
     const faces = [value, ...(typeof value === 'number' ? otherFaces(value, sides) : [value, value, value, value, value])];
     return (
-      <span className={stage}>
-        <span className="wr-die-hop block" style={delay}>
-          <span className="wr-die-cube block" style={delay}>
+      <span className={stage} style={throwStyle}>
+        <span className="wr-die-travel">
+          <span className="wr-die-hop block">
+          <span className="wr-die-cube block">
             {faces.map((face, index) => (
               <span key={index} className="wr-die-face">
                 {face}
               </span>
             ))}
+          </span>
           </span>
         </span>
       </span>
@@ -140,18 +145,20 @@ export function Die({ sides, value, state = 'resting', order = 0, small = false 
   const shape = shapeFor(sides);
   const text = String(value);
   return (
-    <span className={stage}>
-      <span className="wr-die-hop block" style={delay}>
-        <svg viewBox="0 0 100 100" className="wr-die-flat block" style={delay} aria-hidden="true">
+    <span className={stage} style={throwStyle}>
+      <span className="wr-die-travel">
+      <span className="wr-die-hop block">
+        <svg viewBox="0 0 100 100" className="wr-die-flat block" aria-hidden="true">
           {shape.facets.map((facet, index) => (
             <polygon key={index} points={path(facet.points)} className={`wr-die-facet-${facet.shade}`} />
           ))}
-          {/* A soft shine across the face towards you. */}
+          {/* A soft shine across the face toward you. */}
           <polygon points={path(shape.facets[0]!.points)} className="wr-die-shine" />
           <text x={shape.number.x} y={shape.number.y} className="wr-die-number" fontSize={text.length > 2 ? shape.number.size * 0.72 : shape.number.size} textAnchor="middle" dominantBaseline="central">
             {text}
           </text>
         </svg>
+      </span>
       </span>
     </span>
   );
