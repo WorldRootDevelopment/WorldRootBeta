@@ -1,20 +1,24 @@
 import { z } from 'zod';
 
 /**
- * WorldRoot Premium: what it is called, what it costs, and what a free
+ * WorldRoot's paid membership, called Heartwood after the strong wood at the
+ * centre of a tree. In code it is still `premium`, the name it was built
+ * under; only what people read was renamed.
+ *
+ * WorldRoot Heartwood: what it is called, what it costs, and what a free
  * account is limited to. Nothing here takes a payment. Until billing exists,
- * an account is Premium only when WorldRoot staff make it so.
+ * an account is Heartwood only when WorldRoot staff make it so.
  */
 export const PREMIUM = {
-  name: 'WorldRoot Premium',
+  name: 'WorldRoot Heartwood',
   /** In US dollars, a month. Shown on the store page; not charged by anything yet. */
   monthlyPrice: 5,
 } as const;
 
 /**
- * What a free account may have. Premium and staff accounts have no limit.
+ * What a free account may have. Heartwood and staff accounts have no limit.
  * Reaching a limit only stops new ones being made: nothing a person already
- * has is ever taken away, including when Premium ends.
+ * has is ever taken away, including when Heartwood ends.
  */
 export const FREE_LIMITS = {
   /** Characters in a person's own library. Copies of them in communities do not count. */
@@ -25,13 +29,13 @@ export const FREE_LIMITS = {
   characterImages: 1,
 } as const;
 
-/** What Premium raises a limit to, where it does not remove it altogether. */
+/** What Heartwood raises a limit to, where it does not remove it altogether. */
 export const PREMIUM_LIMITS = {
   characterImages: 10,
 } as const;
 
 /**
- * Places a Premium member can point to from their profile. These are the
+ * Places a Heartwood member can point to from their profile. These are the
  * creative corners of the internet that writers and artists actually use, not
  * the large general social networks.
  *

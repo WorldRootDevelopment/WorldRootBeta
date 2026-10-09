@@ -61,7 +61,20 @@
   --wr-page-glow: oklch(1 0 0);
   --wr-aurora-strength: 0.3;
 
-  --wr-shadow-raised: 0 1px 2px oklch(0.4 0.05 62 / 0.1), 0 10px 28px -8px oklch(0.4 0.06 62 / 0.22);
+  /*
+   * A raised surface's shadow, built the way a soft light casts one: a hairline where the surface
+   * meets the page, a tight dark contact shadow, then wider and fainter ones as the light spreads.
+   */
+  --wr-shadow-raised:
+    0 0 0 1px oklch(0.4 0.05 62 / 0.04), 0 1px 1px oklch(0.35 0.05 62 / 0.1), 0 3px 6px -1px oklch(0.35 0.05 62 / 0.1),
+    0 12px 24px -8px oklch(0.35 0.06 62 / 0.16), 0 32px 56px -24px oklch(0.35 0.07 62 / 0.24);
+  /* The lit edge of a surface, toward the light, and its shaded edge, away from it. */
+  --wr-rim: oklch(1 0 0 / 0.95);
+  --wr-rim-shade: oklch(0.45 0.05 62 / 0.2);
+  /* How strong the film grain and the darkening toward the corners of the page are, and how far a button glows. */
+  --wr-grain: 0.06;
+  --wr-vignette: oklch(0.45 0.07 62 / 0.16);
+  --wr-bloom: 0.45;
 
   color-scheme: light;
 }
@@ -98,7 +111,14 @@
   --wr-page-glow: oklch(0.27 0.02 65);
   --wr-aurora-strength: 0.34;
 
-  --wr-shadow-raised: 0 1px 2px oklch(0 0 0 / 0.35), 0 12px 30px -8px oklch(0 0 0 / 0.5);
+  --wr-shadow-raised:
+    0 0 0 1px oklch(0 0 0 / 0.4), 0 1px 1px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 16px 28px -10px oklch(0 0 0 / 0.55),
+    0 40px 64px -28px oklch(0 0 0 / 0.75);
+  --wr-rim: oklch(1 0 0 / 0.24);
+  --wr-rim-shade: oklch(0 0 0 / 0.55);
+  --wr-grain: 0.09;
+  --wr-vignette: oklch(0 0 0 / 0.55);
+  --wr-bloom: 0.55;
 
   color-scheme: dark;
 }
@@ -135,7 +155,14 @@
     --wr-page-glow: oklch(0.27 0.02 65);
     --wr-aurora-strength: 0.34;
 
-    --wr-shadow-raised: 0 1px 2px oklch(0 0 0 / 0.35), 0 12px 30px -8px oklch(0 0 0 / 0.5);
+    --wr-shadow-raised:
+    0 0 0 1px oklch(0 0 0 / 0.4), 0 1px 1px oklch(0 0 0 / 0.5), 0 4px 8px -2px oklch(0 0 0 / 0.45), 0 16px 28px -10px oklch(0 0 0 / 0.55),
+    0 40px 64px -28px oklch(0 0 0 / 0.75);
+  --wr-rim: oklch(1 0 0 / 0.24);
+  --wr-rim-shade: oklch(0 0 0 / 0.55);
+  --wr-grain: 0.09;
+  --wr-vignette: oklch(0 0 0 / 0.55);
+  --wr-bloom: 0.55;
 
     color-scheme: dark;
   }

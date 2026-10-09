@@ -2,10 +2,9 @@
  * Dice themes: how a person's dice look when they roll. A theme is only a
  * set of colors; it never changes what is rolled.
  *
- * `free` themes can be chosen by anyone. The others are shown as previews
- * and cannot be chosen yet: they are the ones meant to be earned with points
- * or bought, once WorldRoot has a way to do either. Nothing here takes a
- * payment or tracks ownership; that is still to be designed.
+ * Every theme here is free and can be chosen by anyone. A theme with
+ * `free: false` would be a store item that has to be owned first; there are
+ * none at the moment, and the designs meant for the store are still to be made.
  */
 
 interface DiceThemeDefinition {
@@ -20,10 +19,10 @@ export const DICE_THEMES = {
   classic: { label: 'Classic', note: 'Takes the color of the community.', free: true },
   ivory: { label: 'Ivory', note: 'Bone white with dark numbers.', free: true },
   obsidian: { label: 'Obsidian', note: 'Black glass with gold numbers.', free: true },
-  jade: { label: 'Jade', note: 'Deep green stone.', free: false },
-  ember: { label: 'Ember', note: 'Glowing red and orange.', free: false },
-  amethyst: { label: 'Amethyst', note: 'Violet crystal.', free: false },
-  starlight: { label: 'Starlight', note: 'Midnight blue, flecked with silver.', free: false },
+  jade: { label: 'Jade', note: 'Deep green stone.', free: true },
+  ember: { label: 'Ember', note: 'Glowing red and orange.', free: true },
+  amethyst: { label: 'Amethyst', note: 'Violet crystal.', free: true },
+  starlight: { label: 'Starlight', note: 'Midnight blue, flecked with silver.', free: true },
 } as const satisfies Record<string, DiceThemeDefinition>;
 
 export type DiceThemeKey = keyof typeof DICE_THEMES;

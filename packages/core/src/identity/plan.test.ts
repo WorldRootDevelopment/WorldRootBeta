@@ -36,7 +36,7 @@ afterAll(async () => {
 const full = { code: 'forbidden' };
 
 describe('a free account', () => {
-  it('keeps up to ten characters, and Premium lifts the limit without taking anything back when it ends', async () => {
+  it('keeps up to ten characters, and Heartwood lifts the limit without taking anything back when it ends', async () => {
     const { db } = connection;
     const community = await createCommunity(db, thea, { slug: 'harbour', name: 'Harbour Lights' });
     const made = [];
@@ -72,7 +72,7 @@ describe('a free account', () => {
 });
 
 describe('links on a profile', () => {
-  it('come with Premium, point only where they say, and are hidden but kept when Premium ends', async () => {
+  it('come with Heartwood, point only where they say, and are hidden but kept when Heartwood ends', async () => {
     const { db } = connection;
     const details = { displayName: 'Marcus', hideOnline: false };
     const links = [
@@ -108,7 +108,7 @@ describe('links on a profile', () => {
       await expect(updateProfile(db, marcus, { ...details, website })).rejects.toMatchObject(invalid);
     }
 
-    // Premium ends: nobody sees the links, but they come back if it returns.
+    // Heartwood ends: nobody sees the links, but they come back if it returns.
     await setPremium(db, staff, marcus.userId, false);
     const hidden = (await getProfileView(db, thea, 'marcus')).profile;
     expect(hidden.links).toEqual([]);

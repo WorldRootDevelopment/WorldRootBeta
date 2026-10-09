@@ -7,7 +7,7 @@ import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { emitEvent } from '../platform/outbox';
 
-/** Links and a website are part of Premium. Without it they stay stored but are not shown to anyone. */
+/** Links and a website are part of Heartwood. Without it they stay stored but are not shown to anyone. */
 const showsLinks = (held: readonly string[] | null) => toBadges(held).some((badge) => badge === 'premium' || badge === 'staff');
 
 const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | null): Profile => ({

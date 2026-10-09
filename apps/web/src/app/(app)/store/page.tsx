@@ -71,16 +71,17 @@ export default async function StorePage() {
           <li>
             Up to {PREMIUM_LIMITS.characterImages} pictures in each character&rsquo;s gallery. A free account adds {FREE_LIMITS.characterImages}.
           </li>
-          <li>The Premium badge on your profile.</li>
+          <li>The Heartwood badge on your profile.</li>
         </ul>
         <p className="mt-4 text-sm text-ink-muted">
           {usage.premium
-            ? 'Your account has Premium. Thank you.'
+            ? 'Your account has Heartwood. Thank you.'
             : `You have ${usage.characters.used} of ${FREE_LIMITS.characters} characters and own ${usage.communities.used} of ${FREE_LIMITS.communities} communities. Nothing you already have is ever taken away.`}
         </p>
       </div>
 
       <SectionHeading>Dice Styles</SectionHeading>
+      {items.length === 0 ? <p className="max-w-2xl text-ink-muted">New dice designs are being made for the store. Every style there is today is free.</p> : null}
       <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {items.map((item) => (
           <li key={item.key} className="wr-glass flex flex-col gap-3 rounded-2xl p-4">

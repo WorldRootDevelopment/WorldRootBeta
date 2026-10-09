@@ -2,7 +2,6 @@
 
 import { DICE_THEME_KEYS, DICE_THEMES, diceItemKey, toDiceTheme, type DiceThemeKey } from '@worldroot/contracts';
 import { Lock } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { send } from '@/features/scenes/api';
@@ -76,13 +75,6 @@ export function DiceStylePicker({ theme: saved, owned }: { theme: string; /** Ke
           {error}
         </p>
       ) : null}
-      <p className="text-sm text-ink-muted">
-        Locked styles are in the{' '}
-        <Link href="/store" className="font-medium text-accent-text underline">
-          Store
-        </Link>
-        , which is coming soon.
-      </p>
     </div>
   );
 }

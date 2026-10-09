@@ -16,6 +16,7 @@ import { requireViewer } from '@/lib/session';
 import { BlockButton } from './account-client';
 import { Achievements } from './achievements';
 import { Badges } from './badges';
+import { LinkIcon } from './link-icons';
 import { MessageButton } from './profile-client';
 
 /** Everything one viewer may see of one person's profile. Loaded once per request, however many places use it. */
@@ -112,15 +113,18 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer nofollow ugc"
+                        title={link.label}
                         className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line-strong bg-surface-raised px-3 text-sm text-ink hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                       >
-                        <span className="font-medium">{link.label}</span>
-                        <span className="text-ink-muted">{link.handle}</span>
+                        <LinkIcon service={link.service} />
+                        <span className="sr-only">{link.label}:</span>
+                        <span>{link.handle}</span>
                       </a>
                     ) : (
-                      <span className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line-strong bg-surface-raised px-3 text-sm text-ink">
-                        <span className="font-medium">{link.label}</span>
-                        <span className="select-all text-ink-muted">{link.handle}</span>
+                      <span title={link.label} className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-line-strong bg-surface-raised px-3 text-sm text-ink">
+                        <LinkIcon service={link.service} />
+                        <span className="sr-only">{link.label}:</span>
+                        <span className="select-all">{link.handle}</span>
                       </span>
                     )}
                   </li>

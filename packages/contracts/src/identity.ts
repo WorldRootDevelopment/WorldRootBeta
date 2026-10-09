@@ -48,7 +48,7 @@ export const profileSchema = z.object({
   accentHue: z.number().nullable(),
   /** Their own two-color background. Null takes the plain look. */
   theme: profileThemeSchema.nullable(),
-  /** Other places they can be found. Empty unless the account has Premium. */
+  /** Other places they can be found. Empty unless the account has Heartwood. */
   links: z.array(
     z.object({
       service: z.enum(LINK_SERVICE_KEYS as [LinkServiceKey, ...LinkServiceKey[]]),
@@ -57,7 +57,7 @@ export const profileSchema = z.object({
       url: z.string().nullable(),
     }),
   ),
-  /** Their own website. Null unless the account has Premium. */
+  /** Their own website. Null unless the account has Heartwood. */
   website: z.string().nullable(),
   /** A short line shown under their name. */
   status: z.string().nullable(),
@@ -89,7 +89,7 @@ export const updateProfileSchema = z.object({
   status: optionalLine(80).optional(),
   accentHue: z.coerce.number().int().min(0).max(359).nullable().optional(),
   theme: profileThemeSchema.nullable().optional(),
-  // Premium only. Clearing them is always allowed.
+  // Heartwood only. Clearing them is always allowed.
   links: profileLinksSchema.optional(),
   website: websiteSchema.optional(),
 });

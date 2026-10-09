@@ -5,8 +5,8 @@ import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 
 /**
- * Whether an account has what Premium gives. WorldRoot staff always do. There
- * is no billing yet, so an account is Premium only when staff have made it so.
+ * Whether an account has what Heartwood gives. WorldRoot staff always do. There
+ * is no billing yet, so an account is Heartwood only when staff have made it so.
  */
 export async function hasPremium(db: Db, actor: Actor): Promise<boolean> {
   if (actor.platformRole === 'staff') return true;
@@ -27,7 +27,7 @@ export async function characterImageLimit(db: Db, playerUserId: string | null): 
 /**
  * The demo host and the shared guest account. One is filled by WorldRoot itself and the other is used
  * by everyone trying the site, so a limit meant for one person's library would fill at once. They get
- * room to make things and nothing else Premium gives. Kept as plain addresses here because the demo
+ * room to make things and nothing else Heartwood gives. Kept as plain addresses here because the demo
  * code builds on the services this file guards; a test holds the two in step.
  */
 export const UNLIMITED_DEMO_EMAILS = ['host@worldroot.test', 'guest@worldroot.test'];

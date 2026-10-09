@@ -66,7 +66,7 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
       </form>
       <p className="mb-3 text-sm text-ink-muted">
         {query ? `${accounts.length} matching` : `The ${accounts.length} newest accounts`}. Press a label to give or take away that badge, or Manage to suspend, sign out or review an account.
-        Premium is set by hand here until billing exists.
+        Heartwood is set by hand here until billing exists.
       </p>
       <ul className="flex flex-col gap-3">
         {accounts.map((account) => (

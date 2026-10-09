@@ -107,31 +107,17 @@ describe('profile pictures', () => {
 });
 
 describe('the store', () => {
-  it('lists what there is, and lets a locked dice style be used only by someone who owns it', async () => {
+  it('has nothing to own yet, so every dice style is free and nothing can be handed out', async () => {
     const { db } = connection;
-    const before = await getStore(db, thea);
-    expect(before.items.map((item) => item.key)).toEqual(['dice:jade', 'dice:ember', 'dice:amethyst', 'dice:starlight']);
-    expect(before.items.every((item) => !item.owned)).toBe(true);
-
-    expect(await setDiceTheme(db, thea, 'ivory')).toBe('ivory');
-    await expect(setDiceTheme(db, thea, 'jade')).rejects.toMatchObject({ code: 'forbidden' });
-
-    // Only staff can give an item, and only one that exists.
-    await expect(setItemOwned(db, thea, thea.userId, 'dice:jade', true)).rejects.toMatchObject({ code: 'forbidden' });
-    await expect(setItemOwned(db, staff, thea.userId, 'dice:plutonium', true)).rejects.toMatchObject({ code: 'invalid_input' });
-    await setItemOwned(db, staff, thea.userId, 'dice:jade', true);
-    await setItemOwned(db, staff, thea.userId, 'dice:jade', true);
-    expect(await listOwnedItems(db, thea.userId)).toEqual(['dice:jade']);
-    expect((await getStore(db, thea)).items.find((item) => item.key === 'dice:jade')?.owned).toBe(true);
-    expect(await listOwnedItems(db, marcus.userId)).toEqual([]);
-
-    expect(await setDiceTheme(db, thea, 'jade')).toBe('jade');
-    await expect(setDiceTheme(db, marcus, 'jade')).rejects.toMatchObject({ code: 'forbidden' });
-
-    // Taken back: their dice return to the plain set.
-    await setItemOwned(db, staff, thea.userId, 'dice:jade', false);
+    expect((await getStore(db, thea)).items).toEqual([]);
     expect(await listOwnedItems(db, thea.userId)).toEqual([]);
-    await expect(setDiceTheme(db, thea, 'jade')).rejects.toMatchObject({ code: 'forbidden' });
-    expect((await getStore(db, thea)).items.every((item) => !item.owned)).toBe(true);
+
+    // Styles that were once kept back are now anyone's to choose.
+    for (const theme of ['ivory', 'jade', 'ember', 'amethyst', 'starlight'] as const) expect(await setDiceTheme(db, thea, theme)).toBe(theme);
+    await expect(setDiceTheme(db, thea, 'plutonium')).rejects.toMatchObject({ code: 'invalid_input' });
+
+    // Giving an item is for staff, and only an item that exists. Neither is true of anything today.
+    await expect(setItemOwned(db, thea, thea.userId, 'dice:jade', true)).rejects.toMatchObject({ code: 'forbidden' });
+    await expect(setItemOwned(db, staff, thea.userId, 'dice:jade', true)).rejects.toMatchObject({ code: 'invalid_input' });
   });
 });

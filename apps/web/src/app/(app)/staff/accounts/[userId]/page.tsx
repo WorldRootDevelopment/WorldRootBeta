@@ -1,3 +1,4 @@
+import { STORE_ITEMS } from '@worldroot/contracts';
 import { getAccountForStaff, listOwnedItems } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
@@ -26,8 +27,8 @@ const ACTIONS: Record<string, string> = {
   'platform.account.sign_out': 'Signed Out Of Every Device',
   'platform.badge.grant': 'Given A Badge',
   'platform.badge.revoke': 'Badge Taken Away',
-  'platform.premium.grant': 'Given Premium',
-  'platform.premium.revoke': 'Premium Taken Away',
+  'platform.premium.grant': 'Given Heartwood',
+  'platform.premium.revoke': 'Heartwood Taken Away',
   'platform.avatar.remove': 'Profile Picture Removed',
   'platform.banner.remove': 'Banner Removed',
   'platform.item.grant': 'Given A Store Item',
@@ -106,13 +107,18 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
       <p className="mb-4 max-w-2xl text-sm text-ink-muted">If the account may be in the wrong hands, sign it out everywhere. The owner can sign in again with their password.</p>
       <SignOutEverywhereButton userId={account.userId} sessions={account.sessions} />
 
-      <SectionHeading>Badges And Premium</SectionHeading>
+      <SectionHeading>Badges And Heartwood</SectionHeading>
       <p className="mb-4 text-sm text-ink-muted">Press a label to give or take away that badge.</p>
       <AccountControls userId={account.userId} badges={account.badges} />
 
-      <SectionHeading>Store Items</SectionHeading>
-      <p className="mb-4 text-sm text-ink-muted">Press a label to give or take back that item. The store is not open yet, so this is the only way to own one.</p>
-      <ItemControls userId={account.userId} owned={ownedItems} />
+      {/* Shown only while the store has something that can be owned. */}
+      {STORE_ITEMS.length > 0 ? (
+        <>
+          <SectionHeading>Store Items</SectionHeading>
+          <p className="mb-4 text-sm text-ink-muted">Press a label to give or take back that item. The store is not open yet, so this is the only way to own one.</p>
+          <ItemControls userId={account.userId} owned={ownedItems} />
+        </>
+      ) : null}
 
       {account.profile && !isSelf && (account.profile.avatarId || account.profile.bannerId) ? (
         <>

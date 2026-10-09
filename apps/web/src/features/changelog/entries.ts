@@ -14,6 +14,17 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-heartwood',
+    date: '2026-10-09',
+    title: 'Heartwood, Free Dice And A New Look',
+    items: [
+      'WorldRoot’s membership has a name of its own: Heartwood, after the strong wood at the centre of a tree. It is still coming soon.',
+      'Jade, Ember, Amethyst and Starlight dice are now free for everyone. Choose yours under Settings, Customization.',
+      'Links on a profile now show each site’s own icon.',
+      'Panels, buttons and backgrounds have a new, more lifelike finish: real glass, soft light and deeper shadows.',
+    ],
+  },
+  {
     id: '2026-10-09-community-rating-limit',
     date: '2026-10-09',
     title: 'Communities Can Limit Scene Ratings',
@@ -24,16 +35,16 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-09',
     title: 'Character Galleries',
     items: [
-      'Characters now have a gallery beside their portrait. Add a picture from the character’s edit page; WorldRoot Premium, coming soon, will allow 10.',
+      'Characters now have a gallery beside their portrait. Add a picture from the character’s edit page; WorldRoot Heartwood, coming soon, will allow 10.',
       'The Store and Support Us are now in the side rail, and Support Us is on the front page.',
     ],
   },
   {
     id: '2026-10-09-premium-preview',
     date: '2026-10-09',
-    title: 'A First Look At WorldRoot Premium',
+    title: 'A First Look At WorldRoot Heartwood',
     items: [
-      'The Store now shows WorldRoot Premium, planned at $5 a month and coming soon: unlimited characters and communities, links on your profile, and a button for your own website.',
+      'The Store now shows WorldRoot Heartwood, planned at $5 a month and coming soon: unlimited characters and communities, links on your profile, and a button for your own website.',
       'A free account keeps up to 10 characters in its library and, during the beta, owns up to 3 communities. Nothing you already have is taken away.',
     ],
   },
@@ -194,7 +205,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Quieter Badges',
     items: [
       'Badges are now a small icon. Point at one, or tab to it, to see its name.',
-      'Founder, Premium, Early supporter and Beta tester badges are shown on profiles only.',
+      'Founder, Heartwood, Early supporter and Beta tester badges are shown on profiles only.',
       'The Staff badge still appears beside a name everywhere, so WorldRoot staff are always recognizable.',
     ],
   },
@@ -308,7 +319,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     items: [
       'Settings now has an Account tab: change your handle and password, sign out other devices, and manage who you have blocked.',
       'New badges. WorldRoot staff have a filled Staff badge; a community’s own owner, admins and moderators have an outlined one in the community’s color, shown only inside it.',
-      'More badges: Founder, Premium, Early supporter and Beta tester.',
+      'More badges: Founder, Heartwood, Early supporter and Beta tester.',
       'Block someone from their profile. Neither of you can message the other or invite the other to a private scene, and they are not told.',
       'A first message from someone you share no community with now arrives as a request you can accept or decline.',
       'WorldRoot can be installed as an app from your browser’s menu.',

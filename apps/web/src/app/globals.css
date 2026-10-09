@@ -64,6 +64,7 @@
     z-index: -1;
     pointer-events: none;
     background:
+      radial-gradient(ellipse 120% 95% at 28% 18%, transparent 48%, var(--wr-vignette)),
       radial-gradient(64rem 34rem at 50% -10rem, var(--wr-page-glow), transparent 72%),
       radial-gradient(40rem 30rem at 4% 2%, color-mix(in oklch, var(--wr-accent-light) calc(var(--wr-aurora-strength) * 260%), transparent), transparent 70%),
       radial-gradient(36rem 28rem at 100% 10%, color-mix(in srgb, var(--wr-aurora-violet) calc(var(--wr-aurora-strength) * 100%), transparent), transparent 70%),
@@ -71,21 +72,21 @@
       radial-gradient(34rem 26rem at 0% 100%, color-mix(in oklch, var(--wr-accent-light) calc(var(--wr-aurora-strength) * 200%), transparent), transparent 70%);
   }
 
-  /* A few soft bubbles, each a circle with a highlight near its top left. */
+  /*
+   * A fine grain over everything behind the interface, as film or a camera sensor has. With the
+   * light falling away toward the corners, it is what makes the page read as a photograph of a
+   * lit room and not a flat fill.
+   */
   body::after {
     content: '';
     position: fixed;
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.7;
-    background:
-      radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 6% 78% / 9rem 9rem no-repeat,
-      radial-gradient(circle, transparent 58%, color-mix(in oklch, var(--wr-shine) 55%, transparent) 66%, transparent 70%) 6% 78% / 9rem 9rem no-repeat,
-      radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 93% 34% / 6rem 6rem no-repeat,
-      radial-gradient(circle, transparent 58%, color-mix(in oklch, var(--wr-shine) 55%, transparent) 66%, transparent 70%) 93% 34% / 6rem 6rem no-repeat,
-      radial-gradient(circle at 34% 30%, var(--wr-shine) 0 6%, transparent 7%) 72% 90% / 4rem 4rem no-repeat,
-      radial-gradient(circle, transparent 58%, color-mix(in oklch, var(--wr-shine) 55%, transparent) 66%, transparent 70%) 72% 90% / 4rem 4rem no-repeat;
+    opacity: var(--wr-grain);
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 240px 240px;
   }
 
   ::selection {
@@ -98,79 +99,130 @@
  * kind of surface appears, so the look is changed here and nowhere else.
  */
 
-/* A card or panel: translucent, with a bright upper edge and a soft shadow. */
+/*
+ * Everything here is lit by one light, above and to the left. A surface is
+ * brightest at its top left edge and corner, shaded along its bottom right,
+ * and casts a soft shadow down and away. Keeping to that one rule is what
+ * makes the panels look like objects in the same room.
+ */
+
+/* A card or panel: a slab of glass, bright where the light catches its edge and corner. */
 @utility wr-glass {
   background-color: var(--wr-glass);
-  background-image: linear-gradient(180deg, color-mix(in oklch, var(--wr-shine) 50%, transparent), transparent 5rem);
-  border: 1px solid var(--wr-glass-edge);
+  background-image:
+    radial-gradient(110% 80% at 0% 0%, color-mix(in oklch, var(--wr-shine) 75%, transparent), transparent 44%),
+    linear-gradient(180deg, color-mix(in oklch, var(--wr-shine) 38%, transparent), transparent 4.5rem),
+    linear-gradient(140deg, var(--wr-rim), color-mix(in oklch, var(--wr-rim) 22%, transparent) 36%, var(--wr-rim-shade));
+  background-origin: border-box;
+  background-clip: padding-box, padding-box, border-box;
+  border: 1px solid transparent;
   box-shadow:
     var(--wr-shadow-raised),
-    inset 0 1px 0 var(--wr-glass-edge);
+    inset 0 1px 0 var(--wr-rim),
+    inset 0 -1px 0 color-mix(in oklch, var(--wr-rim-shade) 60%, transparent);
 }
 
-/* A menu or pop-up: nearly solid, so what is behind it never competes with its text. */
+/* A menu or pop-up: thick frosted glass, nearly solid, so what is behind it never competes with its text. */
 @utility wr-popover {
   background-color: var(--wr-glass-strong);
-  border: 1px solid var(--wr-glass-edge);
+  background-image:
+    radial-gradient(110% 70% at 0% 0%, color-mix(in oklch, var(--wr-shine) 55%, transparent), transparent 40%),
+    linear-gradient(140deg, var(--wr-rim), color-mix(in oklch, var(--wr-rim) 22%, transparent) 36%, var(--wr-rim-shade));
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border: 1px solid transparent;
   box-shadow:
     var(--wr-shadow-raised),
-    inset 0 1px 0 var(--wr-glass-edge);
-  backdrop-filter: blur(18px) saturate(1.4);
+    inset 0 1px 0 var(--wr-rim);
+  backdrop-filter: blur(28px) saturate(1.8);
 }
 
-/* The frame of the app: the side rail and the top and bottom bars. */
+/* The frame of the app: the side rail and the top and bottom bars. Frosted glass with a lit inner edge. */
 @utility wr-chrome {
   background-color: var(--wr-glass);
+  background-image: linear-gradient(180deg, color-mix(in oklch, var(--wr-shine) 40%, transparent), transparent 12rem);
   border-color: var(--wr-glass-edge);
-  box-shadow: 0 0 24px -8px oklch(0.4 0.06 62 / 0.25);
-  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow:
+    inset -1px 0 0 color-mix(in oklch, var(--wr-rim) 55%, transparent),
+    10px 0 40px -18px var(--wr-vignette);
+  backdrop-filter: blur(28px) saturate(1.7);
 }
 
-/* The main button: a pill of accent color with a shine across its upper half. */
+/*
+ * The main button: polished and lit. A bright spot where the light lands, a hard shine across the
+ * upper half, light bounced back up from below, and a glow of its own color on the page around it.
+ */
 @utility wr-gloss {
   color: var(--wr-accent-contrast);
   background-color: var(--wr-accent);
   background-image:
-    linear-gradient(180deg, var(--wr-shine) 0%, color-mix(in oklch, var(--wr-shine) 30%, transparent) 48%, transparent 52%, color-mix(in oklch, var(--wr-shine) 22%, transparent) 100%),
-    linear-gradient(180deg, var(--wr-accent-light), var(--wr-accent));
-  border: 1px solid color-mix(in oklch, var(--wr-accent) 72%, black);
+    radial-gradient(70% 55% at 28% 0%, oklch(1 0 0 / 0.7), transparent 62%),
+    linear-gradient(180deg, oklch(1 0 0 / 0.4) 0%, oklch(1 0 0 / 0.1) 46%, transparent 50%, oklch(0 0 0 / 0.14) 100%),
+    radial-gradient(110% 60% at 50% 125%, color-mix(in oklch, var(--wr-accent-light) 70%, white), transparent 62%),
+    linear-gradient(180deg, var(--wr-accent-light), var(--wr-accent) 55%, color-mix(in oklch, var(--wr-accent) 80%, black));
+  border: 1px solid color-mix(in oklch, var(--wr-accent) 60%, black);
   box-shadow:
-    inset 0 1px 0 var(--wr-glass-edge),
-    0 1px 2px oklch(0.3 0.04 62 / 0.2),
-    0 8px 18px -8px color-mix(in oklch, var(--wr-accent) 80%, transparent);
-  text-shadow: 0 1px 0 color-mix(in oklch, white 30%, transparent);
+    inset 0 1px 0 oklch(1 0 0 / 0.75),
+    inset 0 -1px 0 oklch(0 0 0 / 0.22),
+    0 1px 1px oklch(0 0 0 / 0.28),
+    0 5px 10px -3px color-mix(in oklch, var(--wr-accent) 60%, black 20%),
+    0 0 30px -4px color-mix(in oklch, var(--wr-accent) calc(var(--wr-bloom) * 100%), transparent);
+  text-shadow: 0 1px 0 color-mix(in oklch, white 35%, transparent);
 
   &:hover:not(:disabled) {
-    filter: brightness(1.06) saturate(1.05);
+    filter: brightness(1.07) saturate(1.08);
+    box-shadow:
+      inset 0 1px 0 oklch(1 0 0 / 0.8),
+      inset 0 -1px 0 oklch(0 0 0 / 0.22),
+      0 1px 1px oklch(0 0 0 / 0.28),
+      0 6px 12px -3px color-mix(in oklch, var(--wr-accent) 60%, black 20%),
+      0 0 40px -2px color-mix(in oklch, var(--wr-accent) calc(var(--wr-bloom) * 140%), transparent);
   }
   &:active:not(:disabled) {
-    filter: brightness(0.96);
+    filter: brightness(0.95);
     transform: translateY(1px);
+    box-shadow:
+      inset 0 2px 4px oklch(0 0 0 / 0.3),
+      0 0 18px -4px color-mix(in oklch, var(--wr-accent) calc(var(--wr-bloom) * 80%), transparent);
   }
 }
 
-/* The quieter button: clear glass with the same shine. */
+/* The quieter button: a clear glass pill with the same light on it. */
 @utility wr-gloss-light {
   background-color: var(--wr-glass-strong);
-  background-image: linear-gradient(180deg, var(--wr-shine) 0%, transparent 50%, color-mix(in oklch, var(--wr-accent-soft) 60%, transparent) 100%);
-  border: 1px solid var(--wr-border-strong);
+  background-image:
+    radial-gradient(70% 55% at 28% 0%, color-mix(in oklch, var(--wr-shine) 90%, transparent), transparent 62%),
+    linear-gradient(180deg, color-mix(in oklch, var(--wr-shine) 60%, transparent) 0%, transparent 50%, color-mix(in oklch, var(--wr-accent-soft) 60%, transparent) 100%),
+    linear-gradient(140deg, var(--wr-rim), color-mix(in oklch, var(--wr-rim) 30%, transparent) 40%, var(--wr-rim-shade));
+  background-origin: border-box;
+  background-clip: padding-box, padding-box, border-box;
+  border: 1px solid transparent;
   box-shadow:
-    inset 0 1px 0 var(--wr-glass-edge),
-    0 1px 2px oklch(0.3 0.04 62 / 0.12);
+    inset 0 1px 0 var(--wr-rim),
+    0 1px 1px oklch(0 0 0 / 0.14),
+    0 4px 10px -4px oklch(0 0 0 / 0.22);
 
   &:hover:not(:disabled) {
-    filter: brightness(1.04);
-    border-color: var(--wr-accent);
+    filter: brightness(1.05);
+    box-shadow:
+      inset 0 1px 0 var(--wr-rim),
+      0 1px 1px oklch(0 0 0 / 0.14),
+      0 4px 10px -4px oklch(0 0 0 / 0.22),
+      0 0 0 1px var(--wr-accent),
+      0 0 22px -6px color-mix(in oklch, var(--wr-accent) calc(var(--wr-bloom) * 100%), transparent);
   }
   &:active:not(:disabled) {
     transform: translateY(1px);
+    box-shadow: inset 0 2px 4px oklch(0 0 0 / 0.22);
   }
 }
 
 /* A page title, lit from one side in the accent color, as the WorldRoot site does. */
 @utility wr-title {
   color: var(--wr-accent-text);
-  background-image: linear-gradient(70deg, var(--wr-accent-text) 10%, var(--wr-accent) 190%);
+  background-image:
+    linear-gradient(180deg, color-mix(in oklch, var(--wr-accent-text) 86%, white) 0%, transparent 46%, color-mix(in oklch, var(--wr-accent-text) 80%, black) 54%, transparent 100%),
+    linear-gradient(70deg, var(--wr-accent-text) 10%, var(--wr-accent) 190%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

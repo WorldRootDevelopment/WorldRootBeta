@@ -45,7 +45,7 @@ export function ItemControls({ userId, owned }: { userId: string; owned: string[
   );
 }
 
-/** Staff controls for one account: Premium, and each badge that is granted by hand. */
+/** Staff controls for one account: Heartwood, and each badge that is granted by hand. */
 export function AccountControls({ userId, badges }: { userId: string; badges: BadgeKey[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);

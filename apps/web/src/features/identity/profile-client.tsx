@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type CSSProperties, type FormEvent } from 'react';
 import { send } from '@/features/scenes/api';
+import { LinkIcon } from './link-icons';
 import { FormFooter } from '@/features/shell/form-footer';
 
 interface ProfileFormProps {
@@ -63,7 +64,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
       status: form.get('status'),
       accentHue: ownColor ? hue : null,
       theme: ownBackground ? background : null,
-      // Left out without Premium, so what was saved before stays as it is.
+      // Left out without Heartwood, so what was saved before stays as it is.
       ...(premium ? { links: links.filter((link) => link.handle.trim()), website: form.get('website') } : {}),
       hideOnline: form.get('hideOnline') === 'on',
     });
@@ -207,7 +208,10 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
               <ul className="flex flex-col gap-2">
                 {links.map((link, index) => (
                   <li key={link.service} className="flex flex-wrap items-center gap-2">
-                    <span className="w-40 shrink-0 text-sm font-medium text-ink">{LINK_SERVICES[link.service].label}</span>
+                    <span className="flex w-44 shrink-0 items-center gap-2 text-sm font-medium text-ink">
+                      <LinkIcon service={link.service} />
+                      {LINK_SERVICES[link.service].label}
+                    </span>
                     <input
                       aria-label={`Your Name On ${LINK_SERVICES[link.service].label}`}
                       value={link.handle}
@@ -269,9 +273,9 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
           </>
         ) : (
           <p className="max-w-xl rounded-lg bg-surface-sunken px-4 py-3 text-sm text-ink">
-            Links to where else you write and draw, and a button for your own website, are part of WorldRoot Premium, which is coming soon.{' '}
+            Links to where else you write and draw, and a button for your own website, are part of WorldRoot Heartwood, which is coming soon.{' '}
             <Link href="/store" className="font-medium text-accent-text underline">
-              See What Premium Includes
+              See What Heartwood Includes
             </Link>
           </p>
         )}

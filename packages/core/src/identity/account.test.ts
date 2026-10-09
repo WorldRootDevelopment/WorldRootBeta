@@ -51,7 +51,7 @@ describe('badges', () => {
 
     await expect(setBadge(db, writer, writer.userId, 'founder', true)).rejects.toMatchObject({ code: 'forbidden' });
     await expect(setPremium(db, writer, writer.userId, true)).rejects.toMatchObject({ code: 'forbidden' });
-    // Staff and Premium are derived from the account, so they cannot be handed out as loose badges.
+    // Staff and Heartwood are derived from the account, so they cannot be handed out as loose badges.
     await expect(setBadge(db, staff, writer.userId, 'staff', true)).rejects.toMatchObject({ code: 'invalid_input' });
     await expect(setBadge(db, staff, writer.userId, 'premium', true)).rejects.toMatchObject({ code: 'invalid_input' });
     await expect(setBadge(db, staff, writer.userId, 'made_up', true)).rejects.toMatchObject({ code: 'invalid_input' });

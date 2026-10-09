@@ -21,7 +21,7 @@ interface BadgeDefinition {
   how: string;
   /** Which fixed color the badge takes. Never the community's accent. */
   tone: 'staff' | 'premium' | 'special';
-  /** Staff may hand this out by hand. Staff and Premium are derived from the account, and earned badges are earned. */
+  /** Staff may hand this out by hand. Staff and Heartwood are derived from the account, and earned badges are earned. */
   grantable: boolean;
 }
 
@@ -29,7 +29,7 @@ interface BadgeDefinition {
 export const BADGES = {
   staff: { label: 'Rootwarden', title: 'Rootwarden: WorldRoot Staff', how: 'Held by the Rootwardens, the staff who look after WorldRoot.', tone: 'staff', grantable: false },
   founder: { label: 'Seedbearer', title: 'Seedbearer: Planted WorldRoot', how: 'For the people who planted WorldRoot.', tone: 'special', grantable: true },
-  premium: { label: 'Premium', title: 'WorldRoot Premium Member', how: 'Comes with WorldRoot Premium, which is not on sale yet.', tone: 'premium', grantable: false },
+  premium: { label: 'Heartwood', title: 'WorldRoot Heartwood Member', how: 'Comes with WorldRoot Heartwood, which is not on sale yet.', tone: 'premium', grantable: false },
   early_supporter: { label: 'Deeproot', title: 'Deeproot: Supported WorldRoot From The Start', how: 'Given by WorldRoot to people who backed it early.', tone: 'special', grantable: true },
   beta_tester: { label: 'Seedling', title: 'Seedling: Helped Test WorldRoot Before Launch', how: 'Given by WorldRoot to people who tested it before launch.', tone: 'special', grantable: true },
   // Earned, not granted. These two are achievements that also sit in the badge row; the keys match the achievement registry.

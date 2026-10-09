@@ -24,9 +24,9 @@ export async function getOwnProfileSettings(db: Db, actor: Actor): Promise<OwnPr
 /** Updates the actor's own profile. Nobody edits anyone else's. */
 export async function updateProfile(db: Db, actor: Actor, input: UpdateProfileInput): Promise<Profile> {
   const { theme, ...rest } = parseInput(updateProfileSchema, input);
-  // Links and a website come with Premium. Anyone may clear theirs.
+  // Links and a website come with Heartwood. Anyone may clear theirs.
   if (((rest.links?.length ?? 0) > 0 || rest.website) && !(await hasPremium(db, actor))) {
-    throw new DomainError('forbidden', 'Links on your profile are part of WorldRoot Premium, which is coming soon.');
+    throw new DomainError('forbidden', 'Links on your profile are part of WorldRoot Heartwood, which is coming soon.');
   }
   // Left out, the background stays as it is. Null clears it.
   const background = theme === undefined ? {} : theme === null ? { themeFrom: null, themeTo: null } : { themeFrom: theme.from, themeTo: theme.to, themeAngle: theme.angle };

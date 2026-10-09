@@ -40,7 +40,7 @@ afterAll(async () => {
 });
 
 describe('a character’s gallery', () => {
-  it('holds one picture on a free account and ten with Premium, and keeps them when Premium ends', async () => {
+  it('holds one picture on a free account and ten with Heartwood, and keeps them when Heartwood ends', async () => {
     const { db } = connection;
     const captain = await createCharacter(db, thea, { name: 'Captain Thea' });
     expect(await getCharacterGallery(db, captain)).toEqual({ images: [], limit: 1 });

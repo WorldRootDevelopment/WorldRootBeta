@@ -43,7 +43,7 @@ interface GalleryEditorProps {
   images: string[];
   /** How many pictures this character may hold. */
   limit: number;
-  /** Whether more would be allowed with Premium, so the note can say so. */
+  /** Whether more would be allowed with Heartwood, so the note can say so. */
   canGrow: boolean;
 }
 
@@ -136,7 +136,7 @@ export function GalleryEditor({ characterId, name, images, limit, canGrow }: Gal
           {full ? 'The gallery is full. ' : 'Reference art, outfits, anything that shows who they are. PNG, JPEG or WebP. '}
           {canGrow ? (
             <>
-              WorldRoot Premium, which is coming soon, allows 10.{' '}
+              WorldRoot Heartwood, which is coming soon, allows 10.{' '}
               <Link href="/store" className="font-medium text-accent-text underline">
                 See The Store
               </Link>

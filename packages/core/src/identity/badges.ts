@@ -8,7 +8,7 @@ import { DomainError } from '../platform/errors';
 
 /**
  * A person's platform badges, for use in any query that selects from
- * `profiles`. Staff and Premium come from the account itself; the rest are
+ * `profiles`. Staff and Heartwood come from the account itself; the rest are
  * rows in user_badges. Null when the profile side of a left join is missing.
  */
 export const platformBadgesSql = sql<string[] | null>`(
@@ -68,8 +68,8 @@ export async function setBadge(db: Db, actor: Actor, userId: string, badge: stri
 }
 
 /**
- * Turns Premium on or off for an account. Staff only, and by hand for now:
- * there is no billing yet, so this is how a Premium account comes to exist.
+ * Turns Heartwood on or off for an account. Staff only, and by hand for now:
+ * there is no billing yet, so this is how a Heartwood account comes to exist.
  */
 export async function setPremium(db: Db, actor: Actor, userId: string, premium: boolean): Promise<void> {
   requireStaff(actor);
