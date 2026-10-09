@@ -133,7 +133,7 @@ export function GalleryEditor({ characterId, name, images, limit, canGrow }: Gal
           <input ref={input} id={inputId} type="file" multiple accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={choose} disabled={busy || full} />
         </label>
         <p className="text-sm text-ink-muted">
-          {full ? 'The gallery is full. ' : 'Reference art, outfits, anything that shows who they are. PNG, JPEG or WebP. '}
+          {full ? 'The gallery is full. ' : 'Reference art, outfits, anything that shows who they are. No NSFW artwork. PNG, JPEG or WebP. '}
           {canGrow ? (
             <>
               WorldRoot Heartwood, which is coming soon, allows 10.{' '}

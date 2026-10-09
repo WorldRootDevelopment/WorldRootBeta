@@ -14,6 +14,15 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-gallery-rule',
+    date: '2026-10-09',
+    title: 'A Rule For Character Galleries',
+    items: [
+      'Character galleries are for showing who a character is: no NSFW artwork. This is now in the Terms Of Service.',
+      'The light or dark choice is now also under Settings, Customization.',
+    ],
+  },
+  {
     id: '2026-10-09-chronicle-and-player-roles',
     date: '2026-10-09',
     title: 'Player Roles, And The Chronicle In The Demos',

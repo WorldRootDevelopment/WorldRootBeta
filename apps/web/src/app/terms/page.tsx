@@ -54,6 +54,10 @@ export default function TermsPage() {
           <li>Spam, scams, or advertising nobody asked for.</li>
           <li>Breaking into the site, getting around a block or a suspension, or collecting other people&rsquo;s information in bulk.</li>
           <li>Posting other people&rsquo;s work as your own.</li>
+          <li>
+            <strong>NSFW artwork in a character&rsquo;s gallery.</strong> No nudity and nothing sexually explicit. A gallery is for showing who
+            a character is, and anyone who can see the character can see it.
+          </li>
         </ul>
         <p>
           Dark themes are part of fiction and are welcome within these limits. Writing about something is not the same as doing it; the

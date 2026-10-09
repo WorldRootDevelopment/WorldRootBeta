@@ -5,6 +5,7 @@ import { DiceStylePicker } from '@/features/identity/dice-style-picker';
 import { SettingsTabs } from '@/features/identity/settings-tabs';
 import { PageHeader } from '@/features/shell/page-header';
 import { SectionHeading } from '@/features/shell/prose';
+import { ThemeToggle } from '@/features/shell/theme-toggle';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
 
@@ -20,6 +21,15 @@ export default async function CustomizationPage() {
       <PageHeader title="Settings" />
       <SettingsTabs />
       <p className="mb-2 mt-6 text-ink-muted">How WorldRoot looks for you.</p>
+
+      <SectionHeading>Light Or Dark</SectionHeading>
+      <p className="mb-4 max-w-2xl text-sm text-ink-muted">
+        Follow your device, or keep WorldRoot light or dark whatever it says. The same choice is in your account menu. It is remembered on this
+        device.
+      </p>
+      <div className="max-w-xs">
+        <ThemeToggle />
+      </div>
 
       <SectionHeading>Dice Style</SectionHeading>
       <p className="mb-5 max-w-2xl text-sm text-ink-muted">
