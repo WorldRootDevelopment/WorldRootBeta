@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { BADGE_KEYS, type BadgeKey } from './badges';
+import { PLAYER_ROLE_GROUP_KEYS, playerRolesSchema, type PlayerRoleGroupKey } from './player-roles';
 import { LINK_SERVICE_KEYS, profileLinksSchema, websiteSchema, type LinkServiceKey } from './plans';
 
 export const HANDLE_MIN = 3;
@@ -48,6 +49,8 @@ export const profileSchema = z.object({
   accentHue: z.number().nullable(),
   /** Their own two-color background. Null takes the plain look. */
   theme: profileThemeSchema.nullable(),
+  /** What they say about themselves in every community: pronouns, whether to message them, and so on. */
+  playerRoles: z.array(z.object({ key: z.string(), group: z.enum(PLAYER_ROLE_GROUP_KEYS as [PlayerRoleGroupKey, ...PlayerRoleGroupKey[]]), label: z.string() })),
   /** Other places they can be found. Empty unless the account has Heartwood. */
   links: z.array(
     z.object({
@@ -89,6 +92,7 @@ export const updateProfileSchema = z.object({
   status: optionalLine(80).optional(),
   accentHue: z.coerce.number().int().min(0).max(359).nullable().optional(),
   theme: profileThemeSchema.nullable().optional(),
+  playerRoles: playerRolesSchema.optional(),
   // Heartwood only. Clearing them is always allowed.
   links: profileLinksSchema.optional(),
   website: websiteSchema.optional(),

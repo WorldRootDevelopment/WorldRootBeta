@@ -18,6 +18,9 @@ export const communities = pgTable('communities', {
   // The highest content rating a scene here may be given: 'everyone', 'teen', 'mature' or 'adult'.
   // The default allows all of them. Lowering it does not change scenes that already exist.
   maxRating: text('max_rating').notNull().default('adult'),
+  // Shows the Chronicle: finished scenes read in order, as the chapters of one book. On for the demo
+  // communities while it is being tried out; there is no setting for it yet.
+  chronicle: boolean('chronicle').notNull().default(false),
   // Turns on dice rolls in this community's scenes.
   dndMode: boolean('dnd_mode').notNull().default(false),
   // Set while the community is archived: kept and readable by its members, but frozen and hidden from everyone else.

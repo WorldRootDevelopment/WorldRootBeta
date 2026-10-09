@@ -104,6 +104,15 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
               <span> · Joined {joinedAt.toLocaleDateString('en', { month: 'long', year: 'numeric' })}</span>
             </p>
             {profile.status ? <p className="mt-2 inline-flex max-w-full rounded-full bg-accent-soft px-3 py-1 text-sm font-medium text-accent-text">{profile.status}</p> : null}
+            {profile.playerRoles.length > 0 ? (
+              <ul aria-label="Player Roles" className="mt-3 flex flex-wrap gap-1.5">
+                {profile.playerRoles.map((role) => (
+                  <li key={role.key} className="inline-flex min-h-7 items-center rounded-full bg-surface-sunken px-2.5 text-xs font-medium text-ink">
+                    {role.label}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
             {profile.links.length > 0 ? (
               <ul aria-label="Elsewhere" className="mt-3 flex flex-wrap gap-2">
                 {profile.links.map((link) => (

@@ -25,7 +25,7 @@ export default async function EditProfilePage() {
       <div className="mb-8 max-w-2xl">
         <ImageUpload url="/api/v1/profile/banner" mediaId={profile.bannerId} name={profile.displayName} label="Banner" shape="banner" />
       </div>
-      <ProfileForm handle={profile.handle} displayName={profile.displayName} pronouns={profile.pronouns} bio={profile.bio} hideOnline={hideOnline} status={profile.status} accentHue={profile.accentHue} theme={profile.theme} premium={premium} links={profile.links.map(({ service, handle }) => ({ service, handle }))} website={profile.website} />
+      <ProfileForm handle={profile.handle} displayName={profile.displayName} pronouns={profile.pronouns} bio={profile.bio} hideOnline={hideOnline} status={profile.status} accentHue={profile.accentHue} theme={profile.theme} playerRoles={profile.playerRoles.map((role) => role.key)} premium={premium} links={profile.links.map(({ service, handle }) => ({ service, handle }))} website={profile.website} />
     </>
   );
 }

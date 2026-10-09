@@ -104,6 +104,9 @@ export const profiles = pgTable('profiles', {
   themeTo: text('theme_to'),
   // The direction the two colors run in, in degrees.
   themeAngle: integer('theme_angle').notNull().default(135),
+  // Player roles: what this person says about themselves in every community, as `group:option` keys
+  // from the registry in @worldroot/contracts.
+  playerRoles: jsonb('player_roles').notNull().default([]),
   // Other places this person can be found, as { service, handle } pairs. The services are a registry in
   // @worldroot/contracts. Shown only while the account has Premium; kept, unseen, when it does not.
   links: jsonb('links').notNull().default([]),

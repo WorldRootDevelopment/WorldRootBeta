@@ -152,7 +152,11 @@ The room goes quiet in the way a room does when everyone is waiting for someone 
  */
 export async function seedDndDemo(db: Db, options: DemoOptions = {}): Promise<DemoSeedResult> {
   const [existing] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, DND_DEMO_COMMUNITY_SLUG));
-  if (existing) return { created: false, communitySlug: DND_DEMO_COMMUNITY_SLUG };
+  if (existing) {
+    // The Chronicle is being tried out in the demo communities first.
+    await db.update(communities).set({ chronicle: true }).where(eq(communities.id, existing.id));
+    return { created: false, communitySlug: DND_DEMO_COMMUNITY_SLUG };
+  }
   const actor = await ensureDemoActor(db, options);
 
   const settings = {
@@ -167,6 +171,7 @@ export async function seedDndDemo(db: Db, options: DemoOptions = {}): Promise<De
   };
   const community = await createCommunity(db, actor, { slug: DND_DEMO_COMMUNITY_SLUG, ...settings });
   await updateCommunity(db, actor, community.id, { ...settings, requireCharacterApproval: false, dndMode: true });
+  await db.update(communities).set({ chronicle: true }).where(eq(communities.id, community.id));
 
   await createRole(db, actor, community.id, {
     name: 'Dungeon Master',

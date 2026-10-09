@@ -692,7 +692,10 @@ export async function setSceneStatus(db: Db, actor: Actor, sceneId: string, stat
   if (!(await canManageScene(db, actor, scene))) throw new DomainError('forbidden', 'Only the scene’s creator can change its status.');
 
   const changed = await db.transaction(async (tx) => {
-    const [updated] = await tx.update(scenes).set({ status }).where(eq(scenes.id, sceneId)).returning();
+    // Finishing a scene dates it, which is what places it in the Chronicle. Archiving a finished scene
+    // keeps the date; reopening one clears it, and it takes a new place when it is finished again.
+    const completedAt = status === 'completed' ? (scene.completedAt ?? new Date()) : status === 'archived' ? scene.completedAt : null;
+    const [updated] = await tx.update(scenes).set({ status, completedAt }).where(eq(scenes.id, sceneId)).returning();
     if (scene.communityId) {
       await recordAudit(tx, {
         actor,

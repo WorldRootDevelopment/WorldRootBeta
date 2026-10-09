@@ -29,6 +29,12 @@ function MemberList({ title, members }: { title: string; members: PresenceRow[] 
                 <Badges list={member.badges} community={member.communityBadge} />
               </span>
               {member.role ? <span className="block truncate text-xs text-ink-muted">{member.role}</span> : null}
+              {/* What they say about themselves everywhere, under the role this community gave them. */}
+              {member.playerRoles.length > 0 ? (
+                <span className="block truncate text-xs text-ink-muted" title={member.playerRoles.map((role) => role.label).join(', ')}>
+                  {member.playerRoles.map((role) => role.label).join(' · ')}
+                </span>
+              ) : null}
             </span>
           </li>
         ))}

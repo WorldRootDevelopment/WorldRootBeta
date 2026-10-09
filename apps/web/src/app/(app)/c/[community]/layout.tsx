@@ -71,6 +71,12 @@ export default async function CommunityLayout({ params, children }: Props) {
         <NavLink href={`${base}/characters`} className={tabClass} activeClassName="border-accent text-ink">
           Characters
         </NavLink>
+        {/* Finished scenes, read as the chapters of one book. Being tried out in the demo communities first. */}
+        {community.chronicle ? (
+          <NavLink href={`${base}/chronicle`} className={tabClass} activeClassName="border-accent text-ink">
+            Chronicle
+          </NavLink>
+        ) : null}
         {canAdminister ? (
           <NavLink href={`${base}/settings`} className={tabClass} activeClassName="border-accent text-ink">
             Settings

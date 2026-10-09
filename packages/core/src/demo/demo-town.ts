@@ -236,6 +236,7 @@ export async function seedDemo(db: Db, options: DemoOptions = {}): Promise<DemoS
 
   const [existing] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, DEMO_COMMUNITY_SLUG));
   if (existing) {
+    await db.update(communities).set({ chronicle: true }).where(eq(communities.id, existing.id));
     // Each step stands alone, so a database seeded by an earlier version is brought up to date.
     await ensureNarrator(db, actor, existing.id);
     await ensureDemoScenes(db, actor, existing.id);
@@ -252,6 +253,8 @@ export async function seedDemo(db: Db, options: DemoOptions = {}): Promise<DemoS
     accentHue: 155,
     listed: true,
   });
+  // The Chronicle is being tried out in the demo communities first.
+  await db.update(communities).set({ chronicle: true }).where(eq(communities.id, community.id));
 
   await createRole(db, actor, community.id, {
     name: 'Moderator',

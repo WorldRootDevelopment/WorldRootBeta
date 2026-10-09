@@ -1,6 +1,6 @@
 'use client';
 
-import { LINK_SERVICE_KEYS, LINK_SERVICES, MAX_PROFILE_LINKS, type LinkServiceKey, type ProfileTheme } from '@worldroot/contracts';
+import { LINK_SERVICE_KEYS, LINK_SERVICES, MAX_PROFILE_LINKS, PLAYER_ROLE_GROUP_KEYS, PLAYER_ROLE_GROUPS, type LinkServiceKey, type ProfileTheme } from '@worldroot/contracts';
 import { Button, TextArea, TextField } from '@worldroot/ui';
 import { Plus, X } from 'lucide-react';
 import Link from 'next/link';
@@ -19,6 +19,8 @@ interface ProfileFormProps {
   status: string | null;
   accentHue: number | null;
   theme: ProfileTheme | null;
+  /** The keys of the player roles chosen so far. */
+  playerRoles: string[];
   /** Whether this account may have links and a website on its profile. */
   premium: boolean;
   links: Array<{ service: LinkServiceKey; handle: string }>;
@@ -38,13 +40,17 @@ const BACKGROUNDS: Array<{ name: string; from: string; to: string }> = [
 ];
 
 /** Edit your own profile and how you appear to others. */
-export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, status, accentHue, theme, premium, links: savedLinks, website }: ProfileFormProps) {
+export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, status, accentHue, theme, playerRoles: savedRoles, premium, links: savedLinks, website }: ProfileFormProps) {
   const router = useRouter();
   // No color of your own means WorldRoot's.
   const [ownColor, setOwnColor] = useState(accentHue !== null);
   const [hue, setHue] = useState(accentHue ?? 62);
   const [ownBackground, setOwnBackground] = useState(theme !== null);
   const [background, setBackground] = useState<ProfileTheme>(theme ?? { from: BACKGROUNDS[0]!.from, to: BACKGROUNDS[0]!.to, angle: 135 });
+  const [roles, setRoles] = useState(savedRoles);
+  // Pressing a choice turns it on or off. Where only one is allowed, turning one on turns the others in its group off.
+  const toggleRole = (group: string, key: string, many: boolean) =>
+    setRoles((current) => (current.includes(key) ? current.filter((other) => other !== key) : [...(many ? current : current.filter((other) => !other.startsWith(`${group}:`))), key]));
   const [links, setLinks] = useState(savedLinks);
   const unused = LINK_SERVICE_KEYS.filter((key) => !links.some((link) => link.service === key));
   const [fields, setFields] = useState<Record<string, string>>({});
@@ -64,6 +70,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
       status: form.get('status'),
       accentHue: ownColor ? hue : null,
       theme: ownBackground ? background : null,
+      playerRoles: roles,
       // Left out without Heartwood, so what was saved before stays as it is.
       ...(premium ? { links: links.filter((link) => link.handle.trim()), website: form.get('website') } : {}),
       hideOnline: form.get('hideOnline') === 'on',
@@ -195,6 +202,46 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
         {fields.theme ? (
           <p role="alert" className="text-sm text-danger">
             {fields.theme}
+          </p>
+        ) : null}
+      </fieldset>
+
+      <fieldset className="flex flex-col gap-4">
+        <legend className="mb-1 text-sm font-medium text-ink">Player Roles</legend>
+        <p className="-mt-2 text-sm text-ink-muted">
+          About you, the writer. These show beside your name in every community you join, under the roles that community gives you. All are
+          optional.
+        </p>
+        {PLAYER_ROLE_GROUP_KEYS.map((group) => {
+          const { label, many, options } = PLAYER_ROLE_GROUPS[group];
+          return (
+            <div key={group} role="group" aria-label={label}>
+              <p className="mb-1.5 text-sm text-ink">
+                {label} <span className="text-ink-muted">· {many ? 'Choose Any' : 'Choose One'}</span>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(options).map(([option, name]) => {
+                  const key = `${group}:${option}`;
+                  const on = roles.includes(key);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => toggleRole(group, key, many)}
+                      className={`inline-flex min-h-11 items-center rounded-full border px-3.5 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${on ? 'border-accent bg-accent-soft font-medium text-accent-text' : 'border-line-strong bg-surface-raised text-ink hover:bg-surface-sunken'}`}
+                    >
+                      {name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+        {fields.playerRoles ? (
+          <p role="alert" className="text-sm text-danger">
+            {fields.playerRoles}
           </p>
         ) : null}
       </fieldset>

@@ -14,6 +14,15 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-chronicle-and-player-roles',
+    date: '2026-10-09',
+    title: 'Player Roles, And The Chronicle In The Demos',
+    items: [
+      'Player Roles: choose your pronouns, whether you want direct messages, your region and more under Settings, Profile. They show beside your name in every community.',
+      'The Chronicle is being tried out in Demo Town and Demo Dungeon: finished scenes become chapters of one ongoing book, read in order.',
+    ],
+  },
+  {
     id: '2026-10-09-heartwood',
     date: '2026-10-09',
     title: 'Heartwood, Free Dice And A New Look',

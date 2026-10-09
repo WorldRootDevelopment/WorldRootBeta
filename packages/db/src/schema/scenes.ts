@@ -32,6 +32,9 @@ export const scenes = pgTable(
     lastIcSeq: integer('last_ic_seq').notNull().default(0),
     lastIcAuthorUserId: uuid('last_ic_author_user_id'),
     lastPostAt: timestamptz('last_post_at').notNull().defaultNow(),
+    // When the scene was finished. Set on being marked complete, kept if it is then archived, and cleared
+    // if it is reopened. It is what places a scene in its community's Chronicle.
+    completedAt: timestamptz('completed_at'),
 
     createdAt: createdAt(),
     updatedAt: updatedAt(),

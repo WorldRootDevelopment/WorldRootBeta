@@ -1,4 +1,4 @@
-import { createProfileSchema, toDiceTheme, toProfileLinks, type CreateProfileInput, type Profile } from '@worldroot/contracts';
+import { createProfileSchema, toDiceTheme, toPlayerRoles, toProfileLinks, type CreateProfileInput, type Profile } from '@worldroot/contracts';
 import { handleHistory, profiles, type Db } from '@worldroot/db';
 import { eq } from 'drizzle-orm';
 import { recordAudit } from '../platform/audit';
@@ -20,6 +20,7 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   bannerId: row.bannerMediaId,
   accentHue: row.accentHue,
   theme: row.themeFrom && row.themeTo ? { from: row.themeFrom, to: row.themeTo, angle: row.themeAngle } : null,
+  playerRoles: toPlayerRoles(row.playerRoles),
   links: showsLinks(held) ? toProfileLinks(row.links) : [],
   website: showsLinks(held) ? row.website : null,
   status: row.status,

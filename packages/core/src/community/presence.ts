@@ -1,3 +1,4 @@
+import { toPlayerRoles, type PlayerRole } from '@worldroot/contracts';
 import type { BadgeKey, CommunityBadgeKey } from '@worldroot/contracts';
 import { communityMembers, profiles, type Db } from '@worldroot/db';
 import { and, eq, sql } from 'drizzle-orm';
@@ -33,13 +34,15 @@ export interface PresenceRow {
   online: boolean;
   /** The member's highest role, when it is something more than the built-in Member role. */
   role: string | null;
+  /** What they say about themselves everywhere, shown under the role this community gave them. */
+  playerRoles: PlayerRole[];
 }
 
 /** A community's members with who is online now: online first, then by rank, then by name. */
 export async function listMemberPresence(db: Db, communityId: string): Promise<PresenceRow[]> {
   const members = await listMembers(db, communityId);
   const seen = await db
-    .select({ userId: profiles.userId, lastSeenAt: profiles.lastSeenAt, hideOnline: profiles.hideOnline, avatarId: profiles.avatarMediaId })
+    .select({ userId: profiles.userId, lastSeenAt: profiles.lastSeenAt, hideOnline: profiles.hideOnline, avatarId: profiles.avatarMediaId, playerRoles: profiles.playerRoles })
     .from(communityMembers)
     .innerJoin(profiles, eq(profiles.userId, communityMembers.userId))
     .where(eq(communityMembers.communityId, communityId));
@@ -50,6 +53,7 @@ export async function listMemberPresence(db: Db, communityId: string): Promise<P
   );
 
   const avatars = new Map(seen.map((row) => [row.userId, row.avatarId]));
+  const playerRoles = new Map(seen.map((row) => [row.userId, toPlayerRoles(row.playerRoles)]));
 
   return members
     .map((member, rank) => ({
@@ -61,6 +65,7 @@ export async function listMemberPresence(db: Db, communityId: string): Promise<P
       communityBadge: member.communityBadge,
       online: online.has(member.userId),
       role: member.roles.find((role) => !role.isDefault)?.name ?? null,
+      playerRoles: playerRoles.get(member.userId) ?? [],
       rank,
     }))
     .sort((a, b) => Number(b.online) - Number(a.online) || a.rank - b.rank || a.displayName.localeCompare(b.displayName))
