@@ -103,7 +103,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
               {me.canPost ? (
                 <>
                   <Composer sceneId={scene.id} characters={me.characters} draft={me.draft} />
-                  {view.dice ? <DiceRoller sceneId={scene.id} characters={me.characters} /> : null}
+                  {view.dice ? <DiceRoller sceneId={scene.id} characters={me.characters} theme={viewer.profile.diceTheme} /> : null}
                 </>
               ) : closed ? (
                 <p className="text-ink-muted">
@@ -169,7 +169,7 @@ export default async function ScenePage({ params, searchParams }: Props) {
                   <Link href={`/u/${person.handle}`} className="rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
                     {person.displayName}
                   </Link>{' '}
-                  <span className="text-ink-muted">@{person.handle}</span> <Badges list={person.badges} compact />
+                  <span className="text-ink-muted">@{person.handle}</span> <Badges list={person.badges} />
                 </li>
               ))}
             </ul>

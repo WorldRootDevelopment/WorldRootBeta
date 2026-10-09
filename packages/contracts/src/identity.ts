@@ -34,6 +34,8 @@ export const profileSchema = z.object({
   accentHue: z.number().nullable(),
   /** A short line shown under their name. */
   status: z.string().nullable(),
+  /** How their dice look when they roll. A key from the dice theme registry. */
+  diceTheme: z.string(),
   /** WorldRoot staff. Kept beside `badges` because code asks this question directly. */
   isStaff: z.boolean(),
   /** Platform badges shown beside their name everywhere, most significant first. */

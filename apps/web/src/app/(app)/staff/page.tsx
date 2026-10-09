@@ -70,7 +70,7 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
                 <span className="font-medium text-ink-muted">Not set up yet</span>
               )}
               {account.handle ? <span className="text-sm text-ink-muted">@{account.handle}</span> : null}
-              <Badges list={account.badges} />
+              <Badges list={account.badges} all />
             </p>
             <p className="mt-1 text-sm text-ink-muted">
               {account.email} · joined {account.createdAt.toLocaleDateString('en', { dateStyle: 'medium' })}

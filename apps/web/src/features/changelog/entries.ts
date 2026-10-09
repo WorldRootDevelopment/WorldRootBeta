@@ -14,6 +14,26 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-08-dice-tray',
+    date: '2026-10-08',
+    title: 'A proper dice tray',
+    items: [
+      'Dice now have their real shapes: a d4 is a pyramid, a d20 an icosahedron, and a d6 is still a cube.',
+      'The dice box is rebuilt as a tray. Pick a die by its shape, set how many and what to add, and roll.',
+      'Dice styles: Classic, Ivory and Obsidian are free to choose. More are on the way.',
+    ],
+  },
+  {
+    id: '2026-10-08-quieter-badges',
+    date: '2026-10-08',
+    title: 'Quieter badges',
+    items: [
+      'Badges are now a small icon. Point at one, or tab to it, to see its name.',
+      'Founder, Premium, Early supporter and Beta tester badges are shown on profiles only.',
+      'The Staff badge still appears beside a name everywhere, so WorldRoot staff are always recognisable.',
+    ],
+  },
+  {
     id: '2026-10-08-friends-profiles-sidebar',
     date: '2026-10-08',
     title: 'Friends, richer profiles, achievements and a new sidebar',

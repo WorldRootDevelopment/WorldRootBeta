@@ -98,6 +98,8 @@ export const profiles = pgTable('profiles', {
   accentHue: integer('accent_hue'),
   // A short line shown under the name: what they are up to, or a favourite quote.
   status: text('status'),
+  // How this person's dice look when they roll. A key from the registry in @worldroot/contracts.
+  diceTheme: text('dice_theme').notNull().default('classic'),
   handleChangedAt: timestamptz('handle_changed_at'),
   createdAt: createdAt(),
   updatedAt: updatedAt(),

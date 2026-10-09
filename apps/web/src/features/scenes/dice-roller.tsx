@@ -1,19 +1,24 @@
 'use client';
 
+import { DICE_THEME_KEYS, DICE_THEMES, toDiceTheme, type DiceThemeKey } from '@worldroot/contracts';
 import { Button } from '@worldroot/ui';
+import { Lock, Minus, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { send } from './api';
+import { Die } from './die';
 
+const focusRing = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
 const field =
-  'min-h-11 rounded-lg border border-line-strong bg-surface-raised px-3 text-base text-ink placeholder:text-ink-muted ' +
+  'min-h-11 w-full rounded-lg border border-line-strong bg-surface-raised px-3 text-base text-ink placeholder:text-ink-muted ' +
   'focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus';
-const quick =
-  'min-h-9 rounded-full border border-line-strong px-3 text-sm font-medium text-ink-muted hover:text-ink ' +
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus';
+const smallLabel = 'text-xs font-semibold uppercase tracking-wide text-ink-muted';
+const stepButton = `flex size-9 items-center justify-center rounded-full border border-line-strong text-ink hover:bg-surface-sunken disabled:opacity-40 ${focusRing}`;
 
-const COMMON = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100'];
+const DICE = [4, 6, 8, 10, 12, 20, 100];
 const SELF = 'self';
+const MAX_COUNT = 20;
+const MAX_MODIFIER = 99;
 /** How long the dice tumble before they settle, in milliseconds. */
 const TUMBLE_MS = 1100;
 /** More dice than this are shown as one die carrying the total. */
@@ -27,50 +32,52 @@ interface RollResult {
 
 interface Throw {
   result: RollResult;
-  /** How many sides the dice have, read from the tidied notation, so every face shows a number the die could roll. */
   sides: number;
-  /** One entry per die shown: the number that came up. The real numbers came from the server. */
+  /** One entry per die shown. The numbers came from the server. */
   values: number[];
   landed: boolean;
 }
 
 const sidesOf = (notation: string) => Number(/d(\d+)/.exec(notation)?.[1] ?? 20);
 const prefersStillness = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const signed = (value: number) => (value > 0 ? `+${value}` : value < 0 ? `−${Math.abs(value)}` : '');
 
-/**
- * The six faces of one die. The first is the face that ends up towards you and
- * carries the result. The other five carry other numbers the die could show,
- * chosen from the result so they are the same on every render.
- */
-function faces(value: number, sides: number): number[] {
-  const others = Array.from({ length: 5 }, (_, index) => ((value - 1 + (index + 1) * Math.max(1, Math.floor(sides / 6) || 1)) % sides) + 1);
-  return [value, ...others];
-}
-
-/** One die: a cube in 3D that spins while the roll is in the air and settles with the result facing you. */
-function Die({ value, sides, landed, order }: { value: number; sides: number; landed: boolean; order: number }) {
-  const delay = { animationDelay: `${order * 70}ms` };
+/** A number with a button either side, for how many dice and what to add. */
+function Stepper({ label, value, min, max, onChange, show }: { label: string; value: number; min: number; max: number; onChange: (value: number) => void; show: string }) {
   return (
-    <span className={`wr-die-stage ${landed ? 'wr-die-landed' : 'wr-die-tumbling'}`}>
-      <span className="wr-die-hop block" style={delay}>
-        <span className="wr-die-cube block" style={delay}>
-          {faces(value, sides).map((face, index) => (
-            <span key={index} className="wr-die-face">
-              {face}
-            </span>
-          ))}
-        </span>
-      </span>
-    </span>
+    <div className="flex flex-col gap-1.5">
+      <span className={smallLabel}>{label}</span>
+      <div className="flex items-center gap-2">
+        <button type="button" className={stepButton} onClick={() => onChange(Math.max(min, value - 1))} disabled={value <= min} aria-label={`Less: ${label}`}>
+          <Minus className="size-4" aria-hidden="true" />
+        </button>
+        <output className="min-w-10 text-center font-display text-lg font-bold tabular-nums text-ink" aria-live="polite">
+          {show}
+        </output>
+        <button type="button" className={stepButton} onClick={() => onChange(Math.min(max, value + 1))} disabled={value >= max} aria-label={`More: ${label}`}>
+          <Plus className="size-4" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
   );
 }
 
-/** Rolls dice into the scene. Shown only where the community has DnD mode on. */
-export function DiceRoller({ sceneId, characters }: { sceneId: string; characters: Array<{ id: string; name: string }> }) {
+interface DiceRollerProps {
+  sceneId: string;
+  characters: Array<{ id: string; name: string }>;
+  /** The dice theme saved on the roller's profile. */
+  theme: string;
+}
+
+/** The dice tray: choose the dice, roll them, watch them land. Shown only where the community has DnD mode on. */
+export function DiceRoller({ sceneId, characters, theme: savedTheme }: DiceRollerProps) {
   const router = useRouter();
-  const [notation, setNotation] = useState('d20');
+  const [sides, setSides] = useState(20);
+  const [count, setCount] = useState(1);
+  const [modifier, setModifier] = useState(0);
   const [reason, setReason] = useState('');
   const [who, setWho] = useState(characters[0]?.id ?? SELF);
+  const [theme, setTheme] = useState<DiceThemeKey>(toDiceTheme(savedTheme));
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [thrown, setThrown] = useState<Throw | null>(null);
@@ -78,19 +85,26 @@ export function DiceRoller({ sceneId, characters }: { sceneId: string; character
 
   useEffect(() => () => clearTimeout(settle.current), []);
 
+  const notation = `${count}d${sides}${modifier > 0 ? `+${modifier}` : modifier < 0 ? modifier : ''}`;
+  const choose = (next: { sides?: number; count?: number; modifier?: number }) => {
+    // Changing the dice clears the last throw from the tray, so what is shown is always what will be rolled.
+    setThrown(null);
+    if (next.sides !== undefined) setSides(next.sides);
+    if (next.count !== undefined) setCount(next.count);
+    if (next.modifier !== undefined) setModifier(next.modifier);
+  };
+
   /** Shows the dice tumbling, then settles them on the numbers the server rolled and brings the roll into the story. */
   const animate = (result: RollResult) => {
     clearTimeout(settle.current);
-    const sides = sidesOf(result.notation);
-    // Many dice are shown as one die carrying the total, which may be larger than any one face.
-    const many = result.rolls.length > MAX_SHOWN;
-    const values = many ? [result.total] : result.rolls;
+    const rolledSides = sidesOf(result.notation);
+    const values = result.rolls.length > MAX_SHOWN ? [result.total] : result.rolls;
     const land = () => {
-      setThrown({ result, sides: many ? Math.max(sides, result.total) : sides, values, landed: true });
+      setThrown({ result, sides: rolledSides, values, landed: true });
       router.refresh();
     };
     if (prefersStillness()) return land();
-    setThrown({ result, sides: many ? Math.max(sides, result.total) : sides, values, landed: false });
+    setThrown({ result, sides: rolledSides, values, landed: false });
     settle.current = setTimeout(land, TUMBLE_MS);
   };
 
@@ -105,34 +119,61 @@ export function DiceRoller({ sceneId, characters }: { sceneId: string; character
     animate(result.data.roll);
   };
 
+  const pickTheme = async (key: DiceThemeKey) => {
+    const before = theme;
+    setTheme(key);
+    const result = await send('PUT', '/api/v1/profile/dice-theme', { theme: key });
+    if (!result.ok) {
+      setTheme(before);
+      setError(result.message);
+    }
+  };
+
   const tumbling = Boolean(thrown && !thrown.landed);
   const showTotal = thrown?.landed && (thrown.values.length > 1 || thrown.result.total !== thrown.values[0]);
+  const resting = Math.min(count, MAX_SHOWN);
 
   return (
-    <form onSubmit={roll} aria-label="Roll dice" className="wr-glass mt-8 flex flex-col gap-3 rounded-2xl p-4">
-      <p className="text-sm font-medium text-ink">Roll dice</p>
-      <div className="flex flex-wrap gap-2">
-        {COMMON.map((die) => (
-          <button key={die} type="button" className={quick} onClick={() => setNotation(die)}>
-            {die}
+    <form onSubmit={roll} aria-label="Roll dice" className={`wr-glass wr-dice-${theme} mt-8 overflow-hidden rounded-3xl`}>
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4">
+        <h3 className="font-display text-lg font-semibold text-ink">Dice</h3>
+        <span className="rounded-full bg-accent-soft px-3 py-1 font-display text-sm font-bold tabular-nums text-accent-text" aria-label={`Rolling ${notation}`}>
+          {count}d{sides}
+          {signed(modifier)}
+        </span>
+      </div>
+
+      {/* Which die. Each button is the die itself. */}
+      <div role="radiogroup" aria-label="Which die" className="flex flex-wrap gap-1 px-4 pt-3">
+        {DICE.map((die) => (
+          <button
+            key={die}
+            type="button"
+            role="radio"
+            aria-checked={sides === die}
+            onClick={() => choose({ sides: die })}
+            className={`flex flex-col items-center gap-0.5 rounded-2xl px-2 pb-1.5 pt-1 text-xs font-semibold ${focusRing} ${sides === die ? 'bg-accent-soft text-accent-text' : 'text-ink-muted hover:bg-surface-sunken hover:text-ink'}`}
+          >
+            <Die sides={die} value={die === 100 ? '%' : die} small />
+            d{die}
           </button>
         ))}
       </div>
-      <div className="grid gap-3 sm:grid-cols-[8rem_minmax(0,1fr)_auto]">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="dice-notation" className="text-xs font-medium text-ink-muted">
-            Dice
-          </label>
-          <input id="dice-notation" value={notation} onChange={(event) => setNotation(event.target.value)} maxLength={12} className={field} autoComplete="off" />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="dice-reason" className="text-xs font-medium text-ink-muted">
+
+      <div className="flex flex-wrap items-end gap-x-8 gap-y-4 px-5 pt-4">
+        <Stepper label="How many" value={count} min={1} max={MAX_COUNT} onChange={(value) => choose({ count: value })} show={String(count)} />
+        <Stepper label="Add or subtract" value={modifier} min={-MAX_MODIFIER} max={MAX_MODIFIER} onChange={(value) => choose({ modifier: value })} show={modifier === 0 ? '0' : signed(modifier)} />
+      </div>
+
+      <div className="grid gap-4 px-5 pt-4 sm:grid-cols-[minmax(0,1fr)_12rem]">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="dice-reason" className={smallLabel}>
             What for (optional)
           </label>
           <input id="dice-reason" value={reason} onChange={(event) => setReason(event.target.value)} maxLength={120} placeholder="to pick the lock" className={field} />
         </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor="dice-who" className="text-xs font-medium text-ink-muted">
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="dice-who" className={smallLabel}>
             Rolling as
           </label>
           <select id="dice-who" value={who} onChange={(event) => setWho(event.target.value)} className={field}>
@@ -145,33 +186,62 @@ export function DiceRoller({ sceneId, characters }: { sceneId: string; character
           </select>
         </div>
       </div>
+
       {error ? (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="px-5 pt-3 text-sm text-danger">
           {error}
         </p>
-      ) : (
-        <p className="text-xs text-ink-muted">Like d20, 2d6 or 3d8+2. WorldRoot makes the roll and adds it to the story; it cannot be edited.</p>
-      )}
+      ) : null}
 
-      <div className="flex min-h-24 flex-wrap items-center gap-4">
-        <Button type="submit" disabled={pending || tumbling || !notation.trim()}>
-          {pending || tumbling ? 'Rolling…' : 'Roll'}
-        </Button>
-        {thrown ? (
-          <>
-            {/* The dice are decoration. The result is announced in words below, once, when they land. */}
-            <div aria-hidden="true" className="flex flex-wrap items-center">
-              {thrown.values.map((value, index) => (
+      {/* The tray: where the dice sit, tumble and land. */}
+      <div className="wr-dice-tray mt-5 flex min-h-36 flex-wrap items-center justify-between gap-4 px-5 py-4">
+        {/* The dice are decoration. The result is announced in words below, once, when they land. */}
+        <div aria-hidden="true" className="flex min-h-24 flex-1 flex-wrap items-center">
+          {thrown
+            ? thrown.values.map((value, index) => (
                 // The key changes when the dice land, so the settling turn starts afresh.
-                <Die key={`${index}-${thrown.landed}`} value={value} sides={thrown.sides} landed={thrown.landed} order={index} />
-              ))}
-              {showTotal ? <span className="ml-2 font-display text-xl font-bold text-ink">= {thrown.result.total}</span> : null}
-            </div>
-            <p role="status" className="sr-only">
-              {thrown.landed ? `Rolled ${thrown.result.notation}: ${thrown.result.total}` : ''}
-            </p>
-          </>
-        ) : null}
+                <Die key={`${index}-${thrown.landed}`} sides={thrown.values.length === 1 && thrown.result.rolls.length > MAX_SHOWN ? 20 : thrown.sides} value={value} state={thrown.landed ? 'landed' : 'tumbling'} order={index} />
+              ))
+            : Array.from({ length: resting }, (_, index) => <Die key={index} sides={sides} value={sides === 100 ? '%' : sides} />)}
+          {!thrown && count > MAX_SHOWN ? <span className="ml-2 font-display text-lg font-bold text-ink-muted">× {count}</span> : null}
+          {showTotal ? <span className="ml-3 font-display text-3xl font-bold tabular-nums text-ink">= {thrown.result.total}</span> : null}
+        </div>
+        <p role="status" className="sr-only">
+          {thrown?.landed ? `Rolled ${thrown.result.notation}: ${thrown.result.total}` : ''}
+        </p>
+        <Button type="submit" size="lg" disabled={pending || tumbling}>
+          {pending || tumbling ? 'Rolling…' : `Roll ${count}d${sides}${signed(modifier)}`}
+        </Button>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line px-5 py-3">
+        <span className={smallLabel}>Dice style</span>
+        <div role="radiogroup" aria-label="Dice style" className="flex flex-wrap items-center gap-1">
+          {DICE_THEME_KEYS.map((key) => {
+            const { label, note, free } = DICE_THEMES[key];
+            return (
+              <button
+                key={key}
+                type="button"
+                role="radio"
+                aria-checked={theme === key}
+                aria-label={free ? `${label}. ${note}` : `${label}. ${note} Not available yet.`}
+                title={free ? `${label} — ${note}` : `${label} — ${note} Coming later.`}
+                disabled={!free}
+                onClick={() => pickTheme(key)}
+                className={`wr-dice-${key} relative rounded-xl p-0.5 ${focusRing} ${theme === key ? 'bg-accent-soft ring-2 ring-accent' : free ? 'hover:bg-surface-sunken' : 'opacity-70'}`}
+              >
+                <Die sides={20} value="" small />
+                {free ? null : (
+                  <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-surface-raised text-ink-muted ring-1 ring-line-strong">
+                    <Lock className="size-2.5" aria-hidden="true" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <p className="basis-full text-xs text-ink-muted sm:basis-auto">WorldRoot makes every roll and adds it to the story. A style only changes how your dice look.</p>
       </div>
     </form>
   );

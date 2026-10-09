@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" ADD COLUMN "dice_theme" text DEFAULT 'classic' NOT NULL;

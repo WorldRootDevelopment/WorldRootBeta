@@ -59,7 +59,7 @@ export default async function ProfilePage({ params }: Props) {
           <div className="min-w-0 flex-1 pt-3">
             <h1 className="flex flex-wrap items-center gap-3 font-display text-3xl font-bold tracking-tight text-ink md:text-4xl">
               {profile.displayName}
-              <Badges list={profile.badges} />
+              <Badges list={profile.badges} all />
             </h1>
             <p className="mt-1 text-ink-muted">
               @{profile.handle}

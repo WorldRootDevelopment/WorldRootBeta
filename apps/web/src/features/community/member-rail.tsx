@@ -26,7 +26,7 @@ function MemberList({ title, members }: { title: string; members: PresenceRow[] 
                 <Link href={`/u/${member.handle}`} className="truncate rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
                   {member.displayName}
                 </Link>
-                <Badges list={member.badges} community={member.communityBadge} compact />
+                <Badges list={member.badges} community={member.communityBadge} />
               </span>
               {member.role ? <span className="block truncate text-xs text-ink-muted">{member.role}</span> : null}
             </span>

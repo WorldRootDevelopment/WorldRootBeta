@@ -1,4 +1,4 @@
-import { createProfileSchema, type CreateProfileInput, type Profile } from '@worldroot/contracts';
+import { createProfileSchema, toDiceTheme, type CreateProfileInput, type Profile } from '@worldroot/contracts';
 import { handleHistory, profiles, type Db } from '@worldroot/db';
 import { eq } from 'drizzle-orm';
 import { recordAudit } from '../platform/audit';
@@ -17,6 +17,7 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   bannerId: row.bannerMediaId,
   accentHue: row.accentHue,
   status: row.status,
+  diceTheme: toDiceTheme(row.diceTheme),
   isStaff: toBadges(held).includes('staff'),
   badges: toBadges(held),
 });

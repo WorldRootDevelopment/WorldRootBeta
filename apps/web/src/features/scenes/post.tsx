@@ -71,7 +71,7 @@ export function StoryPost({ post, canModerate, editable }: StoryPostProps) {
             {post.authorBadges.length > 0 ? (
               <>
                 {' '}
-                <Badges list={post.authorBadges} compact />
+                <Badges list={post.authorBadges} />
               </>
             ) : null}
             <span aria-hidden="true"> · </span>
@@ -105,7 +105,7 @@ export function OocMessage({ post, canModerate }: { post: Post; canModerate: boo
     <li className="text-sm">
       <div className="flex flex-wrap items-center gap-x-2 text-xs text-ink-muted">
         <span className="font-medium text-ink">{post.authorName ?? 'Former member'}</span>
-        <Badges list={post.authorBadges} compact />
+        <Badges list={post.authorBadges} />
         <time dateTime={post.createdAt.toISOString()}>{when(post.createdAt)}</time>
         {post.mine || canModerate ? <RemovePostButton postId={post.id} what="message" /> : null}
         {post.mine ? null : <ReportButton targetType="scene_post" targetId={post.id} />}

@@ -188,12 +188,30 @@
  */
 @layer components {
   .wr-die-stage {
-    --die: 3.25rem;
+    --die: 3.75rem;
     position: relative;
+    display: block;
+    flex: none;
     width: var(--die);
     height: var(--die);
-    margin: 0.75rem 0.85rem 1rem;
+    margin: 0.75rem 0.9rem 1.1rem;
     perspective: 28rem;
+  }
+  /* A small die, for the buttons that choose one. It casts no shadow and never moves. */
+  .wr-die-small {
+    --die: 2.5rem;
+    margin: 0.35rem 0.45rem;
+  }
+  .wr-die-small::after {
+    display: none;
+  }
+  /* A cube drawn in perspective reads larger than a flat die of the same width, so it is drawn smaller. */
+  .wr-die-small .wr-die-cube {
+    transform: rotateX(-18deg) rotateY(24deg) scale(0.68);
+  }
+  .wr-die-small .wr-die-face {
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
   }
   /* The shadow the die throws on the table. */
   .wr-die-stage::after {
@@ -216,7 +234,7 @@
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transform: rotateX(-18deg) rotateY(24deg);
+    transform: rotateX(-18deg) rotateY(24deg) scale(0.8);
   }
   .wr-die-face {
     position: absolute;
@@ -229,15 +247,15 @@
     font-size: 1.3rem;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
-    color: var(--wr-accent-contrast);
-    background-color: var(--wr-accent);
+    color: var(--die-ink);
+    background-color: var(--die-base);
     background-image:
-      radial-gradient(120% 80% at 28% 0%, var(--wr-shine), transparent 62%),
-      linear-gradient(160deg, var(--wr-accent-light), var(--wr-accent));
-    border: 1px solid color-mix(in oklch, var(--wr-accent) 68%, black);
+      radial-gradient(120% 80% at 28% 0%, oklch(1 0 0 / 0.45), transparent 62%),
+      linear-gradient(160deg, var(--die-light), var(--die-base));
+    border: 1px solid var(--die-edge);
     box-shadow:
-      inset 0 1px 0 var(--wr-glass-edge),
-      inset 0 -4px 8px color-mix(in oklch, var(--wr-accent) 62%, black 22%);
+      inset 0 1px 0 oklch(1 0 0 / 0.5),
+      inset 0 -4px 8px var(--die-dark);
     backface-visibility: hidden;
   }
   .wr-die-face:nth-child(1) {
@@ -263,6 +281,111 @@
     filter: brightness(0.78);
   }
 
+  /* The dice that are not cubes: a faceted drawing, turned in 3D as it tumbles. */
+  .wr-die-flat {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 1px 1px oklch(0.2 0.03 62 / 0.35));
+  }
+  .wr-die-flat polygon {
+    stroke: var(--die-edge);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+  }
+  .wr-die-facet-light {
+    fill: var(--die-light);
+  }
+  .wr-die-facet-base {
+    fill: var(--die-base);
+  }
+  .wr-die-facet-dark {
+    fill: var(--die-dark);
+  }
+  .wr-die-flat .wr-die-shine {
+    fill: oklch(1 0 0 / 0.22);
+    stroke: none;
+    transform: scale(0.62);
+    transform-origin: 50% 30%;
+  }
+  .wr-die-number {
+    fill: var(--die-ink);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .wr-die-tumbling .wr-die-flat {
+    animation: wr-die-spin-flat 0.6s linear infinite;
+  }
+  .wr-die-landed .wr-die-flat {
+    animation: wr-die-settle-flat 0.55s cubic-bezier(0.2, 0.85, 0.3, 1.15) both;
+  }
+
+  /*
+   * Dice themes. A theme is five colours: the face towards you, the body, the
+   * faces in shadow, the edges and the numbers. Classic follows the accent of
+   * wherever you are rolling; the rest are fixed.
+   */
+  .wr-dice-classic {
+    --die-light: var(--wr-accent-light);
+    --die-base: var(--wr-accent);
+    --die-dark: color-mix(in oklch, var(--wr-accent) 72%, black);
+    --die-edge: color-mix(in oklch, var(--wr-accent) 52%, black);
+    --die-ink: var(--wr-accent-contrast);
+  }
+  .wr-dice-ivory {
+    --die-light: #fbf6ec;
+    --die-base: #efe6d6;
+    --die-dark: #cdbfa6;
+    --die-edge: #9c8c70;
+    --die-ink: #2b2118;
+  }
+  .wr-dice-obsidian {
+    --die-light: #4a4553;
+    --die-base: #2a2730;
+    --die-dark: #131116;
+    --die-edge: #050406;
+    --die-ink: #f2c96b;
+  }
+  .wr-dice-jade {
+    --die-light: #63c49d;
+    --die-base: #2f8f6b;
+    --die-dark: #1c5a44;
+    --die-edge: #123b2d;
+    --die-ink: #f3fff8;
+  }
+  .wr-dice-ember {
+    --die-light: #f7a04f;
+    --die-base: #d9532b;
+    --die-dark: #8f2412;
+    --die-edge: #5c1408;
+    --die-ink: #fff4d6;
+  }
+  .wr-dice-amethyst {
+    --die-light: #b995ea;
+    --die-base: #8a5cc7;
+    --die-dark: #54318a;
+    --die-edge: #331a5c;
+    --die-ink: #fdf7ff;
+  }
+  .wr-dice-starlight {
+    --die-light: #4d62ad;
+    --die-base: #27356e;
+    --die-dark: #121a3d;
+    --die-edge: #080d24;
+    --die-ink: #e6ecff;
+  }
+
+  /* The tray the dice are thrown into: a shallow, shaded well. */
+  .wr-dice-tray {
+    background:
+      radial-gradient(120% 140% at 50% 0%, transparent 40%, oklch(0.3 0.04 62 / 0.1)),
+      var(--wr-surface-sunken);
+    box-shadow:
+      inset 0 2px 6px oklch(0.3 0.04 62 / 0.16),
+      inset 0 -1px 0 var(--wr-glass-edge);
+  }
+
   .wr-die-tumbling .wr-die-cube {
     animation: wr-die-spin 0.7s linear infinite;
   }
@@ -286,6 +409,33 @@
   }
 }
 
+@keyframes wr-die-spin-flat {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  25% {
+    transform: rotateX(55deg) rotateY(20deg) rotateZ(90deg);
+  }
+  50% {
+    transform: rotateX(0deg) rotateY(55deg) rotateZ(180deg);
+  }
+  75% {
+    transform: rotateX(-55deg) rotateY(20deg) rotateZ(270deg);
+  }
+  100% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(360deg);
+  }
+}
+
+@keyframes wr-die-settle-flat {
+  from {
+    transform: rotateX(50deg) rotateZ(-220deg) scale(1.15);
+  }
+  to {
+    transform: rotateX(0deg) rotateZ(0deg) scale(1);
+  }
+}
+
 @keyframes wr-die-hop {
   from {
     transform: translateY(0.2rem);
@@ -300,7 +450,7 @@
     transform: rotateX(-290deg) rotateY(250deg) rotateZ(40deg);
   }
   to {
-    transform: rotateX(-18deg) rotateY(24deg) rotateZ(0deg);
+    transform: rotateX(-18deg) rotateY(24deg) rotateZ(0deg) scale(0.8);
   }
 }
 
@@ -319,8 +469,10 @@
 /* People who ask for less motion get the die at rest, showing the result. */
 @media (prefers-reduced-motion: reduce) {
   .wr-die-tumbling .wr-die-cube,
+  .wr-die-tumbling .wr-die-flat,
   .wr-die-tumbling .wr-die-hop,
   .wr-die-landed .wr-die-cube,
+  .wr-die-landed .wr-die-flat,
   .wr-die-landed .wr-die-hop {
     animation: none;
   }

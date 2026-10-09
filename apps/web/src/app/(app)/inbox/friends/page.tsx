@@ -31,7 +31,7 @@ function Person({ person, showPresence, children }: { person: FriendRow; showPre
             <Link href={`/u/${person.handle}`} className="truncate rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
               {person.displayName}
             </Link>
-            <Badges list={person.badges} compact />
+            <Badges list={person.badges} />
           </p>
           <p className="truncate text-sm text-ink-muted">
             @{person.handle}

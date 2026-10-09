@@ -10,3 +10,4 @@ export * from './reports';
 export * from './notifications';
 export * from './lfrp';
 export * from './achievements';
+export * from './dice-themes';
