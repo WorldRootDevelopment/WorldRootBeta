@@ -25,11 +25,17 @@ export const oauthProviders = {
 export function database(): Promise<DbConnection> {
   globals.__worldrootDb ??= (async () => {
     const connection = connect();
-    // The embedded database is single-process, so nothing else can prepare it: it migrates itself
-    // and loads the demo community here. A real server is migrated with `pnpm db:migrate`.
+    // The embedded database is single-process, so nothing else can prepare it: it loads the demo
+    // community here.
     const embedded = !/^postgres(ql)?:\/\//.test(process.env.DATABASE_URL ?? '');
     const demo = embedded && process.env.WORLDROOT_DEMO !== 'off';
-    if (embedded) await connection.migrate();
+    // The site brings its own database up to date before it answers anything, on every kind of
+    // database. Hosts differ in which start command they run, so this must not depend on someone
+    // having run `pnpm db:migrate` first. Applying migrations that are already applied does nothing.
+    // If this fails the health check fails, and the host keeps the previous version running.
+    // With more than one web server starting at once, run `pnpm db:migrate` as a release step instead.
+    await connection.migrate();
+    console.log('[worldroot] Database is up to date.');
     if (demo) {
       await seedDemo(connection.db);
       await seedDndDemo(connection.db);
@@ -74,6 +80,10 @@ export function getAuth(): Promise<Auth> {
       db,
       secret: secret ?? 'dev-only-secret-change-me',
       baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
+      clientIpHeaders: (process.env.WORLDROOT_CLIENT_IP_HEADER ?? '')
+        .split(',')
+        .map((name) => name.trim().toLowerCase())
+        .filter(Boolean),
       ...oauthProviders,
     });
   })();

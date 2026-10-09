@@ -14,6 +14,12 @@ export interface AuthConfig {
   /** A provider is enabled only when its credentials are supplied. */
   discord?: OAuthCredentials;
   google?: OAuthCredentials;
+  /**
+   * The request headers the host puts the visitor's address in, most trusted first. Sign-in attempts are
+   * limited per address, so without this every visitor behind the host's proxy shares one allowance.
+   * Name only headers the host itself sets and overwrites; a header a visitor can send is a way round the limit.
+   */
+  clientIpHeaders?: string[];
   /** Framework plugins, such as the Next.js cookie plugin, supplied by the app. */
   plugins?: BetterAuthOptions['plugins'];
 }
@@ -53,6 +59,7 @@ export function createAuth(config: AuthConfig) {
     },
     advanced: {
       database: { generateId: () => newId() },
+      ...(config.clientIpHeaders?.length ? { ipAddress: { ipAddressHeaders: config.clientIpHeaders } } : {}),
     },
     plugins: config.plugins ?? [],
   });

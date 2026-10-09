@@ -20,6 +20,7 @@ Commit and push everything in GitHub Desktop as usual. Check that `apps/web/.env
 1. Go to [railway.com](https://railway.com) and sign in with GitHub.
 2. **New Project → Deploy from GitHub repo →** choose `WorldRootBeta`.
 3. Railway starts building. It will fail the first time, because the settings below are missing. That is expected.
+4. Railway may create two services from the repository, `@worldroot/web` and `@worldroot/worker`. The site is `@worldroot/web`: the disk, the address and every setting below go on that one. Delete `@worldroot/worker`; it has no work to do yet.
 
 ## 3. Add the database
 
@@ -45,8 +46,9 @@ WorldRoot service → **Variables**. Add each of these:
 | --- | --- |
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` (type it exactly; Railway fills in the real address) |
 | `BETTER_AUTH_URL` | the address from step 5, with `https://` and no slash at the end |
-| `BETTER_AUTH_SECRET` | a long random string. Make one at [generate-secret.vercel.app/32](https://generate-secret.vercel.app/32), or mash the keyboard for 40 characters |
+| `BETTER_AUTH_SECRET` | a long random string of at least 32 characters. Make one at [generate-secret.vercel.app/32](https://generate-secret.vercel.app/32). Changing it later signs everyone out |
 | `WORLDROOT_MEDIA_DIR` | `/data/media` |
+| `WORLDROOT_CLIENT_IP_HEADER` | `x-real-ip` (lets the site tell visitors apart when limiting sign-in attempts) |
 | `WORLDROOT_ADMIN_EMAIL` | the email you will sign in with |
 | `WORLDROOT_ADMIN_PASSWORD` | a **new** password, not one you have typed into a chat |
 | `WORLDROOT_CONTACT_EMAIL` | an address people can write to about their data. It is shown publicly on the privacy policy and the terms |
@@ -56,6 +58,8 @@ Leave out `WORLDROOT_ADMIN_PASSWORD_SYNC`. It is for your own computer only and 
 The demo communities do not appear on Railway. They are only ever created in the small built-in database used on your own computer.
 
 Railway redeploys when you save. Watch **Deployments**. A green tick means the site is up. Open your address.
+
+The site creates its own database tables each time it starts, so there is nothing to run by hand. In **Deploy Logs** you should see `Database is up to date.` followed by a line about the administrator.
 
 ## 7. Switch on Discord sign-in
 
