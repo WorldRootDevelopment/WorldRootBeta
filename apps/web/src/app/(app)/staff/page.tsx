@@ -42,8 +42,8 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
 
       <SectionHeading>Site Look</SectionHeading>
       <p className="mb-4 max-w-2xl text-sm text-ink-muted">
-        Dress the whole site for an occasion. It changes the logo, the WorldRoot name and adds a stripe across the top of every page, for
-        everyone, at once. Nothing else changes.
+        Dress the whole site for an occasion. A look changes the logo and titles, button colors, the light behind the page, and adds an illustrated banner
+        across the top and a few drifting shapes, for everyone, at once. Text and each community’s own color stay as they are.
       </p>
       <SeasonPicker season={season} />
 

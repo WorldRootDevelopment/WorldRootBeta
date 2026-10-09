@@ -3,6 +3,7 @@ import { Heebo, Pacifico, Source_Serif_4 } from 'next/font/google';
 import { cookies } from 'next/headers';
 import type { ReactNode } from 'react';
 import { getSeason } from '@worldroot/core';
+import { SeasonBanner } from '@/features/shell/season-banner';
 import { THEME_COOKIE } from '@/features/shell/theme';
 import { database } from '@/lib/server';
 import './globals.css';
@@ -43,8 +44,18 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="en" data-theme={theme} data-season={season === 'none' ? undefined : season} className={`${interfaceFont.variable} ${storyFont.variable} ${wordmarkFont.variable}`}>
       <body className="min-h-dvh">
-        {/* A stripe in the colors of the site look. Hidden unless a look is on. */}
-        <div aria-hidden="true" className="wr-season-bar" />
+        {/* An illustrated banner for the site look, across the top of every page. Nothing unless a look is on. */}
+        {season === 'none' ? null : (
+          <div className="wr-season-banner">
+            <SeasonBanner season={season} />
+          </div>
+        )}
+        {/* A few drifting shapes that suit the look: hearts, bats, blossom or snow. Hidden unless a look is on. */}
+        <div aria-hidden="true" className="wr-season-decor">
+          {Array.from({ length: 10 }, (_, index) => (
+            <i key={index} />
+          ))}
+        </div>
         {children}
       </body>
     </html>

@@ -659,7 +659,7 @@
   --season-5: #1b1b1b;
   --season-6: #6bbf2a;
 }
-:root[data-season='easter'] {
+:root[data-season='spring'] {
   --season-1: #f9c6d8;
   --season-2: #fde7a7;
   --season-3: #bfe8c7;
@@ -667,13 +667,13 @@
   --season-5: #d9c7f0;
   --season-6: #f9c6d8;
 }
-:root[data-season='holidays'] {
-  --season-1: #c1121f;
-  --season-2: #c1121f;
+:root[data-season='winter'] {
+  --season-1: #8ecae6;
+  --season-2: #cfe8f5;
   --season-3: #ffffff;
-  --season-4: #0b6e3a;
-  --season-5: #0b6e3a;
-  --season-6: #d4af37;
+  --season-4: #a8c5e6;
+  --season-5: #5b8fb9;
+  --season-6: #dfe9f5;
 }
 
 /* The logo draws its pages plainly unless a look is on. */
@@ -685,45 +685,6 @@
 }
 :root[data-season] .wr-logo-season {
   display: inline;
-}
-
-/* The stripe across the top of every page. */
-.wr-season-bar {
-  display: none;
-  position: fixed;
-  inset: 0 0 auto 0;
-  z-index: 50;
-  height: 0.3rem;
-  pointer-events: none;
-  background-image: linear-gradient(
-    90deg,
-    var(--season-1) 0 16.67%,
-    var(--season-2) 16.67% 33.33%,
-    var(--season-3) 33.33% 50%,
-    var(--season-4) 50% 66.67%,
-    var(--season-5) 66.67% 83.33%,
-    var(--season-6) 83.33% 100%
-  );
-}
-:root[data-season] .wr-season-bar {
-  display: block;
-}
-
-/*
- * The WorldRoot name, washed in the look's colors. Each color is pulled
- * toward the text color, dark in the light theme and light in the dark one,
- * so a pale band such as white or yellow is still readable as lettering.
- */
-:root[data-season] .wr-wordmark-name {
-  background-image: linear-gradient(
-    90deg,
-    color-mix(in oklch, var(--season-1) 62%, var(--wr-text)),
-    color-mix(in oklch, var(--season-2) 62%, var(--wr-text)),
-    color-mix(in oklch, var(--season-3) 62%, var(--wr-text)),
-    color-mix(in oklch, var(--season-4) 62%, var(--wr-text)),
-    color-mix(in oklch, var(--season-5) 62%, var(--wr-text)),
-    color-mix(in oklch, var(--season-6) 62%, var(--wr-text))
-  );
 }
 
 /* The swatches in the staff portal, each showing its own look whatever is switched on. */
@@ -739,9 +700,192 @@
 .wr-season-swatch[data-season='halloween'] {
   background-image: linear-gradient(180deg, #ff7a00 0 33.33%, #5b2a86 33.33% 66.67%, #1b1b1b 66.67% 83.33%, #6bbf2a 83.33% 100%);
 }
-.wr-season-swatch[data-season='easter'] {
+.wr-season-swatch[data-season='spring'] {
   background-image: linear-gradient(180deg, #f9c6d8 0 20%, #fde7a7 20% 40%, #bfe8c7 40% 60%, #bde0f5 60% 80%, #d9c7f0 80% 100%);
 }
-.wr-season-swatch[data-season='holidays'] {
-  background-image: linear-gradient(180deg, #c1121f 0 33.33%, #ffffff 33.33% 50%, #0b6e3a 50% 83.33%, #d4af37 83.33% 100%);
+.wr-season-swatch[data-season='winter'] {
+  background-image: linear-gradient(180deg, #8ecae6 0 30%, #ffffff 30% 55%, #a8c5e6 55% 78%, #5b8fb9 78% 100%);
+}
+
+/*
+ * A site look is a whole theme, not only a logo. Beyond the logo, the name
+ * and the stripe, each look:
+ *   - gives buttons and highlights its own accent color (communities keep theirs);
+ *   - relights the page behind everything in the look's colors;
+ *   - scatters a few slow-drifting shapes that suit it: hearts, bats, blossom, snow.
+ * Text colors and surfaces are untouched, so contrast is the same in every look.
+ */
+:root[data-season='pride'] {
+  --wr-accent-hue: 300;
+  --season-shape: var(--season-heart);
+}
+:root[data-season='trans'] {
+  --wr-accent-hue: 350;
+  --season-shape: var(--season-heart);
+}
+:root[data-season='halloween'] {
+  --wr-accent-hue: 50;
+  --season-shape: var(--season-bat);
+}
+:root[data-season='spring'] {
+  --wr-accent-hue: 345;
+  --season-shape: var(--season-blossom);
+}
+:root[data-season='winter'] {
+  --wr-accent-hue: 235;
+  --season-shape: var(--season-flake);
+}
+:root {
+  --season-heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21s-7.500-4.600-9.800-9.200C.600 8.500 2.400 4.500 6.300 4.500c2.200 0 3.900 1.200 5.700 3.400 1.800-2.200 3.500-3.400 5.700-3.400 3.900 0 5.700 4 4.100 7.300C19.500 16.400 12 21 12 21z'/%3E%3C/svg%3E");
+  --season-bat: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 20'%3E%3Cpath d='M16 6l-2-4-1 3-2-1 1 4C8 6 4 5 0 8c3 0 5 2 6 5 2-2 4-2 5 0 1 2 3 4 5 6 2-2 4-4 5-6 1-2 3-2 5 0 1-3 3-5 6-5-4-3-8-2-12 0l1-4-2 1-1-3z'/%3E%3C/svg%3E");
+  --season-blossom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-12 -12 24 24'%3E%3Cg%3E%3Cellipse cy='-6' rx='4' ry='6'/%3E%3Cellipse cy='-6' rx='4' ry='6' transform='rotate(72)'/%3E%3Cellipse cy='-6' rx='4' ry='6' transform='rotate(144)'/%3E%3Cellipse cy='-6' rx='4' ry='6' transform='rotate(216)'/%3E%3Cellipse cy='-6' rx='4' ry='6' transform='rotate(288)'/%3E%3C/g%3E%3C/svg%3E");
+  --season-flake: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M12 2v20M3.300 7l17.400 10M3.300 17 20.700 7M12 6l-2.500-2.500M12 6l2.500-2.500M12 18l-2.500 2.500M12 18l2.500 2.500'/%3E%3C/svg%3E");
+}
+
+/* The light behind the page, in the look's six colors. */
+:root[data-season] body::before {
+  background:
+    radial-gradient(70rem 36rem at 50% -12rem, var(--wr-page-glow), transparent 70%),
+    radial-gradient(56rem 40rem at -6% -4%, color-mix(in oklch, var(--season-1) calc(var(--wr-aurora-strength) * 80%), transparent), transparent 68%),
+    radial-gradient(56rem 40rem at 106% -4%, color-mix(in oklch, var(--season-3) calc(var(--wr-aurora-strength) * 80%), transparent), transparent 68%),
+    radial-gradient(60rem 42rem at 106% 104%, color-mix(in oklch, var(--season-4) calc(var(--wr-aurora-strength) * 80%), transparent), transparent 68%),
+    radial-gradient(60rem 42rem at -6% 104%, color-mix(in oklch, var(--season-6) calc(var(--wr-aurora-strength) * 80%), transparent), transparent 68%);
+}
+/* The drifting shapes take the place of the usual bubbles. */
+:root[data-season] body::after {
+  display: none;
+}
+
+.wr-season-decor {
+  display: none;
+}
+:root[data-season] .wr-season-decor {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.wr-season-decor i {
+  position: absolute;
+  width: var(--size, 1.6rem);
+  height: var(--size, 1.6rem);
+  opacity: 0.4;
+  background-color: var(--tint, var(--season-1));
+  -webkit-mask: var(--season-shape) center / contain no-repeat;
+  mask: var(--season-shape) center / contain no-repeat;
+  animation: wr-season-drift var(--time, 16s) ease-in-out infinite alternate;
+  animation-delay: var(--delay, 0s);
+}
+.wr-season-decor i:nth-child(1) { left: 6%; top: 18%; --size: 1.5rem; --tint: var(--season-1); --time: 15s; }
+.wr-season-decor i:nth-child(2) { left: 22%; top: 72%; --size: 2.2rem; --tint: var(--season-2); --time: 19s; --delay: -4s; }
+.wr-season-decor i:nth-child(3) { left: 36%; top: 30%; --size: 1.1rem; --tint: var(--season-4); --time: 13s; --delay: -7s; }
+.wr-season-decor i:nth-child(4) { left: 48%; top: 84%; --size: 1.7rem; --tint: var(--season-5); --time: 21s; --delay: -2s; }
+.wr-season-decor i:nth-child(5) { left: 61%; top: 14%; --size: 2rem; --tint: var(--season-6); --time: 17s; --delay: -9s; }
+.wr-season-decor i:nth-child(6) { left: 72%; top: 58%; --size: 1.3rem; --tint: var(--season-1); --time: 14s; --delay: -5s; }
+.wr-season-decor i:nth-child(7) { left: 84%; top: 28%; --size: 2.4rem; --tint: var(--season-2); --time: 22s; --delay: -11s; }
+.wr-season-decor i:nth-child(8) { left: 92%; top: 78%; --size: 1.4rem; --tint: var(--season-4); --time: 16s; --delay: -3s; }
+.wr-season-decor i:nth-child(9) { left: 14%; top: 46%; --size: 1rem; --tint: var(--season-5); --time: 18s; --delay: -8s; }
+.wr-season-decor i:nth-child(10) { left: 56%; top: 50%; --size: 1.2rem; --tint: var(--season-6); --time: 20s; --delay: -6s; }
+
+/* Snow falls; everything else drifts. White flakes need a little shade to show on a light page. */
+:root[data-season='winter'] .wr-season-decor i {
+  --tint: color-mix(in oklch, var(--wr-text) 25%, white);
+  top: -3rem;
+  animation: wr-season-fall var(--time, 16s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes wr-season-drift {
+  from {
+    transform: translate(0, 0) rotate(-8deg);
+  }
+  to {
+    transform: translate(1.5rem, -2.5rem) rotate(10deg);
+  }
+}
+@keyframes wr-season-fall {
+  from {
+    transform: translateY(0) rotate(0deg);
+  }
+  to {
+    transform: translateY(calc(100dvh + 6rem)) rotate(180deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wr-season-decor i {
+    animation: none;
+  }
+  :root[data-season='winter'] .wr-season-decor i {
+    top: auto;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-season] .wr-season-decor {
+    display: none;
+  }
+}
+
+/*
+ * The WorldRoot name and page titles in the look's colors. Each look has its
+ * own short run of colors chosen for lettering: deep and saturated on the
+ * light page, bright on the dark one. Mixing a flag's colors toward the text
+ * color, as this once did, turned them to brown.
+ */
+:root[data-season='pride'] {
+  --season-ink: linear-gradient(
+    90deg,
+    light-dark(#d7263d, #ff7b7b),
+    light-dark(#e2670a, #ffab57),
+    light-dark(#a67c00, #ffe066),
+    light-dark(#1f8a3b, #6fdc86),
+    light-dark(#2456c7, #7fb0ff),
+    light-dark(#7b2fa3, #cf96fb)
+  );
+}
+:root[data-season='trans'] {
+  --season-ink: linear-gradient(90deg, light-dark(#1486bd, #7dd3fc), light-dark(#d1508a, #f9a8d4), light-dark(#8a7f96, #ffffff), light-dark(#d1508a, #f9a8d4), light-dark(#1486bd, #7dd3fc));
+}
+:root[data-season='halloween'] {
+  --season-ink: linear-gradient(90deg, light-dark(#d95f02, #ff9a3c), light-dark(#7b3fb5, #c39bf5), light-dark(#3f7a14, #9be15d));
+}
+:root[data-season='spring'] {
+  --season-ink: linear-gradient(90deg, light-dark(#c2578a, #f9c6d8), light-dark(#a88410, #fde7a7), light-dark(#2f9460, #bfe8c7), light-dark(#3380bd, #bde0f5), light-dark(#8660c6, #d9c7f0));
+}
+:root[data-season='winter'] {
+  --season-ink: linear-gradient(90deg, light-dark(#1f6f9c, #9bd4f2), light-dark(#3d5fa8, #c6d8ff), light-dark(#2a8a94, #a5e6ea));
+}
+:root[data-season] .wr-wordmark-name,
+:root[data-season] .wr-title {
+  background-image: var(--season-ink);
+}
+
+/*
+ * The banner across the top of every page while a site look is on. It sits
+ * above the page and scrolls away with it. The Pride and Trans Pride banners
+ * are one long flag that ripples: the cloth slides sideways by exactly one
+ * ripple, so the loop has no seam.
+ */
+.wr-season-banner {
+  position: relative;
+  z-index: 30;
+  box-shadow: 0 6px 18px -8px oklch(0.2 0.04 280 / 0.45);
+}
+.wr-flag-banner-cloth {
+  animation: wr-flag-ripple 7s linear infinite;
+}
+@keyframes wr-flag-ripple {
+  from {
+    transform: translateX(-240px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wr-flag-banner-cloth {
+    animation: none;
+  }
 }

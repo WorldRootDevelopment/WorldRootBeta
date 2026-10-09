@@ -14,6 +14,28 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-09-illustrated-banners',
+    date: '2026-10-09',
+    title: 'Illustrated Banners',
+    items: [
+      'Occasions now come with a drawn banner across the top: pumpkins, ghosts and a witch under a night sky for Halloween; a snowy valley for Winter; a meadow in blossom for Spring.',
+      'Pride and Trans Pride fly one long flag that ripples along the top of the page.',
+      'Winter and Spring are seasons for everyone, with no holiday in them.',
+    ],
+  },
+  {
+    id: '2026-10-09-season-ribbon',
+    date: '2026-10-09',
+    title: 'A Ribbon For Each Occasion',
+    items: ['The stripe across the top is now a ribbon whose colors flow, with an edge cut for the occasion: waves, drips, scallops or a zigzag trim. Titles in an occasion’s colors are cleaner and brighter.'],
+  },
+  {
+    id: '2026-10-09-fuller-site-looks',
+    date: '2026-10-09',
+    title: 'Fuller Site Looks',
+    items: ['When WorldRoot dresses up for an occasion it now goes further: buttons, page titles and the light behind the page take the occasion’s colors, with hearts, bats, eggs or snow drifting in the background.'],
+  },
+  {
     id: '2026-10-09-title-case',
     date: '2026-10-09',
     title: 'Title Case For Headings And Buttons',
