@@ -59,19 +59,24 @@ export function InstallAppButton() {
     );
   }
 
+  // A button that cannot be pressed reads as broken, so without an offer from the browser there is none.
+  if (!offer) {
+    return (
+      <p role="status" className="max-w-xl rounded-lg bg-accent-soft px-4 py-3 text-sm font-medium text-accent-text">
+        {state === 'declined'
+          ? 'No problem. You can install it any time from your browser’s menu, using the steps below.'
+          : 'This browser does not offer one-press install. Open WorldRoot in Chrome or Edge to get the button, or follow the steps below for your device.'}
+      </p>
+    );
+  }
+
   return (
     <div className="flex flex-col items-start gap-3">
-      <Button size="lg" onClick={install} disabled={!offer}>
+      <Button size="lg" onClick={install}>
         <Download className="size-5" aria-hidden="true" />
         Install WorldRoot
       </Button>
-      <p className="max-w-xl text-sm text-ink-muted">
-        {offer
-          ? 'One press. Your browser will ask you to confirm.'
-          : state === 'declined'
-            ? 'No problem. You can install it any time from your browser’s menu, using the steps below.'
-            : 'Your browser has not offered one-press install on this page. Use the steps below for your device; it takes a few seconds.'}
-      </p>
+      <p className="max-w-xl text-sm text-ink-muted">One press. Your browser will ask you to confirm.</p>
     </div>
   );
 }

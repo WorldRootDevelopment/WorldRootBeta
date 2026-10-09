@@ -21,7 +21,8 @@ Delete `.data/` to start from an empty database.
 The embedded database also loads a demo community on start: **Demo Town**, a small ordinary town with a single Narrator character, at
 http://localhost:3000/c/demo-town. Any account can browse and join it. To see it as its owner, sign in as
 `host@worldroot.test` with the password `welcome-to-demo-town`. Set `WORLDROOT_DEMO=off` to skip it.
-The demo account has a published password, so the demo must not run on a public deployment.
+That password is published, so it is only ever used on the embedded database. On a real server the demo loads only with
+`WORLDROOT_DEMO=on`, and its account gets `WORLDROOT_DEMO_PASSWORD` or, without one, a random password nobody knows.
 
 To make yourself a platform administrator, set `WORLDROOT_ADMIN_EMAIL` (and, to have the account created for you,
 `WORLDROOT_ADMIN_PASSWORD`) in `apps/web/.env.local`. That file is ignored by git. Administrators can see and manage

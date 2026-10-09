@@ -1,5 +1,5 @@
 import type { CharacterInput } from '@worldroot/contracts';
-import { characters, communities, roleAssignments, roles, users, type Db } from '@worldroot/db';
+import { accounts, characters, communities, roleAssignments, roles, users, type Db } from '@worldroot/db';
 import { and, eq, inArray, notInArray } from 'drizzle-orm';
 import { addCharacterToCommunity, createCharacter } from '../characters/service';
 import { addMember } from '../community/access';
@@ -86,18 +86,37 @@ const LOCATIONS: LocationSeed[] = [
   { name: 'Riverside', summary: 'A quiet walk along the water, out past the last houses.' },
 ];
 
-export async function ensureDemoActor(db: Db): Promise<Actor> {
+export interface DemoOptions {
+  /**
+   * The demo account's password. Left out, it is the published one in DEMO_ACCOUNT, which is only
+   * safe on a developer's own machine. A server other people can reach must always pass one: its own
+   * secret, or a random value nobody knows so that the account cannot be signed in to at all. When
+   * given, it also replaces the password of a demo account that already exists.
+   */
+  password?: string;
+}
+
+export async function ensureDemoActor(db: Db, options: DemoOptions = {}): Promise<Actor> {
+  const auth = createAuth({
+    db,
+    secret: process.env.BETTER_AUTH_SECRET ?? 'dev-only-secret-change-me',
+    baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
+  });
   let [user] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
   if (!user) {
-    const auth = createAuth({
-      db,
-      secret: process.env.BETTER_AUTH_SECRET ?? 'dev-only-secret-change-me',
-      baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
-    });
     await auth.api.signUpEmail({
-      body: { email: DEMO_ACCOUNT.email, password: DEMO_ACCOUNT.password, name: DEMO_ACCOUNT.displayName },
+      body: { email: DEMO_ACCOUNT.email, password: options.password ?? DEMO_ACCOUNT.password, name: DEMO_ACCOUNT.displayName },
     });
     [user] = await db.select().from(users).where(eq(users.email, DEMO_ACCOUNT.email));
+  } else if (options.password) {
+    const { password: hasher } = await auth.$context;
+    const credential = and(eq(accounts.userId, user.id), eq(accounts.providerId, 'credential'));
+    const [existing] = await db.select().from(accounts).where(credential);
+    if (!existing?.password || !(await hasher.verify({ hash: existing.password, password: options.password }))) {
+      const hash = await hasher.hash(options.password);
+      if (existing) await db.update(accounts).set({ password: hash }).where(credential);
+      else await db.insert(accounts).values({ userId: user.id, accountId: user.id, providerId: 'credential', password: hash });
+    }
   }
   const actor: Actor = { userId: user!.id, platformRole: 'user' };
   if (!(await getProfile(db, actor.userId))) {
@@ -199,10 +218,10 @@ export interface DemoSeedResult {
  * Creates the demo community once, and keeps its cast to the single Narrator.
  * Running it again changes nothing.
  */
-export async function seedDemo(db: Db): Promise<DemoSeedResult> {
+export async function seedDemo(db: Db, options: DemoOptions = {}): Promise<DemoSeedResult> {
   await removeOldDemoCharacters(db);
   await removeOldDemo(db);
-  const actor = await ensureDemoActor(db);
+  const actor = await ensureDemoActor(db, options);
 
   const [existing] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, DEMO_COMMUNITY_SLUG));
   if (existing) {

@@ -4,6 +4,7 @@ import { eq, isNotNull, isNull } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getCharacterView, listCommunityCharacters } from '../characters/service';
 import { getCommunityView, joinCommunity } from '../community/service';
+import { createAuth } from '../identity/auth';
 import { createProfile } from '../identity/profile';
 import type { Actor } from '../platform/authorize';
 import { listPosts } from '../scenes/service';
@@ -134,5 +135,28 @@ describe('the demo town', () => {
     expect(story.posts.map((post) => post.characterName)).toEqual(['Narrator', 'Narrator', 'Narrator']);
     expect(story.posts[0]!.contentHtml).toContain('<em>');
     expect((await listPosts(db, actor, open.id, { stream: 'ooc' })).posts).toHaveLength(1);
+  });
+
+  it('swaps the published password for the one a real server supplies', async () => {
+    const { db } = connection;
+    const auth = createAuth({ db, secret: 'dev-only-secret-change-me', baseURL: 'http://localhost:3000' });
+    const signIn = (password: string) =>
+      auth.api.signInEmail({ body: { email: DEMO_ACCOUNT.email, password } }).then(
+        () => true,
+        () => false,
+      );
+
+    // Seeded the way a developer's machine does it: the published password works.
+    expect(await signIn(DEMO_ACCOUNT.password)).toBe(true);
+
+    // A real server always supplies its own, and the published one stops working.
+    expect(await seedDemo(db, { password: 'a-secret-only-the-host-knows' })).toEqual({ created: false, communitySlug: DEMO_COMMUNITY_SLUG });
+    expect(await signIn(DEMO_ACCOUNT.password)).toBe(false);
+    expect(await signIn('a-secret-only-the-host-knows')).toBe(true);
+
+    // Supplying a different one later replaces it again.
+    await seedDemo(db, { password: 'another-value-entirely' });
+    expect(await signIn('a-secret-only-the-host-knows')).toBe(false);
+    expect(await signIn('another-value-entirely')).toBe(true);
   });
 });

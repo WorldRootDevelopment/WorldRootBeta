@@ -8,7 +8,7 @@ import type { Actor } from '../platform/authorize';
 import { rollInScene } from '../scenes/rolls';
 import { createPost, createScene } from '../scenes/service';
 import { copyWorldToCommunity, createWorld } from '../worlds/service';
-import { addLocations, DUNGEON_MASTER_NAME, ensureDemoActor, SAMPLE_ADVENTURER_NAME, type DemoSeedResult, type LocationSeed } from './demo-town';
+import { addLocations, DUNGEON_MASTER_NAME, ensureDemoActor, SAMPLE_ADVENTURER_NAME, type DemoOptions, type DemoSeedResult, type LocationSeed } from './demo-town';
 import { prose } from './demo-town-scenes';
 
 /**
@@ -150,10 +150,10 @@ The room goes quiet in the way a room does when everyone is waiting for someone 
  * Creates the DnD demo community once. Running it again changes nothing, so
  * anything its owners have altered since is left alone.
  */
-export async function seedDndDemo(db: Db): Promise<DemoSeedResult> {
+export async function seedDndDemo(db: Db, options: DemoOptions = {}): Promise<DemoSeedResult> {
   const [existing] = await db.select({ id: communities.id }).from(communities).where(eq(communities.slug, DND_DEMO_COMMUNITY_SLUG));
   if (existing) return { created: false, communitySlug: DND_DEMO_COMMUNITY_SLUG };
-  const actor = await ensureDemoActor(db);
+  const actor = await ensureDemoActor(db, options);
 
   const settings = {
     name: 'Demo Dungeon',

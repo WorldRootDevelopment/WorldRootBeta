@@ -55,7 +55,7 @@ WorldRoot service → **Variables**. Add each of these:
 
 Leave out `WORLDROOT_ADMIN_PASSWORD_SYNC`. It is for your own computer only and is ignored here.
 
-The demo communities do not appear on Railway. They are only ever created in the small built-in database used on your own computer.
+The demo communities, Demo Town and Demo Dungeon, appear only if you add `WORLDROOT_DEMO` with the value `on`. Your administrator account is made an owner of both. The demo account itself (`host@worldroot.test`) cannot be signed in to unless you also add `WORLDROOT_DEMO_PASSWORD`, at least 10 characters. Anyone who knows that password can act as the owner of the demo communities, so keep it to yourself.
 
 Railway redeploys when you save. Watch **Deployments**. A green tick means the site is up. Open your address.
 

@@ -115,7 +115,12 @@ export function AppShell({ profile, inboxUnread, communities, children }: AppShe
           </NavLink>
         </nav>
 
-        <UserMenu profile={profile} placement="rail" />
+        {/* A site-look banner pushes this rail down by its own height until the page is scrolled, which
+            would leave the account menu below the bottom of the window. Sticking it to the bottom of
+            the window keeps it in reach either way. */}
+        <div className="sticky bottom-3 z-10 wide:bottom-4">
+          <UserMenu profile={profile} placement="rail" />
+        </div>
       </aside>
 
       <div className="min-w-0 flex-1">

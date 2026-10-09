@@ -51,7 +51,8 @@ export function UserMenu({ profile, placement }: UserMenuProps) {
 
       <div
         className={cn(
-          'absolute z-20 w-64 wr-popover rounded-xl p-1.5',
+          // Never taller than the window: on a short one the menu scrolls, so nothing in it is out of reach.
+          'absolute z-20 max-h-[calc(100dvh-5.5rem)] w-64 overflow-y-auto wr-popover rounded-xl p-1.5',
           rail ? 'bottom-full left-0 mb-2' : 'right-0 top-full mt-2',
         )}
       >

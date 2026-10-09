@@ -1,4 +1,5 @@
 import 'server-only';
+import { randomBytes } from 'node:crypto';
 import {
   connect,
   createAuth,
@@ -28,7 +29,13 @@ export function database(): Promise<DbConnection> {
     // The embedded database is single-process, so nothing else can prepare it: it loads the demo
     // community here.
     const embedded = !/^postgres(ql)?:\/\//.test(process.env.DATABASE_URL ?? '');
-    const demo = embedded && process.env.WORLDROOT_DEMO !== 'off';
+    // The demo communities load by themselves on a developer's machine. On a real server they are
+    // asked for with WORLDROOT_DEMO=on, and their account never gets the published password: it gets
+    // WORLDROOT_DEMO_PASSWORD, or failing that a random one nobody knows, so it cannot be signed in to.
+    const demo = embedded ? process.env.WORLDROOT_DEMO !== 'off' : process.env.WORLDROOT_DEMO === 'on';
+    const ownDemoPassword = process.env.WORLDROOT_DEMO_PASSWORD?.trim();
+    if (ownDemoPassword && ownDemoPassword.length < 10) console.warn('[worldroot] WORLDROOT_DEMO_PASSWORD is shorter than 10 characters and was ignored.');
+    const demoOptions = embedded ? {} : { password: ownDemoPassword && ownDemoPassword.length >= 10 ? ownDemoPassword : randomBytes(32).toString('base64url') };
     // The site brings its own database up to date before it answers anything, on every kind of
     // database. Hosts differ in which start command they run, so this must not depend on someone
     // having run `pnpm db:migrate` first. Applying migrations that are already applied does nothing.
@@ -37,8 +44,15 @@ export function database(): Promise<DbConnection> {
     await connection.migrate();
     console.log('[worldroot] Database is up to date.');
     if (demo) {
-      await seedDemo(connection.db);
-      await seedDndDemo(connection.db);
+      try {
+        await seedDemo(connection.db, demoOptions);
+        await seedDndDemo(connection.db, demoOptions);
+        if (!embedded) console.log(`[worldroot] Demo communities are loaded. The demo account ${ownDemoPassword && ownDemoPassword.length >= 10 ? 'uses WORLDROOT_DEMO_PASSWORD' : 'cannot be signed in to'}.`);
+      } catch (error) {
+        // On a real server a problem with sample content must not take the site down.
+        if (embedded) throw error;
+        console.error('[worldroot] Could not load the demo communities.', error);
+      }
     }
 
     // The platform administrator is named in the server's own settings, never in code and never by a request.
