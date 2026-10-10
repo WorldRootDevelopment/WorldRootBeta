@@ -33,7 +33,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-09',
     title: 'Player Roles, And The Chronicle In The Demos',
     items: [
-      'Player Roles: choose your pronouns, whether you want direct messages, your region and more under Settings, Profile. They show beside your name in every community.',
+      'Player Roles: choose your pronouns, whether you want direct messages, your region and more under Settings, Profile. They show on your profile.',
       'The Chronicle is being tried out in Demo Town and Demo Dungeon: finished scenes become chapters of one ongoing book, read in order.',
     ],
   },

@@ -209,8 +209,7 @@ export function ProfileForm({ handle, displayName, pronouns, bio, hideOnline, st
       <fieldset className="flex flex-col gap-4">
         <legend className="mb-1 text-sm font-medium text-ink">Player Roles</legend>
         <p className="-mt-2 text-sm text-ink-muted">
-          About you, the writer. These show beside your name in every community you join, under the roles that community gives you. All are
-          optional.
+          About you, the writer. These show on your profile, which anyone can open from your name in any community. All are optional.
         </p>
         {PLAYER_ROLE_GROUP_KEYS.map((group) => {
           const { label, many, options } = PLAYER_ROLE_GROUPS[group];

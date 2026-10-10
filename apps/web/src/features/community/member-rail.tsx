@@ -13,7 +13,7 @@ function MemberList({ title, members }: { title: string; members: PresenceRow[] 
       <ul className="flex flex-col gap-1">
         {members.map((member) => (
           <li key={member.userId} className={`flex items-center gap-2.5 rounded-lg px-1.5 py-1 ${member.online ? '' : 'opacity-60'}`}>
-            <span className="relative">
+            <span className="relative flex shrink-0">
               <Picture mediaId={member.avatarId} name={member.displayName} className="size-9 text-sm" />
               {/* The dot repeats what the section heading already says, so status never rests on color alone. */}
               <span
@@ -29,12 +29,6 @@ function MemberList({ title, members }: { title: string; members: PresenceRow[] 
                 <Badges list={member.badges} community={member.communityBadge} />
               </span>
               {member.role ? <span className="block truncate text-xs text-ink-muted">{member.role}</span> : null}
-              {/* What they say about themselves everywhere, under the role this community gave them. */}
-              {member.playerRoles.length > 0 ? (
-                <span className="block truncate text-xs text-ink-muted" title={member.playerRoles.map((role) => role.label).join(', ')}>
-                  {member.playerRoles.map((role) => role.label).join(' · ')}
-                </span>
-              ) : null}
             </span>
           </li>
         ))}
