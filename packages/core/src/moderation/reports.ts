@@ -1,3 +1,4 @@
+import { channelAddress } from '../messaging/channels';
 import {
   isReportCategory,
   MAX_REPORT_NOTE,
@@ -74,8 +75,11 @@ async function resolveTarget(db: Db, actor: Actor, targetType: ReportTarget, tar
     let href: string | null = null;
     if (row.conversation.kind === 'community') {
       const [community] = await db.select().from(communities).where(eq(communities.id, row.conversation.communityId!));
-      where = `${row.conversation.spaceKey === 'lounge' ? 'Lounge' : 'Announcements'} of ${community?.name ?? 'a community'}`;
-      href = community ? `/c/${community.slug}/${row.conversation.spaceKey}` : null;
+      const announcements = row.conversation.spaceKey === 'announcements';
+      // The Lounge is the first channel, under that name, even before it has been given a channel of its own.
+      const channel = announcements ? null : ((await channelAddress(db, row.conversation.id))?.name ?? (row.conversation.spaceKey === 'lounge' ? 'lounge' : null));
+      where = `${announcements ? 'Announcements' : channel ? `#${channel}` : 'A channel'} of ${community?.name ?? 'a community'}`;
+      href = !community ? null : announcements ? `/c/${community.slug}/announcements` : `/c/${community.slug}/chat${channel ? `/${channel}` : ''}`;
     }
     // A private conversation is not linked: reviewers work from the snapshot, not by reading the rest of it.
     return { subjectUserId: row.message.authorUserId, communityId: row.conversation.communityId, snapshot: { text: clip(row.message.body), where, href } };

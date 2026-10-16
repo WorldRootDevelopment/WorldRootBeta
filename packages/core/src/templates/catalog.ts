@@ -333,6 +333,65 @@ export const WORLD_TEMPLATES: WorldTemplate[] = [
       { label: 'Team', examples: ['Avengers', 'X-Men', 'Fantastic Four', 'None'] },
     ],
   },
+  {
+    id: 'hellaverse',
+    name: 'Hellaverse',
+    category: 'Fantasy',
+    popCulture: true,
+    summary: 'Hell’s seven rings, a hotel for sinners trying to do better, and Heaven watching from above.',
+    description:
+      'The Hellaverse of Hazbin Hotel and Helluva Boss: a Hell split into seven rings, one for each sin, ruled by royals and fought over by Overlords. Start at the hotel in the Pride Ring, take a contract from an imp-run business, or go looking for trouble in the rings below. Heaven and the living world are a portal away.',
+    locations: [
+      {
+        name: 'The Pride Ring',
+        summary: 'Where sinners land when they die. Loud, neon and dangerous.',
+        children: [
+          {
+            name: 'Pentagram City',
+            summary: 'The biggest city in Hell, carved up between Overlords.',
+            children: [
+              { name: 'The Hazbin Hotel', summary: 'A hotel that wants to redeem sinners. Most guests are not sure they want to be redeemed.' },
+              { name: 'The Vees’ Tower', summary: 'Media, fashion and technology, all under one roof and one contract.' },
+              { name: 'Cannibal Town', summary: 'Friendly neighbours with an unusual diet.' },
+              { name: 'The Streets', summary: 'Shops, clubs, turf wars and the occasional extermination.' },
+            ],
+          },
+          { name: 'The Royal Palace', summary: 'Home of Hell’s royal family.' },
+        ],
+      },
+      {
+        name: 'Imp City',
+        summary: 'Where the imps live and work.',
+        children: [
+          { name: 'I.M.P. Headquarters', summary: 'A small office that sends assassins up to the living world. The paperwork is worse than the jobs.' },
+          { name: 'The Apartment Blocks', summary: 'Thin walls, loud neighbours.' },
+        ],
+      },
+      { name: 'The Lust Ring', summary: 'Clubs, cabarets and Hell’s nightlife.' },
+      { name: 'The Greed Ring', summary: 'Everything has a price, and someone is always collecting.' },
+      { name: 'The Wrath Ring', summary: 'Open country, ranches and long memories.' },
+      { name: 'The Gluttony Ring', summary: 'Parties that never stop.' },
+      { name: 'The Envy Ring', summary: 'Waters and coasts, and a lot of looking at what others have.' },
+      { name: 'The Sloth Ring', summary: 'Quiet, misty and in no hurry.' },
+      { name: 'The Goetia Estates', summary: 'The mansions of Hell’s demon nobility, where the grimoires are kept.' },
+      {
+        name: 'Heaven',
+        summary: 'Bright, orderly and very sure of itself.',
+        children: [
+          { name: 'The Pearly Gates', summary: 'Where the newly dead are judged.' },
+          { name: 'The Exorcist Barracks', summary: 'Where the angels who carry out the extermination train.' },
+        ],
+      },
+      { name: 'The Living World', summary: 'Earth, reached by portal for contracts, business and bad ideas.' },
+    ],
+    suggestedFields: [
+      { label: 'Kind', examples: ['Sinner', 'Imp', 'Hellhound', 'Succubus or Incubus', 'Goetia', 'Overlord', 'Angel', 'Exorcist', 'Cherub'] },
+      { label: 'Home Ring', examples: ['Pride', 'Lust', 'Greed', 'Wrath', 'Gluttony', 'Envy', 'Sloth', 'Heaven'] },
+      { label: 'Cause of death', examples: ['For sinners. Leave blank for those born in Hell or Heaven.'] },
+      { label: 'Allegiance', examples: ['The Hotel', 'An Overlord', 'A royal', 'I.M.P.', 'Heaven', 'Nobody'] },
+      { label: 'Powers and abilities' },
+    ],
+  },
 ];
 
 export const findTemplate = (id: string): WorldTemplate | undefined => WORLD_TEMPLATES.find((template) => template.id === id);

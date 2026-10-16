@@ -1,4 +1,4 @@
-import { index, pgEnum, pgTable, primaryKey, text, unique, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgEnum, pgTable, primaryKey, text, unique, uuid } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz } from './columns';
 import { communities } from './community';
 import { users } from './identity';
@@ -24,7 +24,7 @@ export const conversations = pgTable(
     kind: conversationKind('kind').notNull(),
     // Set for community spaces only.
     communityId: uuid('community_id').references(() => communities.id, { onDelete: 'cascade' }),
-    // Which built-in space this is: 'announcements' or 'lounge'.
+    // Which community space this is: 'announcements', 'lounge' (the first channel), or 'channel:<id>' for a channel added later.
     spaceKey: text('space_key'),
     // For direct conversations: both user ids, sorted and joined. Guarantees one conversation per pair.
     directKey: text('direct_key').unique(),
@@ -60,6 +60,36 @@ export const conversationMembers = pgTable(
     joinedAt: timestamptz('joined_at').notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.conversationId, t.userId] }), index('conversation_members_user_idx').on(t.userId)],
+);
+
+/**
+ * A chat channel in a community: a named room, backed by one conversation. The community's original
+ * Lounge is its first channel. Role lists narrow who may see or post in a channel; null means no
+ * narrowing. Deleting the conversation deletes the channel.
+ */
+export const communityChannels = pgTable(
+  'community_channels',
+  {
+    id: id(),
+    communityId: uuid('community_id')
+      .notNull()
+      .references(() => communities.id, { onDelete: 'cascade' }),
+    conversationId: uuid('conversation_id')
+      .notNull()
+      .unique()
+      .references(() => conversations.id, { onDelete: 'cascade' }),
+    // Also its address: lower-case letters, numbers and hyphens.
+    name: text('name').notNull(),
+    topic: text('topic'),
+    // The heading it is listed under. Channels sharing one are grouped.
+    category: text('category'),
+    position: integer('position').notNull().default(0),
+    // Role ids. Null: everyone who can see the community may read; everyone allowed to post in channels may post.
+    readRoleIds: jsonb('read_role_ids').$type<string[] | null>(),
+    postRoleIds: jsonb('post_role_ids').$type<string[] | null>(),
+    createdAt: createdAt(),
+  },
+  (t) => [unique('community_channels_name').on(t.communityId, t.name), index('community_channels_order_idx').on(t.communityId, t.position)],
 );
 
 export const messages = pgTable(

@@ -1,13 +1,6 @@
-import type { Metadata } from 'next';
-import { SpacePage } from '@/features/messaging/space-page';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = { title: 'Lounge' };
-
-interface Props {
-  params: Promise<{ community: string }>;
-  searchParams: Promise<{ before?: string }>;
-}
-
-export default async function LoungePage({ params, searchParams }: Props) {
-  return <SpacePage slug={(await params).community} spaceKey="lounge" before={(await searchParams).before} />;
+/** The Lounge is now the first of a community's chat channels. Old links to it land on the chat. */
+export default async function LoungePage({ params }: { params: Promise<{ community: string }> }) {
+  redirect(`/c/${(await params).community}/chat`);
 }

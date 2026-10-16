@@ -60,7 +60,7 @@ async function requireWorld(db: Db, worldId: string): Promise<World> {
 }
 
 /** Nothing in an archived community can be changed, its worlds included. */
-async function assertCommunityOpen(db: Db, communityId: string): Promise<void> {
+export async function assertCommunityOpen(db: Db, communityId: string): Promise<void> {
   const [home] = await db.select({ archivedAt: communities.archivedAt }).from(communities).where(eq(communities.id, communityId));
   if (home?.archivedAt) throw new DomainError('conflict', 'This community is archived, so its worlds cannot be changed.');
 }

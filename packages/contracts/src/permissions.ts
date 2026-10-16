@@ -35,7 +35,7 @@ export const PERMISSIONS = {
   'post.remove': { group: 'Scenes', label: 'Remove Posts', description: 'Remove a scene post, leaving a marker in its place.' },
 
   'announcement.post': { group: 'Spaces', label: 'Post Announcements', description: 'Write in Announcements.' },
-  'lounge.post': { group: 'Spaces', label: 'Post In The Lounge', description: 'Write in the Lounge.' },
+  'lounge.post': { group: 'Spaces', label: 'Post In Chat Channels', description: 'Write in the community’s chat channels.' },
   'message.remove': { group: 'Spaces', label: 'Remove Messages', description: 'Remove messages in community spaces.' },
 
   'report.review': { group: 'Moderation', label: 'Review Reports', description: 'See and act on reports in the community.' },

@@ -1,5 +1,5 @@
 import type { BadgeKey, CommunityBadgeKey, PermissionKey } from '@worldroot/contracts';
-import { communities, conversationMembers, conversations, messages, profiles, type Db } from '@worldroot/db';
+import { communities, communityChannels, conversationMembers, conversations, messages, profiles, roleAssignments, type Db } from '@worldroot/db';
 import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
 import { listMembers } from '../community/admin';
@@ -41,6 +41,30 @@ async function ensureSpace(db: Db, communityId: string, spaceKey: SpaceKey): Pro
   return created!;
 }
 
+/** A community's Lounge conversation, which is also its first chat channel. */
+export const ensureLounge = (db: Db, communityId: string): Promise<Conversation> => ensureSpace(db, communityId, 'lounge');
+
+/**
+ * What a chat channel lets the actor do, or null when the conversation is not a channel. Whoever
+ * manages the community can always see and post. Otherwise a channel may be narrowed to certain
+ * roles, for reading, for posting, or both.
+ */
+async function channelGate(db: Db, actor: Actor, communityId: string, conversationId: string): Promise<{ read: boolean; post: boolean } | null> {
+  const [channel] = await db.select().from(communityChannels).where(eq(communityChannels.conversationId, conversationId));
+  if (!channel) return null;
+  const resource = { communityId };
+  const grants = communityGrants(db);
+  if (await can(actor, 'community.manage', resource, grants)) return { read: true, post: true };
+  const mayPost = await can(actor, 'lounge.post', resource, grants);
+  if (!channel.readRoleIds && !channel.postRoleIds) return { read: true, post: mayPost };
+  const held = new Set(
+    (await db.select({ roleId: roleAssignments.roleId }).from(roleAssignments).where(and(eq(roleAssignments.communityId, communityId), eq(roleAssignments.userId, actor.userId)))).map((row) => row.roleId),
+  );
+  const holdsOneOf = (list: string[] | null) => !list || list.some((roleId) => held.has(roleId));
+  const read = holdsOneOf(channel.readRoleIds);
+  return { read, post: read && mayPost && holdsOneOf(channel.postRoleIds) };
+}
+
 interface Access {
   conversation: Conversation;
   canPost: boolean;
@@ -61,9 +85,14 @@ async function accessOf(db: Db, actor: Actor, conversation: Conversation): Promi
     if (!community || !visible) throw missing();
     const resource = { communityId: community.id };
     const grants = communityGrants(db);
+    // Announcements is the community's notice board. Everything else is a chat channel with rules of its own.
+    const gate = conversation.spaceKey === 'announcements' ? null : await channelGate(db, actor, community.id, conversation.id);
+    // A channel the actor may not see is indistinguishable from one that does not exist.
+    if (gate && !gate.read) throw missing();
+    const space = SPACES[conversation.spaceKey as SpaceKey] ?? SPACES.lounge;
     return {
       conversation,
-      canPost: await can(actor, SPACES[conversation.spaceKey as SpaceKey].post, resource, grants),
+      canPost: gate ? gate.post : await can(actor, space.post, resource, grants),
       canModerate: await can(actor, 'message.remove', resource, grants),
     };
   }
@@ -74,6 +103,11 @@ async function accessOf(db: Db, actor: Actor, conversation: Conversation): Promi
   if (!membership) throw missing();
   return { conversation, canPost: true, canModerate: false };
 }
+
+export type ConversationAccess = Access;
+
+/** Opens a conversation for the actor, or refuses as if it did not exist. */
+export const openConversation = (db: Db, actor: Actor, conversationId: string): Promise<Access> => requireAccess(db, actor, conversationId);
 
 async function requireAccess(db: Db, actor: Actor, conversationId: string): Promise<Access> {
   const [conversation] = await db.select().from(conversations).where(eq(conversations.id, conversationId));
@@ -154,6 +188,7 @@ export async function sendMessage(db: Db, actor: Actor, conversationId: string, 
   const access = await requireAccess(db, actor, conversationId);
   if (!access.canPost) {
     const space = SPACES[access.conversation.spaceKey as SpaceKey];
+    if (!space || access.conversation.spaceKey === 'lounge') throw new DomainError('forbidden', 'You cannot post in this channel.', { permission: 'lounge.post' });
     throw new DomainError('forbidden', `You cannot post in ${space.label}.`, { permission: space.post });
   }
   const { conversation } = access;
@@ -310,7 +345,11 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
 /** Records that the actor has read up to the newest message. */
 export async function markConversationRead(db: Db, actor: Actor, conversationId: string): Promise<void> {
   const { conversation } = await requireAccess(db, actor, conversationId);
-  if (!conversation.lastMessageId) return;
+  // Opening an empty conversation still counts as having looked, so the first message to arrive shows as new.
+  if (!conversation.lastMessageId) {
+    await db.insert(conversationMembers).values({ conversationId, userId: actor.userId }).onConflictDoNothing();
+    return;
+  }
   await db
     .insert(conversationMembers)
     .values({ conversationId, userId: actor.userId, lastReadMessageId: conversation.lastMessageId })

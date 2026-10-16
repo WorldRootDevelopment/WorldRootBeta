@@ -107,14 +107,16 @@ interface ChatRoomProps {
   /** Shown in place of the message box to someone who may read but not post. */
   readOnlyNote: string;
   track: boolean;
+  /** What this room is called, for people using a screen reader. */
+  label?: string;
 }
 
-/** A community's Lounge: a live chat room. The member list stands beside every page of the community. */
-export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote, track }: ChatRoomProps) {
+/** A live chat room: one of a community's channels. The member list stands beside every page of the community. */
+export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote, track, label = 'Chat' }: ChatRoomProps) {
   const { conversation, messages, hasEarlier, canPost, canModerate } = page;
   return (
     <div>
-      <section aria-label="Lounge Chat" className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden wr-glass rounded-2xl">
+      <section aria-label={label} className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden wr-glass rounded-2xl">
         <ChatLog conversationId={conversation.id} latestId={viewingEarlier ? null : (messages.at(-1)?.id ?? null)} track={track && !viewingEarlier}>
           {hasEarlier && messages[0] ? (
             <p className="mb-3 text-center">

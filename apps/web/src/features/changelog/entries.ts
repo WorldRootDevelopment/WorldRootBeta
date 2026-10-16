@@ -14,6 +14,23 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-16-hellaverse-template',
+    date: '2026-10-16',
+    title: 'A Hellaverse World Template',
+    items: ['New world template after Hazbin Hotel and Helluva Boss: the seven rings of Hell, the hotel, Imp City, Heaven and the living world. Find it under Library, World Templates.'],
+  },
+  {
+    id: '2026-10-09-chat-channels',
+    date: '2026-10-09',
+    title: 'Chat Channels',
+    items: [
+      'A community’s Lounge is now Chat, and it can have many channels. Everything said in the Lounge is still there, as the first channel.',
+      'Whoever manages a community can add, rename, group, reorder and delete channels under Settings, Channels.',
+      'A channel can be private to some roles, or open to read with only some roles posting.',
+      'Channels with messages you have not read are marked.',
+    ],
+  },
+  {
     id: '2026-10-09-site-themes',
     date: '2026-10-09',
     title: 'Site Themes For Heartwood',

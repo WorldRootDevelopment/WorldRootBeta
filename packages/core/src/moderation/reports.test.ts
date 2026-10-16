@@ -76,7 +76,7 @@ describe('reporting', () => {
       category: 'harassment',
       reporterHandle: 'member',
       subjectHandle: 'troll',
-      snapshot: { text: 'Something rude about another writer.', where: 'Lounge of Valley', href: '/c/valley/lounge' },
+      snapshot: { text: 'Something rude about another writer.', where: '#lounge of Valley', href: '/c/valley/chat/lounge' },
     });
     // A community matter that was not escalated stays out of the platform queue.
     expect(await listReports(db, staff, 'platform')).toEqual([]);
