@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@worldroot/ui';
-import { BookOpen, Globe, Megaphone, Plus, UserRound, Users, type LucideIcon } from 'lucide-react';
+import { BookOpen, Feather, Globe, Megaphone, Plus, UserRound, Users, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useCloseOnNavigate } from './use-close-on-navigate';
 
@@ -16,6 +16,7 @@ interface CreateItem {
 
 const CREATE_ITEMS: CreateItem[] = [
   { label: 'Scene', icon: BookOpen, href: '/scenes/new' },
+  { label: 'Story', icon: Feather, href: '/stories/new' },
   { label: 'Character', icon: UserRound, href: '/library/characters/new' },
   { label: 'World', icon: Globe, href: '/library/worlds/new' },
   { label: 'LFRP Listing', icon: Megaphone, arrives: 'Phase 4' },

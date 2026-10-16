@@ -52,7 +52,7 @@ function ownHosts(request: Request): Set<string | null> {
 
 /**
  * What the shared guest account may change. Anyone at all can be signed in to it, so it gets only
- * what trying WorldRoot needs: characters, worlds, and writing and rolling in scenes. Everything not
+ * what trying WorldRoot needs: characters, worlds, stories, and writing and rolling in scenes. Everything not
  * listed is refused, which covers its own profile and pictures, uploads, direct messages, friends,
  * blocks, partner listings, and creating, joining or running communities. A route added later is
  * refused too until it is listed here.
@@ -64,6 +64,8 @@ const GUEST_MAY = [
   /^\/api\/v1\/locations\/[^/]+$/,
   /^\/api\/v1\/scenes(\/[^/]+\/(posts|draft|read|rolls|characters|status))?$/,
   /^\/api\/v1\/posts\/[^/]+$/,
+  /^\/api\/v1\/stories(\/[^/]+(\/chapters)?)?$/,
+  /^\/api\/v1\/story-chapters\/[^/]+$/,
   /^\/api\/v1\/conversations\/[^/]+\/(messages|read)$/,
   /^\/api\/v1\/messages\/[^/]+$/,
   /^\/api\/v1\/notifications\/read$/,

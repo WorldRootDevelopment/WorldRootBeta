@@ -1,5 +1,5 @@
 import 'server-only';
-import { friendState, getProfileView, hasBlocked, listAchievements } from '@worldroot/core';
+import { friendState, getProfileView, hasBlocked, listAchievements, listProfileStories } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import { Globe } from 'lucide-react';
 import Link from 'next/link';
@@ -9,6 +9,7 @@ import { FriendButton } from '@/features/friends/friend-client';
 import { ImageUpload } from '@/features/media/image-upload';
 import { ReportButton } from '@/features/moderation/report-client';
 import { Picture } from '@/features/shell/picture';
+import { StoryCard } from '@/features/stories/story-card';
 import { cardClass, Prose, SectionHeading } from '@/features/shell/prose';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
@@ -24,12 +25,13 @@ export const loadProfile = cache(async (handle: string) => {
   const viewer = await requireViewer();
   const { db } = await database();
   const view = await load(() => getProfileView(db, viewer.actor, decodeURIComponent(handle)));
-  const [blocked, friendship, achievements] = await Promise.all([
+  const [blocked, friendship, achievements, stories] = await Promise.all([
     view.isSelf ? false : hasBlocked(db, viewer.actor, view.profile.userId),
     view.isSelf ? ('none' as const) : friendState(db, viewer.actor.userId, view.profile.userId),
     listAchievements(db, view.profile.userId),
+    listProfileStories(db, viewer.actor, view.profile.userId),
   ]);
-  return { ...view, viewerIsStaff: viewer.actor.platformRole === 'staff', blocked, friendship, achievements };
+  return { ...view, viewerIsStaff: viewer.actor.platformRole === 'staff', blocked, friendship, achievements, stories };
 });
 
 interface ProfileContentProps {
@@ -43,7 +45,7 @@ interface ProfileContentProps {
  * the pop-up that opens when a name is clicked.
  */
 export async function ProfileContent({ handle, popup = false }: ProfileContentProps) {
-  const { profile, isSelf, joinedAt, communities, characters, blocked, viewerIsStaff, friendship, achievements } = await loadProfile(handle);
+  const { profile, isSelf, joinedAt, communities, characters, blocked, viewerIsStaff, friendship, achievements, stories } = await loadProfile(handle);
   const Name = popup ? 'h2' : 'h1';
   const columns = popup ? 'grid gap-3 sm:grid-cols-2' : 'grid gap-4 sm:grid-cols-2 xl:grid-cols-3';
   // Their own background, if they chose one. It fills the pop-up, or the card at the top of the full page.
@@ -192,6 +194,19 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
               See All Achievements And Your Progress
             </Link>
           </p>
+        ) : null}
+
+        {stories.length > 0 ? (
+          <>
+            <SectionHeading>Stories</SectionHeading>
+            <ul className={columns}>
+              {stories.map((story) => (
+                <li key={story.id}>
+                  <StoryCard story={story} showVisibility={isSelf} />
+                </li>
+              ))}
+            </ul>
+          </>
         ) : null}
 
         <SectionHeading>Characters</SectionHeading>

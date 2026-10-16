@@ -14,6 +14,17 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-16-stories',
+    date: '2026-10-16',
+    title: 'Stories',
+    items: [
+      'Write on your own: Stories are short stories and longer tales in chapters, with your characters tagged and set in your worlds if you like. Find them in the side rail or under Create.',
+      'Everything saves as you type, and each chapter keeps a word count.',
+      'A story is private until you choose Link Only or Public. Public stories show on your profile and on the pages of the characters in them.',
+      'Download any story you can read as a text file.',
+    ],
+  },
+  {
     id: '2026-10-16-hellaverse-template',
     date: '2026-10-16',
     title: 'A Hellaverse World Template',
