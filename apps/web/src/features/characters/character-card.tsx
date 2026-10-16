@@ -8,13 +8,15 @@ interface CharacterCardProps {
   /** Short facts shown as chips, such as rank and position. */
   facts?: string[];
   note?: string;
+  /** The writer's own labels, shown only in their Library. */
+  tags?: string[];
 }
 
 export function CharacterAvatar({ name, mediaId = null, className = 'size-12 text-lg' }: { name: string; mediaId?: string | null; className?: string }) {
   return <Picture mediaId={mediaId} name={name} className={className} />;
 }
 
-export function CharacterCard({ character, facts = [], note }: CharacterCardProps) {
+export function CharacterCard({ character, facts = [], note, tags = [] }: CharacterCardProps) {
   return (
     <Link href={`/characters/${character.id}`} className={cardClass}>
       <div className="flex items-start gap-4">
@@ -31,6 +33,15 @@ export function CharacterCard({ character, facts = [], note }: CharacterCardProp
             // Two fields can hold the same value, so the value alone is not a unique key.
             <li key={index} className="rounded-full bg-surface-sunken px-2.5 py-1 text-xs font-medium text-ink-muted">
               {fact}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {tags.length > 0 ? (
+        <ul aria-label="Tags" className="mt-3 flex flex-wrap gap-1.5">
+          {tags.map((tag) => (
+            <li key={tag} className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent-text">
+              {tag}
             </li>
           ))}
         </ul>

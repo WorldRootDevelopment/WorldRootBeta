@@ -14,6 +14,16 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-16-library-tags',
+    date: '2026-10-16',
+    title: 'Tags And Search In Your Library',
+    items: [
+      'Give your characters your own tags, such as Main Cast or Fantasy, from a character’s edit page. Only you see them.',
+      'Search your characters by name, species or tag, and filter your Library by tag.',
+      'Stories can now be reported, like posts and profiles.',
+    ],
+  },
+  {
     id: '2026-10-16-stories',
     date: '2026-10-16',
     title: 'Stories',

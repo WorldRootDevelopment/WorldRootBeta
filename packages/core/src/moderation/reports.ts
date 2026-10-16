@@ -28,6 +28,7 @@ import { recordAudit } from '../platform/audit';
 import { authorize, can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 import { canAccessScene } from '../scenes/service';
+import { exportStory, getStory } from '../stories/service';
 
 export type Report = typeof reports.$inferSelect;
 
@@ -111,6 +112,19 @@ async function resolveTarget(db: Db, actor: Actor, targetType: ReportTarget, tar
       subjectUserId: row.listing.userId,
       communityId: null,
       snapshot: { text: clip(`${row.listing.title}\n\n${row.listing.body}`), where: `Looking for RP listing by @${row.handle}`, href: '/discover/partners' },
+    };
+  }
+
+  if (targetType === 'story') {
+    // getStory refuses a story the actor may not read, so a private one cannot be reported by anyone but its writer.
+    const view = await getStory(db, actor, targetId).catch(() => {
+      throw missing();
+    });
+    const { text } = await exportStory(db, actor, targetId);
+    return {
+      subjectUserId: view.story.ownerUserId,
+      communityId: null,
+      snapshot: { text: clip(text), where: `Story “${view.story.title}”${view.author.handle ? ` by @${view.author.handle}` : ''}`, href: `/stories/${view.story.id}` },
     };
   }
 

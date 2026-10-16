@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cache } from 'react';
 import { Breadcrumbs } from '@/features/shell/prose';
+import { ReportButton } from '@/features/moderation/report-client';
 import { AddChapterButton, ChapterControls } from '@/features/stories/story-client';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
@@ -89,6 +90,11 @@ export default async function StoryPage({ params }: Props) {
             <Download className="size-4" aria-hidden="true" />
             Download
           </a>
+          {isOwner ? null : (
+            <span className="inline-flex min-h-11 items-center px-2">
+              <ReportButton targetType="story" targetId={story.id} />
+            </span>
+          )}
         </div>
       </header>
 

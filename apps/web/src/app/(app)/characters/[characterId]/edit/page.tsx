@@ -1,9 +1,10 @@
 import { PREMIUM_LIMITS } from '@worldroot/contracts';
-import { getCharacterGallery, getCharacterView } from '@worldroot/core';
+import { getCharacterGallery, getCharacterView, listLibraryCharacters } from '@worldroot/core';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CharacterForm } from '@/features/characters/character-form';
 import { GalleryEditor } from '@/features/characters/character-gallery';
+import { TagEditor } from '@/features/characters/tag-editor';
 import { ImageUpload } from '@/features/media/image-upload';
 import { PageHeader } from '@/features/shell/page-header';
 import { Breadcrumbs } from '@/features/shell/prose';
@@ -20,6 +21,9 @@ export default async function EditCharacterPage({ params }: { params: Promise<{ 
   const { character, community, canEdit } = await load(() => getCharacterView(db, viewer.actor, characterId));
   if (!canEdit) notFound();
   const gallery = await getCharacterGallery(db, character);
+  // Tags belong to the writer's own library, so only the player of an original gets them.
+  const ownOriginal = !community && character.playerUserId === viewer.actor.userId;
+  const knownTags = ownOriginal ? [...new Set((await listLibraryCharacters(db, viewer.actor.userId)).flatMap((other) => other.tags))].sort() : [];
 
   return (
     <>
@@ -35,6 +39,11 @@ export default async function EditCharacterPage({ params }: { params: Promise<{ 
       <div className="mb-10 max-w-2xl">
         <ImageUpload url={`/api/v1/characters/${character.id}/portrait`} mediaId={character.portraitMediaId} name={character.name} label="Portrait" />
       </div>
+      {ownOriginal ? (
+        <div className="mb-10 max-w-2xl">
+          <TagEditor characterId={character.id} tags={character.tags} known={knownTags} />
+        </div>
+      ) : null}
       <div className="mb-10 max-w-2xl">
         <GalleryEditor characterId={character.id} name={character.name} images={gallery.images} limit={gallery.limit} canGrow={gallery.limit < PREMIUM_LIMITS.characterImages} />
       </div>

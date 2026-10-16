@@ -48,3 +48,15 @@ export const locationInputSchema = z.object({
 });
 
 export type LocationInput = z.input<typeof locationInputSchema>;
+
+/** The most labels one character can carry in its writer's library. */
+export const MAX_CHARACTER_TAGS = 10;
+
+/**
+ * A writer's labels for sorting their characters. Kept short, without
+ * repeats regardless of capitals, in the order given.
+ */
+export const characterTagsSchema = z
+  .array(z.string().trim().min(1, 'A tag cannot be empty.').max(24, 'Keep each tag to 24 characters.'))
+  .max(MAX_CHARACTER_TAGS, `Use at most ${MAX_CHARACTER_TAGS} tags.`)
+  .transform((tags) => tags.filter((tag, index) => tags.findIndex((other) => other.toLowerCase() === tag.toLowerCase()) === index));

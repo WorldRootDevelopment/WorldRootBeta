@@ -4,6 +4,7 @@ import { PenLine } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cache } from 'react';
+import { ReportButton } from '@/features/moderation/report-client';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
@@ -51,7 +52,11 @@ export default async function ReadChapterPage({ params }: Props) {
               Write
             </Link>
           </p>
-        ) : null}
+        ) : (
+          <p className="mt-4 inline-flex min-h-11 items-center">
+            <ReportButton targetType="story" targetId={storyId} />
+          </p>
+        )}
       </header>
 
       {view.chapter.html ? (

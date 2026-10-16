@@ -25,6 +25,8 @@ export const characters = pgTable(
       onDelete: 'set null',
     }),
     copiedAt: timestamptz('copied_at'),
+    // The writer's own labels for sorting their library, such as "Main Cast" or "Fantasy". Only used on library originals.
+    tags: jsonb('tags').$type<string[]>().notNull().default([]),
     // Null on library originals, which no one approves.
     approvalStatus: characterApprovalStatus('approval_status'),
 

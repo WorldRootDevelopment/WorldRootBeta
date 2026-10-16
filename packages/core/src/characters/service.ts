@@ -1,8 +1,9 @@
 import { assertRoomForCharacter } from '../identity/plan';
 import { checkAchievements } from '../identity/achievements';
-import { characterInputSchema, type CharacterInput } from '@worldroot/contracts';
+import { characterInputSchema, characterTagsSchema, type CharacterInput } from '@worldroot/contracts';
 import { characterImages, characters, characterWorldLinks, communities, worlds, type CharacterCustomValues, type Db } from '@worldroot/db';
 import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
+import { z } from 'zod';
 import { communityGrants, isMember, listCharacterFields } from '../community/service';
 import { membersWithPermission, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
@@ -71,6 +72,15 @@ export async function listLibraryCharacters(db: Db, userId: string): Promise<Cha
     .orderBy(asc(characters.name));
 }
 
+/** Sets the labels a writer sorts one of their library characters by. */
+export async function setCharacterTags(db: Db, actor: Actor, characterId: string, tags: unknown): Promise<string[]> {
+  const [character] = await db.select().from(characters).where(eq(characters.id, characterId));
+  if (!character || character.communityId || character.playerUserId !== actor.userId) throw new DomainError('not_found', 'That character is not in your library.');
+  const values = parseInput(z.object({ tags: characterTagsSchema }), { tags });
+  await db.update(characters).set({ tags: values.tags }).where(eq(characters.id, characterId));
+  return values.tags;
+}
+
 export async function listCommunityCharacters(db: Db, communityId: string): Promise<Character[]> {
   return db.select().from(characters).where(eq(characters.communityId, communityId)).orderBy(asc(characters.name));
 }
@@ -129,7 +139,7 @@ export async function addCharacterToCommunity(
       }
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...profile } = source;
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, tags: _tags, ...profile } = source;
     const [copy] = await tx
       .insert(characters)
       .values({

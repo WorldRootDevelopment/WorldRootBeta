@@ -58,7 +58,7 @@ function ownHosts(request: Request): Set<string | null> {
  * refused too until it is listed here.
  */
 const GUEST_MAY = [
-  /^\/api\/v1\/characters(\/[^/]+)?$/,
+  /^\/api\/v1\/characters(\/[^/]+(\/tags)?)?$/,
   /^\/api\/v1\/communities\/[^/]+\/characters$/,
   /^\/api\/v1\/worlds(\/from-template|\/[^/]+|\/[^/]+\/locations)?$/,
   /^\/api\/v1\/locations\/[^/]+$/,
