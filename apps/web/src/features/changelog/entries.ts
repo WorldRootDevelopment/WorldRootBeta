@@ -14,6 +14,15 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-29-your-data',
+    date: '2026-10-29',
+    title: 'Download Your Data',
+    items: [
+      'Download everything you have made on WorldRoot as one file, under Settings, Account, Your Data.',
+      'Each person can upload up to 30 pictures an hour and 150 a day.',
+    ],
+  },
+  {
     id: '2026-10-29-chat-replies',
     date: '2026-10-29',
     title: 'Replies, Reactions And Mentions In Chat',

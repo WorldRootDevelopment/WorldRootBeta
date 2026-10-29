@@ -1,4 +1,5 @@
 import { getAccount, getOwnProfileSettings, listBlocked, listSignInMethods } from '@worldroot/core';
+import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import { BlockedList, HandleForm, PasswordForm, SessionsPanel } from '@/features/identity/account-client';
 import { ConnectedAccounts, type OAuthProvider } from '@/features/identity/oauth-buttons';
@@ -60,6 +61,16 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
       <SectionHeading>Connected Accounts</SectionHeading>
       <p className="mb-4 max-w-xl text-sm text-ink-muted">Connect Discord or Google to sign in with one press. It also gives you a way back in if you forget your password.</p>
       <ConnectedAccounts available={available} methods={methods} />
+
+      <SectionHeading>Your Data</SectionHeading>
+      <p className="mb-3 max-w-2xl text-sm text-ink-muted">
+        Download everything you have made on WorldRoot as one file: your profile, characters, worlds, stories, scene posts and messages.
+        Other people&rsquo;s writing is not included, and pictures are listed by address.
+      </p>
+      {/* A plain link, so the browser saves the file. */}
+      <a href="/api/v1/account/export" className={buttonClass('secondary')}>
+        Download My Data
+      </a>
 
       <SectionHeading>Redeem A Code</SectionHeading>
       <RedeemForm />

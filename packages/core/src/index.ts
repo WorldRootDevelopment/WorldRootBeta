@@ -39,6 +39,7 @@ export * from './messaging/channels';
 export * from './scenes/chronicle';
 export * from './identity/plan';
 export * from './identity/codes';
+export * from './identity/export';
 export * from './platform/email';
 export * from './media/images';
 export * from './media/service';

@@ -1,7 +1,7 @@
 import { checkAchievements } from '../identity/achievements';
 import { FREE_LIMITS, PREMIUM, PREMIUM_LIMITS } from '@worldroot/contracts';
 import { characterImages, characters, media, profiles, scenePostImages, scenePosts, type Db } from '@worldroot/db';
-import { and, asc, count, eq, max, or } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, inArray, lt, max, or } from 'drizzle-orm';
 import { canEditCharacter } from '../characters/service';
 import { characterImageLimit } from '../identity/plan';
 import { recordAudit } from '../platform/audit';
@@ -13,8 +13,28 @@ import type { MediaStorage } from './storage';
 
 export type Media = typeof media.$inferSelect;
 
+/**
+ * How many pictures one person may upload. Pictures are not scanned, so the limits keep anyone from flooding
+ * the site faster than the Rootwardens can look. WorldRoot staff are not limited.
+ */
+export const UPLOAD_LIMITS = { perHour: 30, perDay: 150 } as const;
+
+async function assertUploadRoom(db: Db, actor: Actor): Promise<void> {
+  if (actor.platformRole === 'staff') return;
+  const since = (ms: number) => new Date(Date.now() - ms);
+  const counted = async (ms: number) =>
+    (await db.select({ value: count() }).from(media).where(and(eq(media.uploaderUserId, actor.userId), gte(media.createdAt, since(ms)))))[0]?.value ?? 0;
+  if ((await counted(3_600_000)) >= UPLOAD_LIMITS.perHour) {
+    throw new DomainError('rate_limited', `You have uploaded ${UPLOAD_LIMITS.perHour} pictures in the last hour. Wait a little and try again.`);
+  }
+  if ((await counted(86_400_000)) >= UPLOAD_LIMITS.perDay) {
+    throw new DomainError('rate_limited', `You have uploaded ${UPLOAD_LIMITS.perDay} pictures today. Try again tomorrow.`);
+  }
+}
+
 /** Checks an upload, stores its bytes and records it. Nothing refers to it until the caller says so. */
 async function store(db: Db, storage: MediaStorage, actor: Actor, upload: Uint8Array, options: { gif: boolean }): Promise<Media> {
+  await assertUploadRoom(db, actor);
   const image = checkImage(upload);
   if (!options.gif && image.contentType === 'image/gif') {
     // Animated profile pictures are switched off for now. They are still welcome in scenes.
@@ -167,6 +187,84 @@ export async function removeCharacterImage(db: Db, storage: MediaStorage, actor:
     return rows.length > 0;
   });
   if (removed) await release(db, storage, mediaId);
+}
+
+export interface UploadRow {
+  id: string;
+  contentType: string;
+  byteSize: number;
+  createdAt: Date;
+  uploader: { userId: string | null; handle: string | null; displayName: string | null };
+  /** Where it is shown, in words, with a link where there is a page to look at. */
+  usedIn: Array<{ label: string; href: string | null }>;
+}
+
+const requireStaff = (actor: Actor) => {
+  if (actor.platformRole !== 'staff') throw new DomainError('forbidden', 'Only Rootwardens, the WorldRoot staff, can do that.');
+};
+
+/** The newest uploads across the whole site, with who uploaded each and where it is shown. Staff only. */
+export async function listRecentUploads(db: Db, actor: Actor, options: { beforeId?: string; limit?: number } = {}): Promise<UploadRow[]> {
+  requireStaff(actor);
+  const limit = Math.min(options.limit ?? 60, 200);
+  const rows = await db
+    .select({ media, handle: profiles.handle, displayName: profiles.displayName })
+    .from(media)
+    .leftJoin(profiles, eq(profiles.userId, media.uploaderUserId))
+    .where(options.beforeId ? lt(media.id, options.beforeId) : undefined)
+    .orderBy(desc(media.id))
+    .limit(limit);
+  const ids = rows.map((row) => row.media.id);
+  if (ids.length === 0) return [];
+
+  const [asAvatar, asBanner, asPortrait, inGallery, inPost] = await Promise.all([
+    db.select({ id: profiles.avatarMediaId, handle: profiles.handle }).from(profiles).where(inArray(profiles.avatarMediaId, ids)),
+    db.select({ id: profiles.bannerMediaId, handle: profiles.handle }).from(profiles).where(inArray(profiles.bannerMediaId, ids)),
+    db.select({ id: characters.portraitMediaId, characterId: characters.id, name: characters.name }).from(characters).where(inArray(characters.portraitMediaId, ids)),
+    db
+      .select({ id: characterImages.mediaId, characterId: characters.id, name: characters.name })
+      .from(characterImages)
+      .innerJoin(characters, eq(characters.id, characterImages.characterId))
+      .where(inArray(characterImages.mediaId, ids)),
+    db
+      .select({ id: scenePostImages.mediaId, sceneId: scenePosts.sceneId, seq: scenePosts.seq, removedAt: scenePosts.removedAt })
+      .from(scenePostImages)
+      .innerJoin(scenePosts, eq(scenePosts.id, scenePostImages.postId))
+      .where(inArray(scenePostImages.mediaId, ids)),
+  ]);
+
+  return rows.map(({ media: row, handle, displayName }) => ({
+    id: row.id,
+    contentType: row.contentType,
+    byteSize: row.byteSize,
+    createdAt: row.createdAt,
+    uploader: { userId: row.uploaderUserId, handle, displayName },
+    usedIn: [
+      ...asAvatar.filter((use) => use.id === row.id).map((use) => ({ label: `Profile picture of @${use.handle}`, href: `/u/${use.handle}` })),
+      ...asBanner.filter((use) => use.id === row.id).map((use) => ({ label: `Banner of @${use.handle}`, href: `/u/${use.handle}` })),
+      ...asPortrait.filter((use) => use.id === row.id).map((use) => ({ label: `Portrait of ${use.name}`, href: `/characters/${use.characterId}` })),
+      ...inGallery.filter((use) => use.id === row.id).map((use) => ({ label: `Gallery of ${use.name}`, href: `/characters/${use.characterId}` })),
+      ...inPost
+        .filter((use) => use.id === row.id)
+        .map((use) => ({ label: use.removedAt ? 'A removed scene post' : 'A scene post', href: `/scenes/${use.sceneId}#post-${use.seq}` })),
+    ],
+  }));
+}
+
+/**
+ * Takes a picture off the site for good, wherever it is shown: profile pictures and banners go blank,
+ * portraits go back to a letter, and it leaves galleries and posts. Staff only, and recorded.
+ */
+export async function removeUpload(db: Db, storage: MediaStorage, actor: Actor, mediaId: string): Promise<void> {
+  requireStaff(actor);
+  const [row] = await db.select().from(media).where(eq(media.id, mediaId));
+  if (!row) throw new DomainError('not_found', 'That picture does not exist.');
+  await db.transaction(async (tx) => {
+    // Every reference either clears itself or goes with the picture, by the database's own rules.
+    await tx.delete(media).where(eq(media.id, mediaId));
+    await recordAudit(tx, { actor, action: 'platform.media.remove', targetType: 'media', targetId: mediaId, before: { uploaderUserId: row.uploaderUserId, contentType: row.contentType } });
+  });
+  await storage.remove(mediaId);
 }
 
 /**

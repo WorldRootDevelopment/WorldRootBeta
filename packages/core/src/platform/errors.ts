@@ -36,6 +36,7 @@ export const HTTP_STATUS: Record<ErrorCode, number> = {
   forbidden: 403,
   not_found: 404,
   conflict: 409,
+  rate_limited: 429,
   invalid_input: 422,
   internal: 500,
 };

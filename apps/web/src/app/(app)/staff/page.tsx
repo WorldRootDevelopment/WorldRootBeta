@@ -51,6 +51,14 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
       </p>
       <SeasonPicker mode={seasonMode} showing={season} />
 
+      <SectionHeading>Uploads</SectionHeading>
+      <p className="mb-4 max-w-2xl text-sm text-ink-muted">
+        Pictures are not scanned. Look over what has been uploaded recently and take down anything that breaks the rules.
+      </p>
+      <Link href="/staff/uploads" className={buttonClass('secondary')}>
+        Recent Uploads
+      </Link>
+
       <SectionHeading>Backer Codes</SectionHeading>
       <p className="mb-4 max-w-2xl text-sm text-ink-muted">
         Kickstarter does not let other sites check who backed a project, so backers claim their rewards with a code. Paste a column from

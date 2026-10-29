@@ -32,6 +32,7 @@ const ACTIONS: Record<string, string> = {
   'platform.avatar.remove': 'Profile Picture Removed',
   'platform.banner.remove': 'Banner Removed',
   'platform.codes.redeem': 'Redeemed A Backer Code',
+  'platform.media.remove': 'Picture Removed By A Rootwarden',
   'platform.item.grant': 'Given A Store Item',
   'platform.item.revoke': 'Store Item Taken Back',
 };

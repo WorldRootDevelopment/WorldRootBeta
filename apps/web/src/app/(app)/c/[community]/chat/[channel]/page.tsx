@@ -40,17 +40,18 @@ export default async function ChannelPage({ params, searchParams }: Props) {
   const note = !isMember ? 'Join the community to chat.' : channel.postRoleIds ? 'Only some roles can post in this channel.' : 'You do not have permission to post here.';
 
   return (
-    <div className="grid gap-5 md:grid-cols-[13rem_minmax(0,1fr)]">
-      <nav aria-label="Chat Channels" className="wr-glass h-fit rounded-2xl p-3">
+    <div className="grid gap-3 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-5">
+      {/* On a phone the channels are one scrolling row, so the conversation and its message box stay on screen. */}
+      <nav aria-label="Chat Channels" className="wr-glass flex h-fit gap-3 overflow-x-auto rounded-2xl p-1.5 md:block md:p-3">
         {grouped(channels).map((group) => (
-          <div key={group.heading ?? ''} className="mb-3 last:mb-0">
-            {group.heading ? <h3 className="mb-1 px-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">{group.heading}</h3> : null}
-            <ul className="flex flex-col gap-0.5">
+          <div key={group.heading ?? ''} className="flex shrink-0 items-center gap-1 md:mb-3 md:block md:last:mb-0">
+            {group.heading ? <h3 className="hidden px-2 text-xs font-semibold uppercase tracking-wide text-ink-muted md:mb-1 md:block">{group.heading}</h3> : null}
+            <ul className="flex gap-0.5 md:flex-col">
               {group.channels.map((item) => (
                 <li key={item.id}>
                   <NavLink
                     href={`${base}/${item.name}`}
-                    className={`flex min-h-10 items-center gap-2 rounded-lg px-2 text-sm hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${item.unread ? 'font-semibold text-ink' : 'text-ink-muted'}`}
+                    className={`flex min-h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-2 text-sm hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${item.unread ? 'font-semibold text-ink' : 'text-ink-muted'}`}
                     activeClassName="bg-accent-soft text-accent-text hover:bg-accent-soft"
                   >
                     {item.restricted ? <Lock className="size-4 shrink-0" aria-hidden="true" /> : <Hash className="size-4 shrink-0" aria-hidden="true" />}

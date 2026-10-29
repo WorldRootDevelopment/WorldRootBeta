@@ -5,6 +5,8 @@ export const ERROR_CODES = [
   'not_found',
   'conflict',
   'invalid_input',
+  /** Too many of something in a short time, such as uploads. Trying again later works. */
+  'rate_limited',
   'internal',
 ] as const;
 
