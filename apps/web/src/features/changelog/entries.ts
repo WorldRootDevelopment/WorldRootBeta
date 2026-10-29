@@ -14,6 +14,16 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-29-kudos-and-comments',
+    date: '2026-10-29',
+    title: 'Kudos And Comments On Stories',
+    items: [
+      'Leave kudos on a story you enjoyed, and comment on its chapters. Writers can close comments on a story and remove any comment on it.',
+      'Any community can now switch on the Chronicle under Settings, Play Style.',
+      'The player role DMs Closed now does what it says: only your friends can start a conversation with you.',
+    ],
+  },
+  {
     id: '2026-10-29-character-keeping',
     date: '2026-10-29',
     title: 'Share Your Characters',

@@ -18,6 +18,8 @@ import {
   scenes,
   type Db,
   type ReportSnapshot,
+  storyComments,
+  stories,
 } from '@worldroot/db';
 import { and, count, desc, eq, isNull, or } from 'drizzle-orm';
 import { getCharacterView } from '../characters/service';
@@ -112,6 +114,25 @@ async function resolveTarget(db: Db, actor: Actor, targetType: ReportTarget, tar
       subjectUserId: row.listing.userId,
       communityId: null,
       snapshot: { text: clip(`${row.listing.title}\n\n${row.listing.body}`), where: `Looking for RP listing by @${row.handle}`, href: '/discover/partners' },
+    };
+  }
+
+  if (targetType === 'story_comment') {
+    const [row] = await db
+      .select({ comment: storyComments, title: stories.title, handle: profiles.handle })
+      .from(storyComments)
+      .innerJoin(stories, eq(stories.id, storyComments.storyId))
+      .leftJoin(profiles, eq(profiles.userId, storyComments.authorUserId))
+      .where(eq(storyComments.id, targetId));
+    // Only a comment on a story the reporter can read, and one still showing.
+    if (!row || row.comment.removedAt) throw missing();
+    await getStory(db, actor, row.comment.storyId).catch(() => {
+      throw missing();
+    });
+    return {
+      subjectUserId: row.comment.authorUserId,
+      communityId: null,
+      snapshot: { text: clip(row.comment.body), where: `A comment${row.handle ? ` by @${row.handle}` : ''} on the story “${row.title}”`, href: `/stories/${row.comment.storyId}/${row.comment.chapterId}#comments` },
     };
   }
 

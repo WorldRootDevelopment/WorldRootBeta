@@ -13,7 +13,7 @@ interface StoryFormProps {
   characters: Array<{ id: string; name: string }>;
   worlds: Array<{ id: string; name: string }>;
   /** The story being changed. Absent when starting one. */
-  story?: { id: string; title: string; summary: string | null; rating: ContentRating; visibility: StoryVisibility; worldId: string | null; characterIds: string[] };
+  story?: { id: string; title: string; summary: string | null; rating: ContentRating; visibility: StoryVisibility; worldId: string | null; characterIds: string[]; commentsOpen: boolean };
 }
 
 const radioRow = 'flex min-h-11 items-start gap-3 py-2 text-sm text-ink';
@@ -37,6 +37,7 @@ export function StoryForm({ characters, worlds, story }: StoryFormProps) {
       visibility,
       worldId: form.get('worldId') || null,
       characterIds: form.getAll('characterIds'),
+      commentsOpen: form.get('commentsOpen') === 'on',
     };
     setPending(true);
     const result = story
@@ -149,6 +150,14 @@ export function StoryForm({ characters, worlds, story }: StoryFormProps) {
           </label>
         ))}
       </fieldset>
+
+      <label className="flex min-h-11 items-start gap-3 text-sm text-ink">
+        <input type="checkbox" name="commentsOpen" defaultChecked={story?.commentsOpen ?? true} className="mt-0.5 size-5 shrink-0 accent-accent" />
+        <span>
+          Let readers comment
+          <span className="block text-ink-muted">Readers can leave kudos either way. You can remove any comment on your story.</span>
+        </span>
+      </label>
 
       <FormFooter error={error} pending={pending} submitLabel={story ? 'Save Story' : 'Start Writing'} cancelHref={story ? `/stories/${story.id}` : '/stories'} />
 

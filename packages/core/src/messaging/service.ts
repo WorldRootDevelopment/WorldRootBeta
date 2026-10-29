@@ -4,7 +4,7 @@ import { and, asc, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
 import { listMembers } from '../community/admin';
 import { isBlockedBetween } from '../identity/account';
-import { knowEachOther } from '../identity/friends';
+import { friendState, knowEachOther } from '../identity/friends';
 import { platformBadgesSql, toBadges } from '../identity/badges';
 import { communityMemberIds, notify, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
@@ -133,6 +133,20 @@ async function userIdsForHandles(db: Db, handles: string[]): Promise<string[]> {
 }
 
 /**
+ * Refuses a new conversation with someone who has chosen the player role DMs Closed, unless the two are
+ * friends or the actor is staff. Conversations already under way carry on.
+ */
+async function assertOpenToMessages(db: Db, actor: Actor, userId: string): Promise<void> {
+  if (actor.platformRole === 'staff') return;
+  const [person] = await db.select({ roles: profiles.playerRoles, name: profiles.displayName }).from(profiles).where(eq(profiles.userId, userId));
+  const closed = Array.isArray(person?.roles) && person.roles.includes('dms:closed');
+  if (closed && (await friendState(db, actor.userId, userId)) !== 'friends') {
+    const message = `${person!.name} has closed their direct messages. Only their friends can start a conversation with them.`;
+    throw new DomainError('forbidden', message, { fields: { handles: message } });
+  }
+}
+
+/**
  * Starts a conversation with one or more people, by handle. One other person
  * gives the single direct conversation that pair shares; more gives a new group.
  */
@@ -150,6 +164,7 @@ export async function startConversation(db: Db, actor: Actor, input: { handles: 
       const [existing] = await tx.select().from(conversations).where(eq(conversations.directKey, directKey));
       if (existing) return existing;
       if (await isBlockedBetween(tx, actor.userId, others[0]!)) throw noContact();
+      await assertOpenToMessages(tx, actor, others[0]!);
       // People who share a community, and staff, can simply talk. Anyone else starts with a request.
       const known = actor.platformRole === 'staff' || (await knowEachOther(tx, actor.userId, others[0]!));
       const [direct] = await tx
@@ -168,6 +183,7 @@ export async function startConversation(db: Db, actor: Actor, input: { handles: 
     // Nobody is added to a group with someone they have blocked, or who has blocked them.
     for (const other of others) {
       if (await isBlockedBetween(tx, actor.userId, other)) throw noContact();
+      await assertOpenToMessages(tx, actor, other);
       // A group has no request step, so it is only for people who already share a community with you.
       if (actor.platformRole !== 'staff' && !(await knowEachOther(tx, actor.userId, other))) {
         const message = 'You can start a group only with people you share a community with. Message the others one to one first.';

@@ -30,6 +30,8 @@ export const communitySettingsSchema = z.object({
   requireCharacterApproval: z.boolean(),
   // Left out, these stay as they are.
   dndMode: z.boolean().optional(),
+  /** Shows the Chronicle: finished scenes read as the chapters of one book. */
+  chronicle: z.boolean().optional(),
   /** The highest rating a scene here may be given. */
   maxRating: z.enum(CONTENT_RATINGS, { error: 'Choose a rating.' }).optional(),
 });

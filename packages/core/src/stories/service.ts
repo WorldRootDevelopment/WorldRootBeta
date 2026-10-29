@@ -80,7 +80,7 @@ export async function updateStory(db: Db, actor: Actor, storyId: string, input: 
   return db.transaction(async (tx) => {
     const [story] = await tx
       .update(stories)
-      .set({ title: values.title, summary: values.summary, rating: values.rating, visibility: values.visibility, worldId: values.worldId })
+      .set({ title: values.title, summary: values.summary, rating: values.rating, visibility: values.visibility, worldId: values.worldId, ...(values.commentsOpen === undefined ? {} : { commentsOpen: values.commentsOpen }) })
       .where(eq(stories.id, storyId))
       .returning();
     await tx.delete(storyCharacters).where(eq(storyCharacters.storyId, storyId));

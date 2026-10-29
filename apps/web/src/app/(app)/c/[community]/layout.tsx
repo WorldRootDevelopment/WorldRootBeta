@@ -71,7 +71,7 @@ export default async function CommunityLayout({ params, children }: Props) {
         <NavLink href={`${base}/characters`} className={tabClass} activeClassName="border-accent text-ink">
           Characters
         </NavLink>
-        {/* Finished scenes, read as the chapters of one book. Being tried out in the demo communities first. */}
+        {/* Finished scenes, read as the chapters of one book, where the community has switched it on. */}
         {community.chronicle ? (
           <NavLink href={`${base}/chronicle`} className={tabClass} activeClassName="border-accent text-ink">
             Chronicle

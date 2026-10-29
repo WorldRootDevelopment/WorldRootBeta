@@ -35,6 +35,7 @@ export * from './discover/service';
 export * from './platform/rich-fields';
 export * from './store/service';
 export * from './stories/service';
+export * from './stories/social';
 export * from './characters/keeping';
 export * from './messaging/channels';
 export * from './scenes/chronicle';

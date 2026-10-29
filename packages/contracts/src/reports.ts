@@ -21,7 +21,7 @@ export const REPORT_CATEGORY_KEYS = Object.keys(REPORT_CATEGORIES) as ReportCate
 
 export const isReportCategory = (value: unknown): value is ReportCategory => typeof value === 'string' && value in REPORT_CATEGORIES;
 
-export const REPORT_TARGETS = ['scene_post', 'message', 'profile', 'character', 'lfrp', 'story'] as const;
+export const REPORT_TARGETS = ['scene_post', 'message', 'profile', 'character', 'lfrp', 'story', 'story_comment'] as const;
 export type ReportTarget = (typeof REPORT_TARGETS)[number];
 
 export const MAX_REPORT_NOTE = 1_000;

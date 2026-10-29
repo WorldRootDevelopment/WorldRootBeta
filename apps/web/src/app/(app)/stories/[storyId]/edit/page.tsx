@@ -33,6 +33,7 @@ export default async function EditStoryPage({ params }: { params: Promise<{ stor
           visibility: story.visibility as StoryVisibility,
           worldId: story.worldId,
           characterIds: view.characters.map((character) => character.id),
+          commentsOpen: story.commentsOpen,
         }}
       />
     </>

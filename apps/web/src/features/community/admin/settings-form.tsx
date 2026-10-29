@@ -17,6 +17,7 @@ interface SettingsValues {
   requireCharacterApproval: boolean;
   dndMode: boolean;
   maxRating: string;
+  chronicle: boolean;
 }
 
 interface SettingsFormProps {
@@ -45,7 +46,7 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
       accentHue: hue,
       listed: form.get('listed') === 'on',
       ...(community
-        ? { rules: form.get('rules'), requireCharacterApproval: form.get('requireCharacterApproval') === 'on', dndMode: form.get('dndMode') === 'on', maxRating: form.get('maxRating') }
+        ? { rules: form.get('rules'), requireCharacterApproval: form.get('requireCharacterApproval') === 'on', dndMode: form.get('dndMode') === 'on', maxRating: form.get('maxRating'), chronicle: form.get('chronicle') === 'on' }
         : { slug: form.get('slug') }),
     };
     setPending(true);
@@ -156,6 +157,15 @@ export function CommunitySettingsForm({ community }: SettingsFormProps) {
       {community ? (
         <fieldset className="flex flex-col">
           <legend className="mb-1 text-sm font-medium text-ink">Play Style</legend>
+          <label className={checkRow}>
+            <input type="checkbox" name="chronicle" defaultChecked={community.chronicle} className="mt-0.5 size-5 shrink-0 accent-accent" />
+            <span>
+              The Chronicle
+              <span className="block text-ink-muted">
+                Every scene finished here becomes a chapter of one ongoing book, read in order from a Chronicle tab.
+              </span>
+            </span>
+          </label>
           <label className="flex flex-col gap-1.5 py-2 text-sm text-ink">
             <span className="font-medium">Highest Scene Rating</span>
             <select

@@ -1,6 +1,6 @@
-import { index, integer, jsonb, pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, jsonb, pgTable, primaryKey, text, uuid } from 'drizzle-orm/pg-core';
 import { characters } from './characters';
-import { createdAt, id, updatedAt } from './columns';
+import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { users } from './identity';
 import { contentRating } from './scenes';
 import { worlds } from './worlds';
@@ -23,6 +23,8 @@ export const stories = pgTable(
     visibility: text('visibility').notNull().default('private'),
     // One of the writer's own library worlds, if the story is set in one.
     worldId: uuid('world_id').references(() => worlds.id, { onDelete: 'set null' }),
+    // Readers may comment on its chapters. The writer can close comments.
+    commentsOpen: boolean('comments_open').notNull().default(true),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -61,4 +63,39 @@ export const storyCharacters = pgTable(
       .references(() => characters.id, { onDelete: 'cascade' }),
   },
   (t) => [primaryKey({ columns: [t.storyId, t.characterId] }), index('story_characters_character_idx').on(t.characterId)],
+);
+
+/** Kudos: one reader saying they liked a story. One per reader per story. */
+export const storyKudos = pgTable(
+  'story_kudos',
+  {
+    storyId: uuid('story_id')
+      .notNull()
+      .references(() => stories.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.storyId, t.userId] })],
+);
+
+/** A reader's comment on one chapter. A removed comment is kept, unseen, for staff looking into a report. */
+export const storyComments = pgTable(
+  'story_comments',
+  {
+    id: id(),
+    storyId: uuid('story_id')
+      .notNull()
+      .references(() => stories.id, { onDelete: 'cascade' }),
+    chapterId: uuid('chapter_id')
+      .notNull()
+      .references(() => storyChapters.id, { onDelete: 'cascade' }),
+    authorUserId: uuid('author_user_id').references(() => users.id, { onDelete: 'set null' }),
+    body: text('body').notNull(),
+    createdAt: createdAt(),
+    removedAt: timestamptz('removed_at'),
+    removedByUserId: uuid('removed_by_user_id').references(() => users.id, { onDelete: 'set null' }),
+  },
+  (t) => [index('story_comments_chapter_idx').on(t.chapterId, t.createdAt)],
 );

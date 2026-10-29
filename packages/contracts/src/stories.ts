@@ -32,6 +32,8 @@ export const storyInputSchema = z.object({
   worldId: z.uuid().nullish().transform((value) => value ?? null),
   /** The writer's own library characters who appear in it. */
   characterIds: z.array(z.uuid()).max(50, 'Tag at most 50 characters.').default([]),
+  /** Readers may comment. Left out, it stays as it is. */
+  commentsOpen: z.boolean().optional(),
 });
 
 export type StoryInput = z.input<typeof storyInputSchema>;

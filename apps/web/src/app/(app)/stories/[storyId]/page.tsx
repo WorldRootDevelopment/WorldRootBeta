@@ -1,5 +1,5 @@
 import { CONTENT_RATING_LABELS, STORY_VISIBILITY_LABELS, type StoryVisibility } from '@worldroot/contracts';
-import { getStory } from '@worldroot/core';
+import { getKudos, getStory } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import { Download, PenLine } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -8,6 +8,7 @@ import { cache } from 'react';
 import { Breadcrumbs } from '@/features/shell/prose';
 import { ReportButton } from '@/features/moderation/report-client';
 import { AddChapterButton, ChapterControls } from '@/features/stories/story-client';
+import { KudosButton } from '@/features/stories/story-social';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
@@ -19,7 +20,8 @@ interface Props {
 const loadStory = cache(async (storyId: string) => {
   const viewer = await requireViewer();
   const { db } = await database();
-  return load(() => getStory(db, viewer.actor, storyId));
+  const view = await load(() => getStory(db, viewer.actor, storyId));
+  return { ...view, kudos: await getKudos(db, viewer.actor, storyId) };
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /** A story's front page: title, summary, who is in it, and its chapters. */
 export default async function StoryPage({ params }: Props) {
   const view = await loadStory((await params).storyId);
-  const { story, isOwner, author, world, characters, chapters, wordCount } = view;
+  const { story, isOwner, author, world, characters, chapters, wordCount, kudos } = view;
   const chapterName = (chapter: { title: string | null }, index: number) => chapter.title || `Chapter ${index + 1}`;
 
   return (
@@ -90,6 +92,7 @@ export default async function StoryPage({ params }: Props) {
             <Download className="size-4" aria-hidden="true" />
             Download
           </a>
+          {story.visibility === 'private' ? null : <KudosButton storyId={story.id} count={kudos.count} mine={kudos.mine} canGive={!isOwner} />}
           {isOwner ? null : (
             <span className="inline-flex min-h-11 items-center px-2">
               <ReportButton targetType="story" targetId={story.id} />

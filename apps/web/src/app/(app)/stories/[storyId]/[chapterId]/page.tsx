@@ -1,10 +1,11 @@
-import { getStoryChapter } from '@worldroot/core';
+import { getKudos, getStory, getStoryChapter, listChapterComments } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import { PenLine } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { cache } from 'react';
 import { ReportButton } from '@/features/moderation/report-client';
+import { Comments, KudosButton } from '@/features/stories/story-social';
 import { load } from '@/lib/load';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
@@ -16,7 +17,11 @@ interface Props {
 const loadChapter = cache(async (storyId: string, chapterId: string) => {
   const viewer = await requireViewer();
   const { db } = await database();
-  return load(() => getStoryChapter(db, viewer.actor, storyId, chapterId));
+  const view = await load(() => getStoryChapter(db, viewer.actor, storyId, chapterId));
+  const { story } = await getStory(db, viewer.actor, storyId);
+  // A private story has no readers but its writer, so nothing to give or say.
+  const social = story.visibility === 'private' ? null : await Promise.all([getKudos(db, viewer.actor, storyId), listChapterComments(db, viewer.actor, storyId, chapterId)]);
+  return { ...view, commentsOpen: story.commentsOpen, kudos: social?.[0] ?? null, comments: social?.[1] ?? null };
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -66,6 +71,12 @@ export default async function ReadChapterPage({ params }: Props) {
         <p className="mt-10 text-center text-ink-muted">Nothing written here yet.</p>
       )}
 
+      {view.kudos && !view.next ? (
+        <p className="mt-12 flex justify-center">
+          <KudosButton storyId={storyId} count={view.kudos.count} mine={view.kudos.mine} canGive={!view.story.isOwner} />
+        </p>
+      ) : null}
+
       <footer className="mt-14 border-t border-line pt-8">
         <nav aria-label="Chapters" className="flex flex-wrap items-stretch justify-between gap-4">
           {view.previous ? (
@@ -88,6 +99,16 @@ export default async function ReadChapterPage({ params }: Props) {
           )}
         </nav>
       </footer>
+
+      {view.comments ? (
+        <Comments
+          storyId={storyId}
+          chapterId={chapterId}
+          comments={view.comments.map((comment) => ({ ...comment, createdAt: comment.createdAt.toISOString() }))}
+          canComment={view.commentsOpen || view.story.isOwner}
+          closedNote={view.commentsOpen ? null : 'The writer has closed comments on this story.'}
+        />
+      ) : null}
     </article>
   );
 }
