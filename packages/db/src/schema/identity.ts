@@ -107,6 +107,9 @@ export const profiles = pgTable('profiles', {
   themeTo: text('theme_to'),
   // The direction the two colors run in, in degrees.
   themeAngle: integer('theme_angle').notNull().default(135),
+  // What brought them to WorldRoot, from the question asked when the account was set up: 'roleplay', 'write',
+  // 'keep' or 'all'. Shapes what Home shows first. Null when they did not say.
+  intent: text('intent'),
   // Player roles: what this person says about themselves in every community, as `group:option` keys
   // from the registry in @worldroot/contracts.
   playerRoles: jsonb('player_roles').notNull().default([]),

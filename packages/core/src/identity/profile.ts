@@ -20,6 +20,7 @@ const toProfile = (row: typeof profiles.$inferSelect, held: readonly string[] | 
   bannerId: row.bannerMediaId,
   accentHue: row.accentHue,
   theme: row.themeFrom && row.themeTo ? { from: row.themeFrom, to: row.themeTo, angle: row.themeAngle } : null,
+  intent: row.intent,
   playerRoles: toPlayerRoles(row.playerRoles),
   links: showsLinks(held) ? toProfileLinks(row.links) : [],
   website: showsLinks(held) ? row.website : null,
@@ -56,7 +57,7 @@ export async function createProfile(db: Db, actor: Actor, input: CreateProfileIn
     for (const issue of parsed.error.issues) fields[String(issue.path[0] ?? 'form')] ??= issue.message;
     throw new DomainError('invalid_input', 'Check the highlighted fields.', { fields });
   }
-  const { handle, displayName } = parsed.data;
+  const { handle, displayName, intent } = parsed.data;
 
   return db.transaction(async (tx) => {
     if (await getProfile(tx, actor.userId)) {
@@ -73,6 +74,7 @@ export async function createProfile(db: Db, actor: Actor, input: CreateProfileIn
         handle,
         handleLower: handle.toLowerCase(),
         displayName,
+        intent: intent ?? null,
         adultConfirmedAt: new Date(),
       })
       .returning();

@@ -1,4 +1,4 @@
-import { index, integer, jsonb, pgEnum, pgTable, primaryKey, text, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
+import { boolean, index, integer, jsonb, pgEnum, pgTable, primaryKey, text, unique, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz, updatedAt } from './columns';
 import { communities } from './community';
 import { users } from './identity';
@@ -25,6 +25,10 @@ export const characters = pgTable(
       onDelete: 'set null',
     }),
     copiedAt: timestamptz('copied_at'),
+    // Set on a library original its player has chosen to share: anyone signed in can open its page.
+    shared: boolean('shared').notNull().default(false),
+    // Notes about the character that only its player ever sees.
+    privateNotes: text('private_notes'),
     // The writer's own labels for sorting their library, such as "Main Cast" or "Fantasy". Only used on library originals.
     tags: jsonb('tags').$type<string[]>().notNull().default([]),
     // Null on library originals, which no one approves.
@@ -88,4 +92,24 @@ export const characterImages = pgTable(
     createdAt: createdAt(),
   },
   (t) => [primaryKey({ columns: [t.characterId, t.mediaId] })],
+);
+
+/**
+ * How two of one person's characters are related, in their own words: "Siblings", "Rivals". One row
+ * per pair, shown the same on both characters' pages. Both are library originals of the same player.
+ */
+export const characterRelationships = pgTable(
+  'character_relationships',
+  {
+    id: id(),
+    characterId: uuid('character_id')
+      .notNull()
+      .references(() => characters.id, { onDelete: 'cascade' }),
+    otherCharacterId: uuid('other_character_id')
+      .notNull()
+      .references(() => characters.id, { onDelete: 'cascade' }),
+    label: text('label').notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [unique('character_relationships_pair').on(t.characterId, t.otherCharacterId), index('character_relationships_other_idx').on(t.otherCharacterId)],
 );

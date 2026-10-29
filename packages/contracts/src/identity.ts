@@ -26,14 +26,24 @@ export const profileThemeSchema = z.object({
 
 export type ProfileTheme = z.infer<typeof profileThemeSchema>;
 
+/** What someone came to WorldRoot for, asked once when the account is set up. */
+export const INTENTS = {
+  roleplay: 'Roleplay With Other People',
+  write: 'Write Stories On My Own',
+  keep: 'Keep My Characters In One Place',
+  all: 'A Bit Of Everything',
+} as const;
+export type Intent = keyof typeof INTENTS;
+
 export const createProfileSchema = z.object({
   handle: handleSchema,
   displayName: z.string().trim().min(1, 'Enter a display name.').max(50, 'Use at most 50 characters.'),
   // WorldRoot is 18+. Only the confirmation is recorded, never a date of birth.
   adultConfirmed: z.literal(true, { error: 'You must confirm that you are 18 or older.' }),
+  intent: z.enum(Object.keys(INTENTS) as [Intent, ...Intent[]]).nullish(),
 });
 
-export type CreateProfileInput = z.infer<typeof createProfileSchema>;
+export type CreateProfileInput = z.input<typeof createProfileSchema>;
 
 export const profileSchema = z.object({
   userId: z.string(),
@@ -64,6 +74,8 @@ export const profileSchema = z.object({
   website: z.string().nullable(),
   /** A short line shown under their name. */
   status: z.string().nullable(),
+  /** What brought them here, if they said. Shapes their own Home. */
+  intent: z.string().nullable(),
   /** How the site looks for them. A key from the site theme registry; the default unless the account has Heartwood. */
   siteTheme: z.string(),
   /** How their dice look when they roll. A key from the dice theme registry. */

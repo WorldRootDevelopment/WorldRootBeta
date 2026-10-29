@@ -1,6 +1,6 @@
 'use client';
 
-import { HANDLE_MAX, HANDLE_MIN, type ApiError } from '@worldroot/contracts';
+import { HANDLE_MAX, HANDLE_MIN, INTENTS, type ApiError } from '@worldroot/contracts';
 import { Button, TextField } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
@@ -25,6 +25,7 @@ export function OnboardingForm({ next }: { next: string }) {
         handle: form.get('handle'),
         displayName: form.get('displayName'),
         adultConfirmed: form.get('adultConfirmed') === 'on',
+        intent: form.get('intent') || null,
       }),
     });
 
@@ -61,6 +62,17 @@ export function OnboardingForm({ next }: { next: string }) {
         error={fields.displayName}
         required
       />
+
+      <fieldset className="flex flex-col">
+        <legend className="mb-1 text-sm font-medium text-ink">What Brings You Here?</legend>
+        <p className="mb-1 text-sm text-ink-muted">Optional. It decides what your Home shows first. Everything is open to you either way.</p>
+        {Object.entries(INTENTS).map(([key, label]) => (
+          <label key={key} className="flex min-h-11 items-center gap-3 text-sm text-ink">
+            <input type="radio" name="intent" value={key} className="size-5 shrink-0 accent-accent" />
+            {label}
+          </label>
+        ))}
+      </fieldset>
 
       <div className="flex flex-col gap-1.5">
         <label className="flex min-h-11 items-start gap-3 text-sm text-ink">

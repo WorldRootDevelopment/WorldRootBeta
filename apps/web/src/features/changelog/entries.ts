@@ -14,6 +14,17 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-29-character-keeping',
+    date: '2026-10-29',
+    title: 'Share Your Characters',
+    items: [
+      'Share a character from your library: anyone signed in can open its page, and it shows on your profile. Find it on the character’s edit page.',
+      'Say how your characters are related, such as Siblings or Rivals. It shows on both of their pages.',
+      'Keep private notes on a character that only you can see.',
+      'New accounts are asked what brings them to WorldRoot, and Home puts stories and characters first for people who came to write on their own.',
+    ],
+  },
+  {
     id: '2026-10-29-your-data',
     date: '2026-10-29',
     title: 'Download Your Data',

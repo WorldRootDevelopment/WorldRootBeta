@@ -1,4 +1,4 @@
-import { getCharacterGallery, getCharacterView, listCharacterStories } from '@worldroot/core';
+import { getCharacterGallery, getCharacterView, listCharacterStories, listRelationships } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -23,8 +23,12 @@ const loadCharacter = cache(async (characterId: string) => {
   const { db } = await database();
   // The view is refused for anyone who may not see the character, so the gallery is read only after it.
   const view = await load(() => getCharacterView(db, viewer.actor, characterId));
-  const [gallery, stories] = await Promise.all([getCharacterGallery(db, view.character), listCharacterStories(db, viewer.actor, view.character.sourceCharacterId ?? view.character.id)]);
-  return { ...view, gallery, stories };
+  const [gallery, stories, relationships] = await Promise.all([
+    getCharacterGallery(db, view.character),
+    listCharacterStories(db, viewer.actor, view.character.sourceCharacterId ?? view.character.id),
+    view.community ? [] : listRelationships(db, viewer.actor, view.character.id),
+  ]);
+  return { ...view, gallery, stories, relationships, mine: view.character.playerUserId === viewer.actor.userId };
 });
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -32,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CharacterPage({ params }: Props) {
-  const { character, community, customFields, sourceName, canEdit, gallery, stories } = await loadCharacter((await params).characterId);
+  const { character, community, customFields, sourceName, canEdit, gallery, stories, relationships, mine } = await loadCharacter((await params).characterId);
 
   const facts = [
     { label: 'Pronouns', value: character.pronouns },
@@ -80,7 +84,11 @@ export default async function CharacterPage({ params }: Props) {
               ? sourceName
                 ? `${community.name}'s copy of your character ${sourceName}. Changes here do not reach your library.`
                 : `A character in ${community.name}.`
-              : 'An original in your library.'}
+              : mine
+                ? character.shared
+                  ? 'An original in your library, shared with everyone signed in.'
+                  : 'An original in your library. Only you can see it.'
+                : 'A shared character.'}
           </p>
         </div>
         {canEdit ? (
@@ -120,6 +128,31 @@ export default async function CharacterPage({ params }: Props) {
             <section>
               <SectionHeading>Gallery</SectionHeading>
               <CharacterGallery name={character.name} images={gallery.images} />
+            </section>
+          ) : null}
+          {relationships.length > 0 ? (
+            <section>
+              <SectionHeading>Relationships</SectionHeading>
+              <ul className="flex flex-wrap gap-2">
+                {relationships.map((relationship) => (
+                  <li key={relationship.id}>
+                    <Link
+                      href={`/characters/${relationship.other.id}`}
+                      className="inline-flex min-h-10 items-center gap-2 rounded-full border border-line-strong bg-surface-raised px-3 text-sm hover:bg-surface-sunken focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                    >
+                      <span className="font-medium text-ink">{relationship.other.name}</span>
+                      <span className="text-ink-muted">{relationship.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+          {mine && character.privateNotes ? (
+            <section>
+              <SectionHeading>Private Notes</SectionHeading>
+              <p className="max-w-[68ch] whitespace-pre-line rounded-xl border border-dashed border-line-strong px-4 py-3 text-ink">{character.privateNotes}</p>
+              <p className="mt-2 text-xs text-ink-muted">Only you can see these.</p>
             </section>
           ) : null}
           {stories.length > 0 ? (

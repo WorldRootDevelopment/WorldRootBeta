@@ -1,5 +1,5 @@
 import 'server-only';
-import { friendState, getProfileView, hasBlocked, listAchievements, listProfileStories } from '@worldroot/core';
+import { friendState, getProfileView, hasBlocked, listAchievements, listProfileStories, listSharedCharacters } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import { Globe } from 'lucide-react';
 import Link from 'next/link';
@@ -25,13 +25,14 @@ export const loadProfile = cache(async (handle: string) => {
   const viewer = await requireViewer();
   const { db } = await database();
   const view = await load(() => getProfileView(db, viewer.actor, decodeURIComponent(handle)));
-  const [blocked, friendship, achievements, stories] = await Promise.all([
+  const [blocked, friendship, achievements, stories, shared] = await Promise.all([
     view.isSelf ? false : hasBlocked(db, viewer.actor, view.profile.userId),
     view.isSelf ? ('none' as const) : friendState(db, viewer.actor.userId, view.profile.userId),
     listAchievements(db, view.profile.userId),
     listProfileStories(db, viewer.actor, view.profile.userId),
+    listSharedCharacters(db, view.profile.userId),
   ]);
-  return { ...view, viewerIsStaff: viewer.actor.platformRole === 'staff', blocked, friendship, achievements, stories };
+  return { ...view, viewerIsStaff: viewer.actor.platformRole === 'staff', blocked, friendship, achievements, stories, shared };
 });
 
 interface ProfileContentProps {
@@ -45,7 +46,7 @@ interface ProfileContentProps {
  * the pop-up that opens when a name is clicked.
  */
 export async function ProfileContent({ handle, popup = false }: ProfileContentProps) {
-  const { profile, isSelf, joinedAt, communities, characters, blocked, viewerIsStaff, friendship, achievements, stories } = await loadProfile(handle);
+  const { profile, isSelf, joinedAt, communities, characters, blocked, viewerIsStaff, friendship, achievements, stories, shared } = await loadProfile(handle);
   const Name = popup ? 'h2' : 'h1';
   const columns = popup ? 'grid gap-3 sm:grid-cols-2' : 'grid gap-4 sm:grid-cols-2 xl:grid-cols-3';
   // Their own background, if they chose one. It fills the pop-up, or the card at the top of the full page.
@@ -209,7 +210,24 @@ export async function ProfileContent({ handle, popup = false }: ProfileContentPr
           </>
         ) : null}
 
-        <SectionHeading>Characters</SectionHeading>
+        {shared.length > 0 ? (
+          <>
+            <SectionHeading>Shared Characters</SectionHeading>
+            <ul className={columns}>
+              {shared.map((character) => (
+                <li key={character.id}>
+                  <Link href={`/characters/${character.id}`} className={cardClass}>
+                    <h3 className="font-display text-lg font-semibold text-ink">{character.name}</h3>
+                    {character.species ? <p className="text-sm text-ink-muted">{character.species}</p> : null}
+                    {character.tagline ? <p className="mt-3 font-serif italic leading-relaxed text-ink">{character.tagline}</p> : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : null}
+
+        <SectionHeading>{shared.length > 0 ? 'In Communities' : 'Characters'}</SectionHeading>
         {characters.length > 0 ? (
           <ul className={columns}>
             {characters.map((character) => (

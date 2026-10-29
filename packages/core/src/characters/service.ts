@@ -139,7 +139,8 @@ export async function addCharacterToCommunity(
       }
     }
 
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, tags: _tags, ...profile } = source;
+    // A community's copy is a profile for that community: the writer's own labels, notes and sharing stay behind.
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, tags: _tags, privateNotes: _notes, shared: _shared, ...profile } = source;
     const [copy] = await tx
       .insert(characters)
       .values({
@@ -205,8 +206,9 @@ export async function getCharacterView(db: Db, actor: Actor, characterId: string
 
   const own = character.playerUserId === actor.userId;
   if (!character.communityId) {
-    if (!own && actor.platformRole !== 'staff') throw missing;
-    return { character, community: null, customFields: [], sourceName: null, canEdit: true };
+    if (!own && !character.shared && actor.platformRole !== 'staff') throw missing;
+    // Notes are for the player alone, whoever else may look at the character.
+    return { character: own ? character : { ...character, privateNotes: null, tags: [] }, community: null, customFields: [], sourceName: null, canEdit: own };
   }
 
   const [community] = await db.select().from(communities).where(eq(communities.id, character.communityId));
@@ -230,7 +232,7 @@ export async function getCharacterView(db: Db, actor: Actor, characterId: string
   }
 
   return {
-    character,
+    character: own ? character : { ...character, privateNotes: null },
     community: { id: community.id, slug: community.slug, name: community.name, accentHue: community.accentHue },
     customFields,
     sourceName,

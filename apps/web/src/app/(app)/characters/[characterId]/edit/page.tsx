@@ -1,9 +1,10 @@
 import { PREMIUM_LIMITS } from '@worldroot/contracts';
-import { getCharacterGallery, getCharacterView, listLibraryCharacters } from '@worldroot/core';
+import { getCharacterGallery, getCharacterView, listLibraryCharacters, listRelationships } from '@worldroot/core';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CharacterForm } from '@/features/characters/character-form';
 import { GalleryEditor } from '@/features/characters/character-gallery';
+import { NotesEditor, RelationshipsEditor, SharingControl } from '@/features/characters/keeping-client';
 import { TagEditor } from '@/features/characters/tag-editor';
 import { ImageUpload } from '@/features/media/image-upload';
 import { PageHeader } from '@/features/shell/page-header';
@@ -23,7 +24,9 @@ export default async function EditCharacterPage({ params }: { params: Promise<{ 
   const gallery = await getCharacterGallery(db, character);
   // Tags belong to the writer's own library, so only the player of an original gets them.
   const ownOriginal = !community && character.playerUserId === viewer.actor.userId;
-  const knownTags = ownOriginal ? [...new Set((await listLibraryCharacters(db, viewer.actor.userId)).flatMap((other) => other.tags))].sort() : [];
+  const library = ownOriginal ? await listLibraryCharacters(db, viewer.actor.userId) : [];
+  const knownTags = [...new Set(library.flatMap((other) => other.tags))].sort();
+  const relationships = ownOriginal ? await listRelationships(db, viewer.actor, character.id) : [];
 
   return (
     <>
@@ -40,8 +43,15 @@ export default async function EditCharacterPage({ params }: { params: Promise<{ 
         <ImageUpload url={`/api/v1/characters/${character.id}/portrait`} mediaId={character.portraitMediaId} name={character.name} label="Portrait" />
       </div>
       {ownOriginal ? (
-        <div className="mb-10 max-w-2xl">
+        <div className="mb-10 flex max-w-2xl flex-col gap-10">
+          <SharingControl characterId={character.id} shared={character.shared} />
           <TagEditor characterId={character.id} tags={character.tags} known={knownTags} />
+          <RelationshipsEditor
+            characterId={character.id}
+            relationships={relationships}
+            candidates={library.filter((other) => other.id !== character.id).map(({ id, name }) => ({ id, name }))}
+          />
+          <NotesEditor characterId={character.id} notes={character.privateNotes} />
         </div>
       ) : null}
       <div className="mb-10 max-w-2xl">
