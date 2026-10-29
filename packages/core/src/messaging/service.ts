@@ -1,6 +1,6 @@
-import { isReaction, MAX_MENTIONS, mentionedHandles, REACTIONS, type BadgeKey, type CommunityBadgeKey, type PermissionKey, type Reaction } from '@worldroot/contracts';
+import { isReaction, MAX_MENTIONS, MAX_REACTION_KINDS, mentionedHandles, type BadgeKey, type CommunityBadgeKey, type PermissionKey, type Reaction } from '@worldroot/contracts';
 import { communities, communityChannels, communityMembers, conversationMembers, conversations, messageReactions, messages, profiles, roleAssignments, users, type Db } from '@worldroot/db';
-import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
 import { listMembers } from '../community/admin';
 import { isBlockedBetween } from '../identity/account';
@@ -303,14 +303,21 @@ async function tellMentioned(db: Db, actor: Actor, conversation: Conversation, m
 
 /** Adds the actor's reaction to a message, or takes it away if they had already added it. Anyone who may post there may react. */
 export async function toggleReaction(db: Db, actor: Actor, messageId: string, emoji: unknown): Promise<{ conversationId: string; added: boolean }> {
-  if (!isReaction(emoji)) throw new DomainError('invalid_input', `React with one of ${REACTIONS.join(' ')}.`);
+  if (!isReaction(emoji)) throw new DomainError('invalid_input', 'React with a single emoji.');
   const [message] = await db.select().from(messages).where(eq(messages.id, messageId));
   if (!message) throw new DomainError('not_found', 'That message does not exist.');
   const access = await requireAccess(db, actor, message.conversationId);
   if (!access.canPost || message.removedAt) throw new DomainError('forbidden', 'You cannot react to this message.');
   const key = and(eq(messageReactions.messageId, messageId), eq(messageReactions.userId, actor.userId), eq(messageReactions.emoji, emoji));
   const removed = await db.delete(messageReactions).where(key).returning({ emoji: messageReactions.emoji });
-  if (removed.length === 0) await db.insert(messageReactions).values({ messageId, userId: actor.userId, emoji }).onConflictDoNothing();
+  if (removed.length === 0) {
+    // A new kind of emoji only while the message has room for one; adding to one already there always works.
+    const kinds = await db.selectDistinct({ emoji: messageReactions.emoji }).from(messageReactions).where(eq(messageReactions.messageId, messageId));
+    if (!kinds.some((kind) => kind.emoji === emoji) && kinds.length >= MAX_REACTION_KINDS) {
+      throw new DomainError('conflict', `A message can carry ${MAX_REACTION_KINDS} different emoji. Add to one already there.`);
+    }
+    await db.insert(messageReactions).values({ messageId, userId: actor.userId, emoji }).onConflictDoNothing();
+  }
   return { conversationId: message.conversationId, added: removed.length === 0 };
 }
 
@@ -360,7 +367,7 @@ export interface MessageRow {
   createdAt: Date;
   /** The message this one answers, as a line to show above it. */
   replyTo: { id: string; authorName: string | null; excerpt: string; removed: boolean } | null;
-  /** Each reaction with how many people added it, in the fixed order. */
+  /** Each emoji with how many people added it, in the order they were first added. */
   reactions: Array<{ emoji: Reaction; count: number; mine: boolean }>;
 }
 
@@ -388,7 +395,13 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
   const ids = page.map((row) => row.message.id);
   const replyIds = [...new Set(page.map((row) => row.message.replyToId).filter((id): id is string => Boolean(id)))];
   const [reactionRows, replied] = await Promise.all([
-    ids.length ? db.select({ messageId: messageReactions.messageId, emoji: messageReactions.emoji, userId: messageReactions.userId }).from(messageReactions).where(inArray(messageReactions.messageId, ids)) : [],
+    ids.length
+      ? db
+          .select({ messageId: messageReactions.messageId, emoji: messageReactions.emoji, userId: messageReactions.userId })
+          .from(messageReactions)
+          .where(inArray(messageReactions.messageId, ids))
+          .orderBy(asc(messageReactions.createdAt))
+      : [],
     replyIds.length
       ? db
           .select({ id: messages.id, body: messages.body, removedAt: messages.removedAt, authorName: profiles.displayName })
@@ -399,10 +412,10 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
   ]);
   const answered = new Map(replied.map((row) => [row.id, row]));
   const reactionsOf = (messageId: string) =>
-    REACTIONS.map((emoji) => {
+    [...new Set(reactionRows.filter((row) => row.messageId === messageId).map((row) => row.emoji))].map((emoji) => {
       const these = reactionRows.filter((row) => row.messageId === messageId && row.emoji === emoji);
       return { emoji, count: these.length, mine: these.some((row) => row.userId === actor.userId) };
-    }).filter((reaction) => reaction.count > 0);
+    });
 
   // In a community space, each author's standing there is shown beside their name.
   const standing =

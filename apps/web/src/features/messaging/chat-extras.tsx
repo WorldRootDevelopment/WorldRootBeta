@@ -1,9 +1,9 @@
 'use client';
 
-import { REACTIONS, type Reaction } from '@worldroot/contracts';
+import { isReaction, QUICK_REACTIONS, type Reaction } from '@worldroot/contracts';
 import { CornerUpLeft, SmilePlus, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, type FormEvent, type ReactNode } from 'react';
 import { send } from '@/features/scenes/api';
 
 export interface ReplyTarget {
@@ -74,13 +74,25 @@ export function Reactions({ messageId, reactions, canReact }: ReactionsProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [other, setOther] = useState('');
+  const [problem, setProblem] = useState<string | null>(null);
 
   const toggle = async (emoji: Reaction) => {
     setBusy(true);
-    setOpen(false);
+    setProblem(null);
     const result = await send('POST', `/api/v1/messages/${messageId}/reactions`, { emoji });
     setBusy(false);
-    if (result.ok) router.refresh();
+    if (!result.ok) return setProblem(result.message);
+    setOpen(false);
+    setOther('');
+    router.refresh();
+  };
+
+  const addOther = (event: FormEvent) => {
+    event.preventDefault();
+    const emoji = other.trim();
+    if (!isReaction(emoji)) return setProblem('Type or paste a single emoji.');
+    void toggle(emoji);
   };
 
   if (reactions.length === 0 && !canReact) return null;
@@ -112,8 +124,9 @@ export function Reactions({ messageId, reactions, canReact }: ReactionsProps) {
             <span className="sr-only">Add A Reaction</span>
           </button>
           {open ? (
-            <span role="group" aria-label="Reactions" className="wr-popover absolute bottom-full left-0 z-10 mb-1 flex gap-0.5 rounded-xl p-1">
-              {REACTIONS.map((emoji) => (
+            <span className="wr-popover absolute bottom-full left-0 z-10 mb-1 flex w-max flex-col gap-1 rounded-xl p-1.5">
+            <span role="group" aria-label="Quick Reactions" className="flex gap-0.5">
+              {QUICK_REACTIONS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
@@ -124,6 +137,30 @@ export function Reactions({ messageId, reactions, canReact }: ReactionsProps) {
                   {emoji}
                 </button>
               ))}
+            </span>
+            {/* Any other emoji, from the device's own emoji keyboard: Windows key and full stop, Control Command and Space on a Mac, or the emoji key on a phone. */}
+            <form onSubmit={addOther} className="flex items-center gap-1">
+              <label className="sr-only" htmlFor={`react-${messageId}`}>
+                Any Emoji
+              </label>
+              <input
+                id={`react-${messageId}`}
+                value={other}
+                onChange={(event) => setOther(event.target.value)}
+                placeholder="Any Emoji…"
+                maxLength={32}
+                autoComplete="off"
+                className="min-h-9 w-36 rounded-lg border border-line-strong bg-surface-raised px-2 text-base text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus"
+              />
+              <button type="submit" disabled={busy || !other.trim()} className="min-h-9 rounded-lg px-2 text-sm font-medium text-ink hover:bg-surface-sunken disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+                Add
+              </button>
+            </form>
+            {problem ? (
+              <span role="alert" className="px-1 text-xs text-danger">
+                {problem}
+              </span>
+            ) : null}
             </span>
           ) : null}
         </span>

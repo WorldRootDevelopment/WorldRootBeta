@@ -65,26 +65,38 @@ describe('chat replies, reactions and mentions', () => {
     expect((await listMessages(db, thea, lounge)).messages.find((message) => message.id === answer.id)?.replyTo).toMatchObject({ removed: true, excerpt: '' });
   });
 
-  it('reactions are a fixed set, one of each per person, and counted', async () => {
+  it('reactions are any single emoji, one of each per person, counted in the order first added', async () => {
     const { db } = connection;
     const news = await sendMessage(db, thea, lounge, 'The event starts Friday.');
     expect(await toggleReaction(db, marcus, news.id, '🎉')).toMatchObject({ added: true });
     await toggleReaction(db, quiet, news.id, '🎉');
     await toggleReaction(db, marcus, news.id, '👍');
-    await expect(toggleReaction(db, marcus, news.id, '🍕')).rejects.toMatchObject({ code: 'invalid_input' });
+    // Any emoji the device can type, including skin tones, flags and joined ones. Never words or two at once.
+    await toggleReaction(db, quiet, news.id, '🧙🏽‍♀️');
+    await toggleReaction(db, quiet, news.id, '🇯🇵');
+    for (const bad of ['lol', '👍👍', '👍 ', ':)', '', '<b>']) await expect(toggleReaction(db, marcus, news.id, bad)).rejects.toMatchObject({ code: 'invalid_input' });
     // A visitor who has only looked in on a listed community can read but not react.
     await expect(toggleReaction(db, outsider, news.id, '👍')).rejects.toMatchObject({ code: 'forbidden' });
 
     const seen = async (actor: Actor) => (await listMessages(db, actor, lounge)).messages.find((message) => message.id === news.id)!.reactions;
     expect(await seen(marcus)).toEqual([
-      { emoji: '👍', count: 1, mine: true },
       { emoji: '🎉', count: 2, mine: true },
+      { emoji: '👍', count: 1, mine: true },
+      { emoji: '🧙🏽‍♀️', count: 1, mine: false },
+      { emoji: '🇯🇵', count: 1, mine: false },
     ]);
     expect(await toggleReaction(db, marcus, news.id, '🎉')).toMatchObject({ added: false });
-    expect(await seen(thea)).toEqual([
-      { emoji: '👍', count: 1, mine: false },
+    expect((await seen(thea)).slice(0, 2)).toEqual([
       { emoji: '🎉', count: 1, mine: false },
+      { emoji: '👍', count: 1, mine: false },
     ]);
+
+    // A message has room for twenty different emoji; after that people add to the ones already there.
+    const busy = await sendMessage(db, thea, lounge, 'React to this.');
+    const twenty = ['😀', '😁', '😃', '😄', '😅', '😆', '😉', '😊', '😋', '😎', '😍', '😘', '🥰', '🙂', '🤗', '🤩', '🤔', '🫡', '🤨', '😐'];
+    for (const emoji of twenty) await toggleReaction(db, marcus, busy.id, emoji);
+    await expect(toggleReaction(db, quiet, busy.id, '🦊')).rejects.toMatchObject({ code: 'conflict' });
+    expect(await toggleReaction(db, quiet, busy.id, '😀')).toMatchObject({ added: true });
   });
 
   it('mentions notify members who can read the channel, unless they asked not to be pinged', async () => {

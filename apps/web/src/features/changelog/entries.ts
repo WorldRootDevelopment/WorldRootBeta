@@ -18,7 +18,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-10-29',
     title: 'Replies, Reactions And Mentions In Chat',
     items: [
-      'Reply to a message in a chat channel, and react to it with one of eight emoji.',
+      'Reply to a message in a chat channel, and react to it with any emoji: pick a favorite, or type any other from your emoji keyboard.',
       'Write @ and someone’s handle to mention them: they get a notification, unless they have chosen the player role Do Not Ping. Mentions of you are highlighted.',
       'People are told when someone replies to them.',
     ],

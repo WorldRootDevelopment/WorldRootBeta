@@ -50,13 +50,28 @@ export const channelInputSchema = z.object({
 
 export type ChannelInput = z.input<typeof channelInputSchema>;
 
-/**
- * The reactions anyone can add to a chat message. A fixed set keeps them
- * readable everywhere and leaves no room to spell things out in emoji.
- */
-export const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀'] as const;
-export type Reaction = (typeof REACTIONS)[number];
-export const isReaction = (value: unknown): value is Reaction => typeof value === 'string' && (REACTIONS as readonly string[]).includes(value);
+/** The reactions offered first, one press away. Any other emoji can be added too. */
+export const QUICK_REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀'] as const;
+
+/** A reaction: exactly one emoji, as the device's own emoji keyboard types it. */
+export type Reaction = string;
+
+// One emoji from the Unicode list, counting skin tones, flags and joined emoji such as families as one.
+// Built at run time because the `v` flag it needs is newer than the language level the code is checked against.
+// A browser too old for it falls back to a looser check; the server, which has the final say, always has it.
+const ONE_EMOJI = (() => {
+  try {
+    return new RegExp('^\\p{RGI_Emoji}$', 'v');
+  } catch {
+    return /^(?:\p{Extended_Pictographic}|\p{Regional_Indicator}{2})(?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|\p{Emoji_Component}|‍|️)*$/u;
+  }
+})();
+
+/** Whether a value is one emoji and nothing else: no letters, no spaces, no two emoji together. */
+export const isReaction = (value: unknown): value is Reaction => typeof value === 'string' && value.length <= 32 && ONE_EMOJI.test(value);
+
+/** The most different emoji one message can carry, so a message cannot be buried under them. */
+export const MAX_REACTION_KINDS = 20;
 
 /** The most people one message can mention and notify. More are still linked, just not told. */
 export const MAX_MENTIONS = 10;
