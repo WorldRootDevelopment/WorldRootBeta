@@ -53,9 +53,9 @@ export async function changeHandle(db: Db, actor: Actor, input: unknown): Promis
 }
 
 /** The account details a person may see about themselves. */
-export async function getAccount(db: Db, actor: Actor): Promise<{ email: string; handleChangedAt: Date | null; nextHandleChange: Date | null }> {
+export async function getAccount(db: Db, actor: Actor): Promise<{ email: string; emailVerified: boolean; handleChangedAt: Date | null; nextHandleChange: Date | null }> {
   const [row] = await db
-    .select({ email: users.email, handleChangedAt: profiles.handleChangedAt })
+    .select({ email: users.email, emailVerified: users.emailVerified, handleChangedAt: profiles.handleChangedAt })
     .from(users)
     .leftJoin(profiles, eq(profiles.userId, users.id))
     .where(eq(users.id, actor.userId));
@@ -63,6 +63,7 @@ export async function getAccount(db: Db, actor: Actor): Promise<{ email: string;
   const next = row.handleChangedAt ? new Date(row.handleChangedAt.getTime() + HANDLE_COOLDOWN_DAYS * 86_400_000) : null;
   return {
     email: row.email,
+    emailVerified: row.emailVerified,
     handleChangedAt: row.handleChangedAt,
     nextHandleChange: next && next.getTime() > Date.now() && actor.platformRole !== 'staff' ? next : null,
   };

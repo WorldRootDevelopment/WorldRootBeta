@@ -1,6 +1,7 @@
 import { accounts, newId, sessions, users, verifications, type Db } from '@worldroot/db';
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { passwordResetEmail, undeliverable, verificationEmail, type SendEmail } from '../platform/email';
 
 interface OAuthCredentials {
   clientId: string;
@@ -20,6 +21,8 @@ export interface AuthConfig {
    * Name only headers the host itself sets and overwrites; a header a visitor can send is a way round the limit.
    */
   clientIpHeaders?: string[];
+  /** How email leaves the server. Without it, no verification or reset email is sent. */
+  sendEmail?: SendEmail;
   /** Framework plugins, such as the Next.js cookie plugin, supplied by the app. */
   plugins?: BetterAuthOptions['plugins'];
 }
@@ -36,6 +39,25 @@ export function createAuth(config: AuthConfig) {
     emailAndPassword: {
       enabled: true,
       minPasswordLength: 10,
+      // Signing in does not wait for the address to be confirmed: an unconfirmed account works, it just cannot
+      // get back in by email if the password is lost.
+      requireEmailVerification: false,
+      sendResetPassword: async ({ user, url }) => {
+        if (!config.sendEmail || undeliverable(user.email)) return;
+        await config.sendEmail(passwordResetEmail(user.email, user.name, url));
+      },
+      resetPasswordTokenExpiresIn: 60 * 60,
+      // A new password signs every device out, in case the old one was what someone else was using.
+      revokeSessionsOnPasswordReset: true,
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      expiresIn: 60 * 60 * 24,
+      sendVerificationEmail: async ({ user, url }) => {
+        if (!config.sendEmail || undeliverable(user.email)) return;
+        await config.sendEmail(verificationEmail(user.email, user.name, url));
+      },
     },
     socialProviders: {
       ...(config.discord ? { discord: config.discord } : {}),
@@ -45,8 +67,9 @@ export function createAuth(config: AuthConfig) {
       accountLinking: {
         enabled: true,
         // Signing in with Discord or Google never quietly joins itself to an existing account that happens to
-        // have the same email. WorldRoot does not verify email addresses, so anyone could have made that
-        // account. A provider is connected only from Settings, by someone already signed in.
+        // have the same email. Many accounts were made before WorldRoot confirmed email addresses, and anyone
+        // could have made one with someone else's address. A provider is connected only from Settings, by someone
+        // already signed in.
         disableImplicitLinking: true,
         // The person connecting is already signed in, so their Discord email need not match.
         allowDifferentEmails: true,

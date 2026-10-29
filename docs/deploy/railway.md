@@ -51,6 +51,8 @@ WorldRoot service → **Variables**. Add each of these:
 | `WORLDROOT_CLIENT_IP_HEADER` | `x-real-ip` (lets the site tell visitors apart when limiting sign-in attempts) |
 | `WORLDROOT_ADMIN_EMAIL` | the email you will sign in with |
 | `WORLDROOT_ADMIN_PASSWORD` | a **new** password, not one you have typed into a chat |
+| `RESEND_API_KEY` | optional but needed for password resets: an API key from resend.com |
+| `WORLDROOT_EMAIL_FROM` | the sender, such as `WorldRoot <hello@yourdomain.com>`, on a domain verified with Resend |
 | `WORLDROOT_DONATE_URL` | optional: the `https://` address of your page on a donation service. It becomes the Donate button on `/support` |
 | `WORLDROOT_CONTACT_EMAIL` | an address people can write to about their data. It is shown publicly on the privacy policy and the terms |
 

@@ -1,4 +1,5 @@
 import 'server-only';
+import { sendEmail } from './email';
 import { randomBytes } from 'node:crypto';
 import {
   connect,
@@ -125,6 +126,7 @@ export function getAuth(): Promise<Auth> {
         .map((name) => name.trim().toLowerCase())
         .filter(Boolean),
       ...oauthProviders,
+      sendEmail,
     });
   })();
   return globals.__worldrootAuth;

@@ -5,9 +5,9 @@ import { database } from '@/lib/server';
 
 /** Send a message to a conversation or community space. */
 export const POST = route<{ conversationId: string }>(async ({ request, actor, params }) => {
-  const { body } = await readJson(request);
+  const { body, replyToId } = await readJson(request);
   const { db } = await database();
-  const message = await sendMessage(db, actor, params.conversationId, body);
+  const message = await sendMessage(db, actor, params.conversationId, body, replyToId);
   publish({ type: 'message.created', conversationId: params.conversationId });
   return Response.json({ message: { id: message.id } }, { status: 201 });
 });

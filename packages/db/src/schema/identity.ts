@@ -16,6 +16,9 @@ export const users = pgTable('users', {
   platformRole: platformRole('platform_role').notNull().default('user'),
   // Set while the account is a Premium member. There is no billing yet, so staff set this by hand.
   premiumSince: timestamptz('premium_since'),
+  // When Heartwood ends. Heartwood is a monthly membership, so a paid month moves this on by a month.
+  // Null with premiumSince set means it has no end, as for staff gifts and lifetime rewards.
+  premiumUntil: timestamptz('premium_until'),
   // Set while WorldRoot staff have suspended the account. A suspended account can do nothing until it is restored.
   suspendedAt: timestamptz('suspended_at'),
   suspensionReason: text('suspension_reason'),

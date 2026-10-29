@@ -1,12 +1,12 @@
-import type { BadgeKey, CommunityBadgeKey, PermissionKey } from '@worldroot/contracts';
-import { communities, communityChannels, conversationMembers, conversations, messages, profiles, roleAssignments, type Db } from '@worldroot/db';
+import { isReaction, MAX_MENTIONS, mentionedHandles, REACTIONS, type BadgeKey, type CommunityBadgeKey, type PermissionKey, type Reaction } from '@worldroot/contracts';
+import { communities, communityChannels, communityMembers, conversationMembers, conversations, messageReactions, messages, profiles, roleAssignments, users, type Db } from '@worldroot/db';
 import { and, desc, eq, inArray, lt, ne, sql } from 'drizzle-orm';
 import { communityGrants, isMember } from '../community/service';
 import { listMembers } from '../community/admin';
 import { isBlockedBetween } from '../identity/account';
 import { knowEachOther } from '../identity/friends';
 import { platformBadgesSql, toBadges } from '../identity/badges';
-import { communityMemberIds, notifyMany } from '../notifications/service';
+import { communityMemberIds, notify, notifyMany } from '../notifications/service';
 import { recordAudit } from '../platform/audit';
 import { can, type Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -184,7 +184,7 @@ export async function startConversation(db: Db, actor: Actor, input: { handles: 
 }
 
 /** Sends a message. */
-export async function sendMessage(db: Db, actor: Actor, conversationId: string, body: unknown): Promise<Message> {
+export async function sendMessage(db: Db, actor: Actor, conversationId: string, body: unknown, replyToId?: unknown): Promise<Message> {
   const access = await requireAccess(db, actor, conversationId);
   if (!access.canPost) {
     const space = SPACES[access.conversation.spaceKey as SpaceKey];
@@ -221,8 +221,15 @@ export async function sendMessage(db: Db, actor: Actor, conversationId: string, 
     throw new DomainError('invalid_input', message, { fields: { body: message } });
   }
 
-  return db.transaction(async (tx) => {
-    const [message] = await tx.insert(messages).values({ conversationId, authorUserId: actor.userId, body: text }).returning();
+  // A reply answers a message still showing in the same conversation.
+  let replyTo: Message | null = null;
+  if (typeof replyToId === 'string' && replyToId) {
+    [replyTo = null] = await db.select().from(messages).where(and(eq(messages.id, replyToId), eq(messages.conversationId, conversationId)));
+    if (!replyTo || replyTo.removedAt) throw new DomainError('invalid_input', 'That message is gone, so it cannot be replied to.', { fields: { body: 'That message is gone.' } });
+  }
+
+  const sent = await db.transaction(async (tx) => {
+    const [message] = await tx.insert(messages).values({ conversationId, authorUserId: actor.userId, body: text, replyToId: replyTo?.id ?? null }).returning();
     await tx
       .update(conversations)
       .set({ lastMessageId: message!.id, lastMessageAt: message!.createdAt, ...(accepting ? { requestState: 'none' as const } : {}) })
@@ -247,6 +254,64 @@ export async function sendMessage(db: Db, actor: Actor, conversationId: string, 
     }
     return message!;
   });
+
+  // In a chat channel, the people mentioned and the person replied to are told. Never anywhere they cannot read.
+  if (conversation.kind === 'community' && conversation.spaceKey !== 'announcements') await tellMentioned(db, actor, conversation, sent, replyTo);
+  return sent;
+}
+
+/**
+ * Notifies the members a channel message mentions or answers. Only members who can read the channel are
+ * told, and anyone who has chosen the player role Do Not Ping is not told about mentions.
+ */
+async function tellMentioned(db: Db, actor: Actor, conversation: Conversation, message: Message, replyTo: Message | null): Promise<void> {
+  const handles = mentionedHandles(message.body).slice(0, MAX_MENTIONS);
+  const [channel] = await db
+    .select({ name: communityChannels.name, slug: communities.slug, communityName: communities.name })
+    .from(communityChannels)
+    .innerJoin(communities, eq(communities.id, communityChannels.communityId))
+    .where(eq(communityChannels.conversationId, conversation.id));
+  if (!channel) return;
+  const where = `#${channel.name} in ${channel.communityName}`;
+  const href = `/c/${channel.slug}/chat/${channel.name}`;
+
+  const people = handles.length
+    ? await db
+        .select({ userId: profiles.userId, platformRole: users.platformRole, playerRoles: profiles.playerRoles })
+        .from(profiles)
+        .innerJoin(users, eq(users.id, profiles.userId))
+        .innerJoin(communityMembers, and(eq(communityMembers.userId, profiles.userId), eq(communityMembers.communityId, conversation.communityId!)))
+        .where(inArray(profiles.handleLower, handles))
+    : [];
+  const canRead = async (userId: string, platformRole: 'user' | 'staff') =>
+    Boolean(await accessOf(db, { userId, platformRole }, conversation).catch(() => null));
+
+  for (const person of people) {
+    if (person.userId === actor.userId) continue;
+    const quiet = Array.isArray(person.playerRoles) && person.playerRoles.includes('pings:no');
+    if (quiet || !(await canRead(person.userId, person.platformRole))) continue;
+    await notify(db, { userId: person.userId, type: 'message.mention', groupKey: `mention:${conversation.id}`, subject: where, href, actorUserId: actor.userId, preview: message.body });
+  }
+  const answered = replyTo?.authorUserId;
+  if (answered && answered !== actor.userId && !people.some((person) => person.userId === answered)) {
+    const [author] = await db.select({ platformRole: users.platformRole }).from(users).where(eq(users.id, answered));
+    if (author && (await canRead(answered, author.platformRole))) {
+      await notify(db, { userId: answered, type: 'message.reply', groupKey: `reply:${conversation.id}`, subject: where, href, actorUserId: actor.userId, preview: message.body });
+    }
+  }
+}
+
+/** Adds the actor's reaction to a message, or takes it away if they had already added it. Anyone who may post there may react. */
+export async function toggleReaction(db: Db, actor: Actor, messageId: string, emoji: unknown): Promise<{ conversationId: string; added: boolean }> {
+  if (!isReaction(emoji)) throw new DomainError('invalid_input', `React with one of ${REACTIONS.join(' ')}.`);
+  const [message] = await db.select().from(messages).where(eq(messages.id, messageId));
+  if (!message) throw new DomainError('not_found', 'That message does not exist.');
+  const access = await requireAccess(db, actor, message.conversationId);
+  if (!access.canPost || message.removedAt) throw new DomainError('forbidden', 'You cannot react to this message.');
+  const key = and(eq(messageReactions.messageId, messageId), eq(messageReactions.userId, actor.userId), eq(messageReactions.emoji, emoji));
+  const removed = await db.delete(messageReactions).where(key).returning({ emoji: messageReactions.emoji });
+  if (removed.length === 0) await db.insert(messageReactions).values({ messageId, userId: actor.userId, emoji }).onConflictDoNothing();
+  return { conversationId: message.conversationId, added: removed.length === 0 };
 }
 
 /**
@@ -293,6 +358,10 @@ export interface MessageRow {
   /** Who removed it, when it has been removed. Its words are then withheld. */
   removedBy: 'author' | 'moderator' | null;
   createdAt: Date;
+  /** The message this one answers, as a line to show above it. */
+  replyTo: { id: string; authorName: string | null; excerpt: string; removed: boolean } | null;
+  /** Each reaction with how many people added it, in the fixed order. */
+  reactions: Array<{ emoji: Reaction; count: number; mine: boolean }>;
 }
 
 export interface MessagePage {
@@ -315,6 +384,26 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
     .orderBy(desc(messages.id))
     .limit(limit + 1);
 
+  const page = rows.slice(0, limit);
+  const ids = page.map((row) => row.message.id);
+  const replyIds = [...new Set(page.map((row) => row.message.replyToId).filter((id): id is string => Boolean(id)))];
+  const [reactionRows, replied] = await Promise.all([
+    ids.length ? db.select({ messageId: messageReactions.messageId, emoji: messageReactions.emoji, userId: messageReactions.userId }).from(messageReactions).where(inArray(messageReactions.messageId, ids)) : [],
+    replyIds.length
+      ? db
+          .select({ id: messages.id, body: messages.body, removedAt: messages.removedAt, authorName: profiles.displayName })
+          .from(messages)
+          .leftJoin(profiles, eq(profiles.userId, messages.authorUserId))
+          .where(inArray(messages.id, replyIds))
+      : [],
+  ]);
+  const answered = new Map(replied.map((row) => [row.id, row]));
+  const reactionsOf = (messageId: string) =>
+    REACTIONS.map((emoji) => {
+      const these = reactionRows.filter((row) => row.messageId === messageId && row.emoji === emoji);
+      return { emoji, count: these.length, mine: these.some((row) => row.userId === actor.userId) };
+    }).filter((reaction) => reaction.count > 0);
+
   // In a community space, each author's standing there is shown beside their name.
   const standing =
     access.conversation.kind === 'community'
@@ -324,8 +413,7 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
   return {
     ...access,
     hasEarlier: rows.length > limit,
-    messages: rows
-      .slice(0, limit)
+    messages: page
       .reverse()
       .map(({ message, authorName, authorHandle, authorBadges }) => ({
         id: message.id,
@@ -338,6 +426,14 @@ export async function listMessages(db: Db, actor: Actor, conversationId: string,
         mine: message.authorUserId === actor.userId,
         removedBy: message.removedAt ? (message.removedByUserId === message.authorUserId ? 'author' : 'moderator') : null,
         createdAt: message.createdAt,
+        replyTo: (() => {
+          const original = message.replyToId ? answered.get(message.replyToId) : undefined;
+          if (!message.replyToId) return null;
+          // A reply to something removed, or since lost, still shows that it was a reply.
+          if (!original || original.removedAt) return { id: message.replyToId, authorName: null, excerpt: '', removed: true };
+          return { id: original.id, authorName: original.authorName, excerpt: original.body.slice(0, 140), removed: false };
+        })(),
+        reactions: message.removedAt ? [] : reactionsOf(message.id),
       })),
   };
 }

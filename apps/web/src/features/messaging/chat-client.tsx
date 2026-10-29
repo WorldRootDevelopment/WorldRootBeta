@@ -4,6 +4,7 @@ import { Button } from '@worldroot/ui';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { send } from '@/features/scenes/api';
+import { ReplyBanner, useReply } from './chat-extras';
 
 /** How close to the bottom still counts as "following the conversation". */
 const FOLLOW_THRESHOLD_PX = 120;
@@ -97,15 +98,17 @@ export function ChatComposer({ conversationId, placeholder }: { conversationId: 
   const [text, setText] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { target, setTarget } = useReply();
 
   const submit = async (event?: FormEvent) => {
     event?.preventDefault();
     if (!text.trim() || pending) return;
     setPending(true);
-    const result = await send('POST', `/api/v1/conversations/${conversationId}/messages`, { body: text });
+    const result = await send('POST', `/api/v1/conversations/${conversationId}/messages`, { body: text, replyToId: target?.id });
     setPending(false);
     if (!result.ok) return setError(result.fields.body ?? result.message);
     setText('');
+    setTarget(null);
     setError(null);
     router.refresh();
     box.current?.focus();
@@ -121,12 +124,14 @@ export function ChatComposer({ conversationId, placeholder }: { conversationId: 
 
   return (
     <form onSubmit={submit}>
+      <ReplyBanner />
       <label htmlFor={`chat-${conversationId}`} className="sr-only">
         Message. Enter sends, Shift and Enter makes a new line.
       </label>
       <div className="flex items-end gap-2">
         <textarea
           ref={box}
+          data-chat-box
           id={`chat-${conversationId}`}
           value={text}
           onChange={(event) => setText(event.target.value)}

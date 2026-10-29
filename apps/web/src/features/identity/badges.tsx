@@ -1,5 +1,5 @@
 import { BADGES, COMMUNITY_BADGES, type BadgeKey, type CommunityBadgeKey } from '@worldroot/contracts';
-import { Crown, Earth, FlaskConical, Gem, Heart, Map as MapIcon, ShieldCheck, Sprout, Wrench, type LucideIcon } from 'lucide-react';
+import { Crown, Earth, FlaskConical, Gem, Heart, HeartHandshake, Map as MapIcon, ShieldCheck, Sprout, Wrench, type LucideIcon } from 'lucide-react';
 
 const pill = 'relative inline-flex shrink-0 items-center rounded-full p-1 align-middle text-[0.6875rem] font-semibold leading-none';
 
@@ -8,6 +8,7 @@ const platformIcons: Record<BadgeKey, LucideIcon> = {
   founder: Sprout,
   premium: Gem,
   early_supporter: Heart,
+  kickstarter: HeartHandshake,
   beta_tester: FlaskConical,
   worldbuilder: Earth,
   cartographer: MapIcon,

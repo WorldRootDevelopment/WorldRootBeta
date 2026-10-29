@@ -87,6 +87,7 @@ export default async function ChannelPage({ params, searchParams }: Props) {
           readOnlyNote={note}
           track={isMember}
           label={`#${channel.name}`}
+          viewerHandle={viewer.profile?.handle ?? null}
         />
         {access.canPost ? null : <p className="sr-only">You can read this channel but not post in it.</p>}
       </div>

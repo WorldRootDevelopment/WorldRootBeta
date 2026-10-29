@@ -38,6 +38,8 @@ export * from './stories/service';
 export * from './messaging/channels';
 export * from './scenes/chronicle';
 export * from './identity/plan';
+export * from './identity/codes';
+export * from './platform/email';
 export * from './media/images';
 export * from './media/service';
 export * from './media/storage';

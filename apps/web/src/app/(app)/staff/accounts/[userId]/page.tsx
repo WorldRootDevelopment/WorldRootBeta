@@ -31,6 +31,7 @@ const ACTIONS: Record<string, string> = {
   'platform.premium.revoke': 'Heartwood Taken Away',
   'platform.avatar.remove': 'Profile Picture Removed',
   'platform.banner.remove': 'Banner Removed',
+  'platform.codes.redeem': 'Redeemed A Backer Code',
   'platform.item.grant': 'Given A Store Item',
   'platform.item.revoke': 'Store Item Taken Back',
 };
@@ -108,8 +109,8 @@ export default async function StaffAccountPage({ params }: { params: Promise<{ u
       <SignOutEverywhereButton userId={account.userId} sessions={account.sessions} />
 
       <SectionHeading>Badges And Heartwood</SectionHeading>
-      <p className="mb-4 text-sm text-ink-muted">Press a label to give or take away that badge.</p>
-      <AccountControls userId={account.userId} badges={account.badges} />
+      <p className="mb-4 text-sm text-ink-muted">Heartwood is monthly: added months go on top of any time left. Press a badge to give or take it away.</p>
+      <AccountControls userId={account.userId} badges={account.badges} heartwoodUntil={account.heartwoodUntil === undefined ? undefined : account.heartwoodUntil ? account.heartwoodUntil.toLocaleDateString('en', { dateStyle: 'long' }) : null} />
 
       {/* Shown only while the store has something that can be owned. */}
       {STORE_ITEMS.length > 0 ? (

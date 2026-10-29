@@ -67,7 +67,7 @@ const GUEST_MAY = [
   /^\/api\/v1\/stories(\/[^/]+(\/chapters)?)?$/,
   /^\/api\/v1\/story-chapters\/[^/]+$/,
   /^\/api\/v1\/conversations\/[^/]+\/(messages|read)$/,
-  /^\/api\/v1\/messages\/[^/]+$/,
+  /^\/api\/v1\/messages\/[^/]+(\/reactions)?$/,
   /^\/api\/v1\/notifications\/read$/,
   /^\/api\/v1\/presence$/,
   /^\/api\/v1\/reports$/,

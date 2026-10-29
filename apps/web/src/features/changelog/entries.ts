@@ -14,6 +14,32 @@ export interface ChangelogEntry {
  */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-29-chat-replies',
+    date: '2026-10-29',
+    title: 'Replies, Reactions And Mentions In Chat',
+    items: [
+      'Reply to a message in a chat channel, and react to it with one of eight emoji.',
+      'Write @ and someone’s handle to mention them: they get a notification, unless they have chosen the player role Do Not Ping. Mentions of you are highlighted.',
+      'People are told when someone replies to them.',
+    ],
+  },
+  {
+    id: '2026-10-29-email-and-passwords',
+    date: '2026-10-29',
+    title: 'Forgot Your Password? Now You Can Reset It',
+    items: [
+      'Reset a forgotten password from the sign-in page: a link is emailed to you.',
+      'Confirm your email address under Settings, Account, so you can always get back in.',
+      'Heartwood now runs month by month, and the Store shows when yours ends.',
+    ],
+  },
+  {
+    id: '2026-10-28-backer-codes',
+    date: '2026-10-28',
+    title: 'Kickstarter Backer Rewards',
+    items: ['Backed WorldRoot on Kickstarter? Enter the code you were sent under Settings, Account, Redeem A Code, to claim Heartwood and the Kickstarter badge.'],
+  },
+  {
     id: '2026-10-16-library-tags',
     date: '2026-10-16',
     title: 'Tags And Search In Your Library',

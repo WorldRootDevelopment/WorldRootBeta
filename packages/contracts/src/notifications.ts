@@ -21,6 +21,8 @@ export const NOTIFICATION_TYPES = {
   'friend.request': { line: (who) => `${who} sent you a friend request` },
   'friend.accepted': { line: (who) => `${who} accepted your friend request` },
   'badge.granted': { line: (_who, _count, subject) => `You have a new badge: ${subject}` },
+  'message.mention': { line: (who, count, subject) => `${who} mentioned you ${times(count, '', '{n} times ')}in ${subject}`.replace('  ', ' ') },
+  'message.reply': { line: (who, _count, subject) => `${who} replied to you in ${subject}` },
 } as const satisfies Record<string, NotificationDefinition>;
 
 export type NotificationType = keyof typeof NOTIFICATION_TYPES;

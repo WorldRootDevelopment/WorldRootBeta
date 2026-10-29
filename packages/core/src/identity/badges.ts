@@ -2,6 +2,7 @@ import { BADGES, isBadgeKey, toBadges, type BadgeKey, type CommunityBadgeKey, ty
 import { profiles, userBadges, users, type Db } from '@worldroot/db';
 import { and, eq, ilike, or, sql } from 'drizzle-orm';
 import { notify } from '../notifications/service';
+import { grantHeartwood, heartwoodActive } from './plan';
 import { recordAudit } from '../platform/audit';
 import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
@@ -14,7 +15,7 @@ import { DomainError } from '../platform/errors';
 export const platformBadgesSql = sql<string[] | null>`(
   select array_remove(array[
     case when u.platform_role = 'staff' then 'staff' end,
-    case when u.premium_since is not null then 'premium' end
+    case when u.premium_since is not null and (u.premium_until is null or u.premium_until > now()) then 'premium' end
   ], null)::text[] || array(select b.badge from user_badges b where b.user_id = u.id order by b.badge)::text[]
   from users u where u.id = ${profiles.userId}
 )`;
@@ -68,23 +69,22 @@ export async function setBadge(db: Db, actor: Actor, userId: string, badge: stri
 }
 
 /**
- * Turns Heartwood on or off for an account. Staff only, and by hand for now:
- * there is no billing yet, so this is how a Heartwood account comes to exist.
+ * Gives Heartwood for a number of months (added to any left), or with no end (months null), or takes it
+ * away. Staff only, and by hand for now: there is no billing yet.
  */
-export async function setPremium(db: Db, actor: Actor, userId: string, premium: boolean): Promise<void> {
+export async function setPremium(db: Db, actor: Actor, userId: string, premium: boolean, months: number | null = null): Promise<void> {
   requireStaff(actor);
   const user = await requireUser(db, userId);
-  if (premium === Boolean(user.premiumSince)) return;
+  if (months !== null && (!Number.isInteger(months) || months < 1 || months > 120)) throw new DomainError('invalid_input', 'Give between 1 and 120 months.');
+  if (!premium && !user.premiumSince) return;
   await db.transaction(async (tx) => {
-    await tx.update(users).set({ premiumSince: premium ? new Date() : null }).where(eq(users.id, userId));
-    await recordAudit(tx, {
-      actor,
-      action: premium ? 'platform.premium.grant' : 'platform.premium.revoke',
-      targetType: 'user',
-      targetId: userId,
-    });
     if (premium) {
-      await notify(tx, { userId, type: 'badge.granted', groupKey: 'badge:premium', subject: BADGES.premium.label, href: '/settings/profile' });
+      const { started, until } = await grantHeartwood(tx, userId, months);
+      await recordAudit(tx, { actor, action: 'platform.premium.grant', targetType: 'user', targetId: userId, after: { months, until: until?.toISOString() ?? null } });
+      if (started) await notify(tx, { userId, type: 'badge.granted', groupKey: 'badge:premium', subject: BADGES.premium.label, href: '/store' });
+    } else {
+      await tx.update(users).set({ premiumSince: null, premiumUntil: null }).where(eq(users.id, userId));
+      await recordAudit(tx, { actor, action: 'platform.premium.revoke', targetType: 'user', targetId: userId });
     }
   });
 }
@@ -111,6 +111,7 @@ export async function searchAccounts(db: Db, actor: Actor, query: string): Promi
       badges: platformBadgesSql,
       staff: users.platformRole,
       premiumSince: users.premiumSince,
+      premiumUntil: users.premiumUntil,
       createdAt: users.createdAt,
     })
     .from(users)
@@ -125,7 +126,7 @@ export async function searchAccounts(db: Db, actor: Actor, query: string): Promi
     handle: row.handle,
     displayName: row.displayName,
     // Someone who has not finished onboarding has no profile row to hang the badge query on.
-    badges: toBadges(row.badges ?? [row.staff === 'staff' ? 'staff' : null, row.premiumSince ? 'premium' : null]),
+    badges: toBadges(row.badges ?? [row.staff === 'staff' ? 'staff' : null, heartwoodActive(row) ? 'premium' : null]),
     createdAt: row.createdAt,
   }));
 }

@@ -1,4 +1,5 @@
-import { getSeason, getSeasonMode, listAllCommunities, listReports, searchAccounts } from '@worldroot/core';
+import { BADGES } from '@worldroot/contracts';
+import { getSeason, getSeasonMode, listAllCommunities, listCodeBatches, listReports, searchAccounts } from '@worldroot/core';
 import { Button, buttonClass } from '@worldroot/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -8,6 +9,7 @@ import { ReportQueue } from '@/features/moderation/report-client';
 import { PageHeader } from '@/features/shell/page-header';
 import { SectionHeading } from '@/features/shell/prose';
 import { AccountControls } from '@/features/staff/account-controls';
+import { CodeBatchForm } from '@/features/staff/code-batch-form';
 import { SeasonPicker } from '@/features/staff/season-picker';
 import { database } from '@/lib/server';
 import { requireViewer } from '@/lib/session';
@@ -22,12 +24,13 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
   if (viewer.actor.platformRole !== 'staff') notFound();
   const query = ((await searchParams).q ?? '').slice(0, 100);
   const { db } = await database();
-  const [accounts, communities, reports, season, seasonMode] = await Promise.all([
+  const [accounts, communities, reports, season, seasonMode, batches] = await Promise.all([
     searchAccounts(db, viewer.actor, query),
     listAllCommunities(db, viewer.actor),
     listReports(db, viewer.actor, 'platform'),
     getSeason(db),
     getSeasonMode(db),
+    listCodeBatches(db, viewer.actor),
   ]);
 
   return (
@@ -47,6 +50,27 @@ export default async function StaffPage({ searchParams }: { searchParams: Promis
         across the top and a few drifting shapes, for everyone, at once. Text and each community’s own color stay as they are.
       </p>
       <SeasonPicker mode={seasonMode} showing={season} />
+
+      <SectionHeading>Backer Codes</SectionHeading>
+      <p className="mb-4 max-w-2xl text-sm text-ink-muted">
+        Kickstarter does not let other sites check who backed a project, so backers claim their rewards with a code. Paste a column from
+        the backer report, download the codes, and send each backer theirs through Kickstarter&rsquo;s backer survey or a message. They
+        enter it under Settings, Account. Each code works once.
+      </p>
+      <CodeBatchForm />
+      {batches.length > 0 ? (
+        <ul className="mt-6 flex max-w-2xl flex-col divide-y divide-line">
+          {batches.map((batch) => (
+            <li key={batch.batch} className="flex flex-wrap items-baseline justify-between gap-2 py-3 text-sm">
+              <span className="font-medium text-ink">{batch.batch}</span>
+              <span className="text-ink-muted">
+                {[batch.grantsHeartwood ? (batch.grantsMonths ? `Heartwood For ${batch.grantsMonths} ${batch.grantsMonths === 1 ? 'Month' : 'Months'}` : 'Heartwood With No End') : null, batch.grantsBadge ? BADGES[batch.grantsBadge].label + ' Badge' : null].filter(Boolean).join(' + ')} ·{' '}
+                {batch.redeemed.toLocaleString('en')} Of {batch.total.toLocaleString('en')} Redeemed
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       <SectionHeading>Accounts</SectionHeading>
       <form className="mb-5 flex max-w-xl gap-2">

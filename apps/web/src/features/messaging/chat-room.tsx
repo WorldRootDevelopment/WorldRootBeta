@@ -5,6 +5,8 @@ import { Badges } from '@/features/identity/badges';
 import { ChatComposer, ChatLog } from './chat-client';
 import { ReportButton } from '@/features/moderation/report-client';
 import { RemoveMessageButton } from './message-client';
+import { Reactions, ReplyButton, ReplyProvider } from './chat-extras';
+import { CornerUpLeft } from 'lucide-react';
 
 type Message = MessagePage['messages'][number];
 
@@ -31,7 +33,50 @@ function Avatar({ name }: { name: string }) {
   );
 }
 
-function ChatMessage({ message, previous, canModerate }: { message: Message; previous: Message | undefined; canModerate: boolean }) {
+/** A message's words, with each @handle linked to that person's profile and the viewer's own handle picked out. */
+function Body({ text, viewerHandle }: { text: string; viewerHandle: string | null }) {
+  const parts = text.split(/((?:^|(?<=[^A-Za-z0-9_@]))@[A-Za-z0-9_]{3,24}(?![A-Za-z0-9_]))/g);
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (!/^@[A-Za-z0-9_]{3,24}$/.test(part)) return part;
+        const handle = part.slice(1);
+        const me = viewerHandle !== null && handle.toLowerCase() === viewerHandle.toLowerCase();
+        return (
+          <Link key={index} href={`/u/${handle}`} className={`rounded px-0.5 font-medium hover:underline ${me ? 'bg-accent-soft text-accent-text' : 'text-accent-text'}`}>
+            {part}
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+/** The line above a reply saying what it answers. */
+function Quote({ replyTo }: { replyTo: NonNullable<Message['replyTo']> }) {
+  return (
+    <p className="mb-0.5 flex min-w-0 items-center gap-1.5 text-xs text-ink-muted">
+      <CornerUpLeft className="size-3.5 shrink-0" aria-hidden="true" />
+      {replyTo.removed ? (
+        <span className="italic">Replying to a message that was removed</span>
+      ) : (
+        <span className="truncate">
+          Replying To <span className="font-medium text-ink">{replyTo.authorName ?? 'Former Member'}</span>: {replyTo.excerpt}
+        </span>
+      )}
+    </p>
+  );
+}
+
+interface MessageProps {
+  message: Message;
+  previous: Message | undefined;
+  canModerate: boolean;
+  canPost: boolean;
+  viewerHandle: string | null;
+}
+
+function ChatMessage({ message, previous, canModerate, canPost, viewerHandle }: MessageProps) {
   const newDay = !previous || dayKey(previous.createdAt) !== dayKey(message.createdAt);
   const divider = newDay ? (
     <li aria-hidden="true" className="my-3 flex items-center gap-3 text-xs text-ink-muted before:h-px before:flex-1 before:bg-line after:h-px after:flex-1 after:bg-line">
@@ -53,19 +98,26 @@ function ChatMessage({ message, previous, canModerate }: { message: Message; pre
   const name = message.authorName ?? 'Former Member';
   const remove = (
     <span className="inline-flex items-center gap-3">
+      {canPost ? <ReplyButton target={{ id: message.id, authorName: name, excerpt: message.body.slice(0, 120) }} /> : null}
       {message.mine || canModerate ? <RemoveMessageButton messageId={message.id} /> : null}
       {message.mine ? null : <ReportButton targetType="message" targetId={message.id} />}
     </span>
   );
 
-  if (continues(message, previous)) {
+  // A reply always starts a new group, so the line saying what it answers sits with its author's name.
+  if (continues(message, previous) && !message.replyTo) {
     return (
       <li className="group flex items-baseline gap-3 rounded py-0.5 hover:bg-surface-sunken">
         {/* The time takes the avatar's column and shows when the row is hovered or focused. */}
         <time dateTime={message.createdAt.toISOString()} className="w-9 shrink-0 text-center text-[0.625rem] text-ink-muted opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">
           {time(message.createdAt)}
         </time>
-        <p className="min-w-0 flex-1 whitespace-pre-line break-words text-ink">{message.body}</p>
+        <div className="min-w-0 flex-1">
+          <p className="whitespace-pre-line break-words text-ink">
+            <Body text={message.body} viewerHandle={viewerHandle} />
+          </p>
+          <Reactions messageId={message.id} reactions={message.reactions} canReact={canPost} />
+        </div>
         <span className="opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">{remove}</span>
       </li>
     );
@@ -77,6 +129,7 @@ function ChatMessage({ message, previous, canModerate }: { message: Message; pre
       <li className="group mt-3 flex gap-3 rounded py-0.5 first:mt-0 hover:bg-surface-sunken">
         <Avatar name={name} />
         <div className="min-w-0 flex-1">
+          {message.replyTo ? <Quote replyTo={message.replyTo} /> : null}
           <div className="flex flex-wrap items-baseline gap-x-2">
             {message.authorHandle ? (
               <Link href={`/u/${message.authorHandle}`} className="font-medium text-ink rounded hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
@@ -91,7 +144,10 @@ function ChatMessage({ message, previous, canModerate }: { message: Message; pre
             </time>
             <span className="opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">{remove}</span>
           </div>
-          <p className="whitespace-pre-line break-words text-ink">{message.body}</p>
+          <p className="whitespace-pre-line break-words text-ink">
+            <Body text={message.body} viewerHandle={viewerHandle} />
+          </p>
+          <Reactions messageId={message.id} reactions={message.reactions} canReact={canPost} />
         </div>
       </li>
     </>
@@ -109,13 +165,15 @@ interface ChatRoomProps {
   track: boolean;
   /** What this room is called, for people using a screen reader. */
   label?: string;
+  /** The viewer's own handle, so mentions of them stand out. */
+  viewerHandle?: string | null;
 }
 
 /** A live chat room: one of a community's channels. The member list stands beside every page of the community. */
-export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote, track, label = 'Chat' }: ChatRoomProps) {
+export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote, track, label = 'Chat', viewerHandle = null }: ChatRoomProps) {
   const { conversation, messages, hasEarlier, canPost, canModerate } = page;
   return (
-    <div>
+    <ReplyProvider>
       <section aria-label={label} className="flex h-[calc(100dvh-25rem)] min-h-[26rem] flex-col overflow-hidden wr-glass rounded-2xl">
         <ChatLog conversationId={conversation.id} latestId={viewingEarlier ? null : (messages.at(-1)?.id ?? null)} track={track && !viewingEarlier}>
           {hasEarlier && messages[0] ? (
@@ -130,7 +188,7 @@ export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote
           ) : (
             <ol>
               {messages.map((message, index) => (
-                <ChatMessage key={message.id} message={message} previous={messages[index - 1]} canModerate={canModerate} />
+                <ChatMessage key={message.id} message={message} previous={messages[index - 1]} canModerate={canModerate} canPost={canPost} viewerHandle={viewerHandle} />
               ))}
             </ol>
           )}
@@ -148,7 +206,6 @@ export function ChatRoom({ page, href, viewingEarlier, placeholder, readOnlyNote
           )}
         </div>
       </section>
-
-    </div>
+    </ReplyProvider>
   );
 }

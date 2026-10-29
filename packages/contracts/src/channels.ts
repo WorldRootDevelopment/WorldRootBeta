@@ -49,3 +49,20 @@ export const channelInputSchema = z.object({
 });
 
 export type ChannelInput = z.input<typeof channelInputSchema>;
+
+/**
+ * The reactions anyone can add to a chat message. A fixed set keeps them
+ * readable everywhere and leaves no room to spell things out in emoji.
+ */
+export const REACTIONS = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀'] as const;
+export type Reaction = (typeof REACTIONS)[number];
+export const isReaction = (value: unknown): value is Reaction => typeof value === 'string' && (REACTIONS as readonly string[]).includes(value);
+
+/** The most people one message can mention and notify. More are still linked, just not told. */
+export const MAX_MENTIONS = 10;
+
+/** The @handles in a message, without repeats, in the order written. */
+export function mentionedHandles(body: string): string[] {
+  const found = [...body.matchAll(/(^|[^A-Za-z0-9_@])@([A-Za-z0-9_]{3,24})(?![A-Za-z0-9_])/g)].map((match) => match[2]!.toLowerCase());
+  return [...new Set(found)];
+}

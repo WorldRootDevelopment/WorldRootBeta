@@ -23,6 +23,8 @@ export function SignUpForm({ next }: { next: string }) {
       password: String(form.get('password')),
       // The account name is a placeholder. The display name is chosen at onboarding.
       name: email.split('@')[0] ?? email,
+      // Where the link in the confirmation email lands.
+      callbackURL: '/settings/account?verified=1',
     });
     if (result.error) {
       setError(result.error.message ?? 'Could not create the account.');

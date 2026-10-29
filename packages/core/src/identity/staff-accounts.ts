@@ -1,3 +1,4 @@
+import { heartwoodActive } from './plan';
 import { toBadges, type BadgeKey } from '@worldroot/contracts';
 import { auditLog, characters, communities, communityMembers, profiles, reports, roleAssignments, roles, scenePosts, sessions, users, type Db } from '@worldroot/db';
 import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
@@ -34,6 +35,7 @@ export interface StaffAccountView {
   /** Null when the account has not finished setting up. */
   profile: { handle: string; displayName: string; avatarId: string | null; bannerId: string | null; status: string | null; lastSeenAt: Date | null } | null;
   badges: BadgeKey[];
+  heartwoodUntil?: Date | null;
   /** Devices signed in right now. */
   sessions: number;
   communities: Array<{ slug: string; name: string; owner: boolean }>;
@@ -95,7 +97,9 @@ export async function getAccountForStaff(db: Db, actor: Actor, userId: string): 
           lastSeenAt: profile.profile.lastSeenAt,
         }
       : null,
-    badges: toBadges(profile?.badges ?? [user.platformRole === 'staff' ? 'staff' : null, user.premiumSince ? 'premium' : null]),
+    badges: toBadges(profile?.badges ?? [user.platformRole === 'staff' ? 'staff' : null, heartwoodActive(user) ? 'premium' : null]),
+    /** When Heartwood ends: a date, null for no end, or undefined when it is not running. */
+    heartwoodUntil: heartwoodActive(user) ? user.premiumUntil : undefined,
     sessions: signedIn,
     communities: memberships.map((row) => ({ slug: row.slug, name: row.name, owner: owns.has(row.id) })),
     characters: cast,

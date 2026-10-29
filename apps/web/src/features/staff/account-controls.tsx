@@ -46,7 +46,7 @@ export function ItemControls({ userId, owned }: { userId: string; owned: string[
 }
 
 /** Staff controls for one account: Heartwood, and each badge that is granted by hand. */
-export function AccountControls({ userId, badges }: { userId: string; badges: BadgeKey[] }) {
+export function AccountControls({ userId, badges, heartwoodUntil }: { userId: string; badges: BadgeKey[]; /** When Heartwood ends, as text; null for no end; undefined when it is not running. */ heartwoodUntil?: string | null }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,19 +60,33 @@ export function AccountControls({ userId, badges }: { userId: string; badges: Ba
   };
 
   const premium = badges.includes('premium');
+  const heartwood = (body: { premium: boolean; months?: number | null }) => change(`/api/v1/staff/accounts/${userId}/premium`, body);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <p className="text-sm text-ink">
+          <span className="font-medium">{BADGES.premium.label}:</span>{' '}
+          {premium ? (heartwoodUntil ? `Runs Until ${heartwoodUntil}` : 'Running, With No End') : 'Not Running'}
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" disabled={busy} onClick={() => heartwood({ premium: true, months: 1 })} className={toggle(false)}>
+            Add 1 Month
+          </button>
+          <button type="button" disabled={busy} onClick={() => heartwood({ premium: true, months: 12 })} className={toggle(false)}>
+            Add 12 Months
+          </button>
+          <button type="button" disabled={busy || (premium && !heartwoodUntil)} onClick={() => heartwood({ premium: true, months: null })} className={toggle(false)}>
+            No End
+          </button>
+          {premium ? (
+            <button type="button" disabled={busy} onClick={() => heartwood({ premium: false })} className={toggle(false)}>
+              Take Away
+            </button>
+          ) : null}
+        </div>
+      </div>
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          aria-pressed={premium}
-          disabled={busy}
-          onClick={() => change(`/api/v1/staff/accounts/${userId}/premium`, { premium: !premium })}
-          className={toggle(premium)}
-        >
-          {BADGES.premium.label}
-        </button>
         {GRANTABLE_BADGES.map((key) => {
           const held = badges.includes(key);
           return (

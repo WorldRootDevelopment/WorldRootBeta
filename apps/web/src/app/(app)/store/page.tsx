@@ -1,5 +1,5 @@
 import { DICE_THEME_KEYS, DICE_THEMES, FREE_LIMITS, PREMIUM, PREMIUM_LIMITS } from '@worldroot/contracts';
-import { getPlanUsage, getStore } from '@worldroot/core';
+import { getPlanUsage, getStore, heartwoodEnds } from '@worldroot/core';
 import { buttonClass } from '@worldroot/ui';
 import { Check, Clock, Heart, Sparkles } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -22,7 +22,7 @@ const SAMPLE = [6, 12, 20];
 export default async function StorePage() {
   const viewer = await requireViewer();
   const { db } = await database();
-  const [{ items }, usage] = await Promise.all([getStore(db, viewer.actor), getPlanUsage(db, viewer.actor)]);
+  const [{ items }, usage, ends] = await Promise.all([getStore(db, viewer.actor), getPlanUsage(db, viewer.actor), heartwoodEnds(db, viewer.actor.userId)]);
   const free = DICE_THEME_KEYS.filter((key) => DICE_THEMES[key].free);
 
   return (
@@ -76,7 +76,7 @@ export default async function StorePage() {
         </ul>
         <p className="mt-4 text-sm text-ink-muted">
           {usage.premium
-            ? 'Your account has Heartwood. Thank you.'
+            ? ends ? `Your Heartwood runs until ${ends.toLocaleDateString('en', { dateStyle: 'long' })}. Thank you.` : 'Your account has Heartwood. Thank you.'
             : `You have ${usage.characters.used} of ${FREE_LIMITS.characters} characters and own ${usage.communities.used} of ${FREE_LIMITS.communities} communities. Nothing you already have is ever taken away.`}
         </p>
       </div>

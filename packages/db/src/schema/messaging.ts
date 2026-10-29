@@ -1,4 +1,4 @@
-import { index, integer, jsonb, pgEnum, pgTable, primaryKey, text, unique, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, jsonb, pgEnum, pgTable, primaryKey, text, unique, uuid, type AnyPgColumn } from 'drizzle-orm/pg-core';
 import { createdAt, id, timestamptz } from './columns';
 import { communities } from './community';
 import { users } from './identity';
@@ -100,11 +100,29 @@ export const messages = pgTable(
       .notNull()
       .references(() => conversations.id, { onDelete: 'cascade' }),
     authorUserId: uuid('author_user_id').references(() => users.id, { onDelete: 'set null' }),
-    // Plain text. Line breaks are kept; nothing else is interpreted.
+    // Plain text. Line breaks are kept; nothing else is interpreted, except @handles, which are linked when shown.
     body: text('body').notNull(),
+    // The message this one answers, in the same conversation.
+    replyToId: uuid('reply_to_id').references((): AnyPgColumn => messages.id, { onDelete: 'set null' }),
     createdAt: createdAt(),
     removedAt: timestamptz('removed_at'),
     removedByUserId: uuid('removed_by_user_id').references(() => users.id, { onDelete: 'set null' }),
   },
   (t) => [index('messages_conversation_idx').on(t.conversationId, t.id)],
+);
+
+/** One person's reaction to one message: an emoji from the fixed set in @worldroot/contracts. */
+export const messageReactions = pgTable(
+  'message_reactions',
+  {
+    messageId: uuid('message_id')
+      .notNull()
+      .references(() => messages.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    emoji: text('emoji').notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.messageId, t.userId, t.emoji] })],
 );

@@ -5,13 +5,49 @@ import type { Actor } from '../platform/authorize';
 import { DomainError } from '../platform/errors';
 
 /**
+ * Whether Heartwood is running for an account: it was started, and its end date, if it has one, is still
+ * ahead. Heartwood is a monthly membership; when a month is not renewed it simply lapses.
+ */
+export const heartwoodActive = (user: { premiumSince: Date | null; premiumUntil: Date | null } | undefined, now = new Date()): boolean =>
+  Boolean(user?.premiumSince) && (!user!.premiumUntil || user!.premiumUntil > now);
+
+/**
  * Whether an account has what Heartwood gives. WorldRoot staff always do. There
- * is no billing yet, so an account is Heartwood only when staff have made it so.
+ * is no billing yet, so an account has Heartwood only from staff or a redeemed code.
  */
 export async function hasPremium(db: Db, actor: Actor): Promise<boolean> {
   if (actor.platformRole === 'staff') return true;
-  const [user] = await db.select({ premiumSince: users.premiumSince }).from(users).where(eq(users.id, actor.userId));
-  return Boolean(user?.premiumSince);
+  const [user] = await db.select({ premiumSince: users.premiumSince, premiumUntil: users.premiumUntil }).from(users).where(eq(users.id, actor.userId));
+  return heartwoodActive(user);
+}
+
+const addMonths = (from: Date, months: number) => {
+  const date = new Date(from);
+  date.setUTCMonth(date.getUTCMonth() + months);
+  return date;
+};
+
+/**
+ * Gives an account Heartwood: for a number of months, added to any time it already has left, or with no
+ * end (months null). Time never shrinks: Heartwood with no end stays that way. Call inside a transaction.
+ * Returns whether Heartwood was off before, so the caller can tell the person it has begun.
+ */
+export async function grantHeartwood(tx: Db, userId: string, months: number | null): Promise<{ started: boolean; until: Date | null }> {
+  const [user] = await tx.select({ premiumSince: users.premiumSince, premiumUntil: users.premiumUntil }).from(users).where(eq(users.id, userId));
+  const now = new Date();
+  const active = heartwoodActive(user, now);
+  const until = months === null || (active && !user!.premiumUntil) ? null : addMonths(active ? user!.premiumUntil! : now, months);
+  await tx
+    .update(users)
+    .set({ premiumSince: active ? user!.premiumSince : now, premiumUntil: until })
+    .where(eq(users.id, userId));
+  return { started: !active, until };
+}
+
+/** When an account's Heartwood ends: a date, null for no end, or undefined when it has none running. */
+export async function heartwoodEnds(db: Db, userId: string): Promise<Date | null | undefined> {
+  const [user] = await db.select({ premiumSince: users.premiumSince, premiumUntil: users.premiumUntil }).from(users).where(eq(users.id, userId));
+  return heartwoodActive(user) ? user!.premiumUntil : undefined;
 }
 
 /**
@@ -20,8 +56,8 @@ export async function hasPremium(db: Db, actor: Actor): Promise<boolean> {
  */
 export async function characterImageLimit(db: Db, playerUserId: string | null): Promise<number> {
   if (!playerUserId) return FREE_LIMITS.characterImages;
-  const [player] = await db.select({ premiumSince: users.premiumSince, platformRole: users.platformRole }).from(users).where(eq(users.id, playerUserId));
-  return player?.premiumSince || player?.platformRole === 'staff' ? PREMIUM_LIMITS.characterImages : FREE_LIMITS.characterImages;
+  const [player] = await db.select({ premiumSince: users.premiumSince, premiumUntil: users.premiumUntil, platformRole: users.platformRole }).from(users).where(eq(users.id, playerUserId));
+  return heartwoodActive(player) || player?.platformRole === 'staff' ? PREMIUM_LIMITS.characterImages : FREE_LIMITS.characterImages;
 }
 
 /**
@@ -34,8 +70,8 @@ export const UNLIMITED_DEMO_EMAILS = ['host@worldroot.test', 'guest@worldroot.te
 
 async function unlimited(db: Db, actor: Actor): Promise<boolean> {
   if (actor.platformRole === 'staff') return true;
-  const [user] = await db.select({ premiumSince: users.premiumSince, email: users.email }).from(users).where(eq(users.id, actor.userId));
-  return Boolean(user?.premiumSince) || UNLIMITED_DEMO_EMAILS.includes(user?.email ?? '');
+  const [user] = await db.select({ premiumSince: users.premiumSince, premiumUntil: users.premiumUntil, email: users.email }).from(users).where(eq(users.id, actor.userId));
+  return heartwoodActive(user) || UNLIMITED_DEMO_EMAILS.includes(user?.email ?? '');
 }
 
 export interface PlanUsage {

@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, TextField } from '@worldroot/ui';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { authClient } from '@/lib/auth-client';
@@ -32,6 +33,11 @@ export function SignInForm({ next }: { next: string }) {
     <form onSubmit={submit} className="flex flex-col gap-5">
       <TextField label="Email" name="email" type="email" autoComplete="email" required />
       <TextField label="Password" name="password" type="password" autoComplete="current-password" required />
+      <p className="-mt-3 text-sm">
+        <Link href="/forgot-password" className="font-medium text-accent-text underline underline-offset-2 hover:no-underline">
+          Forgot Your Password?
+        </Link>
+      </p>
       {error ? (
         <p role="alert" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
           {error}
